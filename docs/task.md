@@ -1,0 +1,11 @@
+- [x] **Design Overhaul (High-End AI Demo Style)**
+    - [x] **Aesthetics:** Deep Dark Backgrounds, Neon Gradients, Glassmorphism.
+    - [x] **Typography:** Large, Bold Headings (Inter/Geist font), High Contrast.
+    - [x] **Layout:** Asymmetrical "Bento" Grids, Sticky Headers.
+    - [x] **Interactivity:** Subtle hover glows, smooth transitions.
+- [ ] **Deployment & Automation**
+    - [ ] Deploy to Vercel (Public Access)
+    - [ ] Setup GitHub Actions (Daily Automation)
+- [ ] **Monetization & Polish**
+    - [ ] Integrate Affiliate Links (Amazon/Rakuten)
+    - [ ] Improve UI (Comparison Tables, Star Ratings)

@@ -1,0 +1,108 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  /* Affiliate Media Theme (LDK/mybest Style) */
+  --background: #ffffff;
+  --foreground: #333333;
+  /* Dark Gray for text */
+
+  --card: #ffffff;
+  --card-foreground: #333333;
+
+  --popover: #ffffff;
+  --popover-foreground: #333333;
+
+  /* Brand Colors */
+  --primary: #4ecdc4;
+  /* Mint Green - Fresh/Trust */
+  --primary-foreground: #ffffff;
+
+  --secondary: #ff6b6b;
+  /* Coral Red - CV/Attention */
+  --secondary-foreground: #ffffff;
+
+  --accent: #f7f9fc;
+  /* Very Light Blue/Gray Background */
+  --accent-foreground: #1a202c;
+
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #4ecdc4;
+
+  --radius: 0.5rem;
+  /* Standard rounded corners */
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+  /* Gothic for readability */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Utilities */
+.ranking-badge {
+  background: linear-gradient(135deg, #ffd700 0%, #fdb931 100%);
+  /* Gold */
+  color: white;
+  font-weight: bold;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ranking-badge.silver {
+  background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
+}
+
+.ranking-badge.bronze {
+  background: linear-gradient(135deg, #cd7f32 0%, #a0522d 100%);
+}
+
+.cv-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  border-radius: 0.5rem;
+  transition: opacity 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cv-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.cv-amazon {
+  background-color: #ff9900;
+}
+
+.cv-rakuten {
+  background-color: #bf0000;
+}
+
+.cv-yahoo {
+  background-color: #ff0033;
+}
+
+/* Yahoo usually red/pinkish in Japan or Yellow */
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-bottom: 3px solid var(--primary);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+}
