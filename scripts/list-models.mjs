@@ -1,39 +1,33 @@
+import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
 if (!GEMINI_API_KEY) {
-    console.error('Error: GEMINI_API_KEY is not set in .env.local');
+    console.error("Error: GEMINI_API_KEY is not set in .env.local");
     process.exit(1);
 }
 
-async function main() {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`;
+const client = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-    console.log("Fetching models list from:", url.replace(GEMINI_API_KEY, 'HIDDEN_KEY'));
-
+async function listModels() {
+    console.log("Listing available models...");
     try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.error("API Error:", data);
-            return;
-        }
-
-        console.log("Available Models:");
-        if (data.models) {
-            data.models.forEach(m => {
-                console.log(`- ${m.name} (${m.supportedGenerationMethods.join(', ')})`);
-            });
+        const response = await client.models.list();
+        // The response structure might vary, let's log it carefully
+        console.log("Models found:");
+        if (Array.isArray(response)) {
+            response.forEach(m => console.log(`- ${m.name} (${m.supportedGenerationMethods})`));
+        } else if (response.models) {
+            response.models.forEach(m => console.log(`- ${m.name} (${m.supportedGenerationMethods})`));
         } else {
-            console.log("No models found in response:", data);
+            console.log(JSON.stringify(response, null, 2));
         }
-
     } catch (error) {
-        console.error("Network Error:", error);
+        console.error("Failed to list models:", error);
     }
 }
 
-main();
+listModels();

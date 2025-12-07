@@ -2,48 +2,53 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  /* Affiliate Media Theme (LDK/mybest Style) */
-  --background: #ffffff;
+  /* Clean & Scientific Beauty Theme */
+  --background: #FAFAFA;
+  /* Off-white */
   --foreground: #333333;
-  /* Dark Gray for text */
+  /* Dark Gray */
 
-  --card: #ffffff;
+  --card: #FFFFFF;
   --card-foreground: #333333;
 
-  --popover: #ffffff;
+  --popover: #FFFFFF;
   --popover-foreground: #333333;
 
   /* Brand Colors */
-  --primary: #4ecdc4;
-  /* Mint Green - Fresh/Trust */
-  --primary-foreground: #ffffff;
+  --primary: #BFA05D;
+  /* Champagne Gold */
+  --primary-foreground: #FFFFFF;
 
-  --secondary: #ff6b6b;
-  /* Coral Red - CV/Attention */
-  --secondary-foreground: #ffffff;
+  --secondary: #E0F2F1;
+  /* Mint Green (Pros) */
+  --secondary-foreground: #00695C;
 
-  --accent: #f7f9fc;
-  /* Very Light Blue/Gray Background */
+  --accent: #F5F5F5;
+  /* Light Gray */
   --accent-foreground: #1a202c;
 
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  --muted: #F0F0F0;
+  --muted-foreground: #666666;
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #4ecdc4;
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: #BFA05D;
 
-  --radius: 0.5rem;
-  /* Standard rounded corners */
+  --radius: 0.75rem;
+  /* Slightly more rounded */
+
+  /* Font Variables */
+  --font-sans: var(--font-noto-sans-jp);
+  --font-serif: var(--font-noto-serif-jp);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+  font-family: var(--font-sans), "Hiragino Kaku Gothic ProN", sans-serif;
   /* Gothic for readability */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

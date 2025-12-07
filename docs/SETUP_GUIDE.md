@@ -39,11 +39,15 @@ npm install
 
 Gemini APIキーを設定する必要があります。
 プロジェクトルートに `.env.local` というファイルを作成し、以下の内容を記述してください。
+（`.env.example` をコピーしてリネームすると簡単です）
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
+NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG=your_amazon_tag
+NEXT_PUBLIC_RAKUTEN_AFFILIATE_ID=your_rakuten_id
 ```
 ※ `your_gemini_api_key_here` は実際のAPIキー（AI Studioで取得）に置き換えてください。
+※ アフィリエイトタグがない場合は `demo-22` などがデフォルトで使用されます。
 
 ## 5. 動作確認 (Running Locally)
 

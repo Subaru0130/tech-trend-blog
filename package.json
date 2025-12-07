@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "next lint",
+    "generate:review": "node scripts/generate-post.mjs && node scripts/process_article_images.mjs && node scripts/verify-post.mjs",
     "generate": "node scripts/generate-post.mjs"
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "lucide-react": "^0.554.0",
     "next": "16.0.4",
     "next-mdx-remote": "^5.0.0",
+    "puppeteer": "^24.32.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "rss-parser": "^3.13.0",

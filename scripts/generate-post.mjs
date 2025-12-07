@@ -2,173 +2,271 @@ import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
-import Parser from 'rss-parser';
+import { fileURLToPath } from 'url';
+import { verifyProducts, getHeroImage } from './verify_products.mjs';
 
 dotenv.config({ path: '.env.local' });
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 if (!GEMINI_API_KEY) {
   console.error("Error: GEMINI_API_KEY is not set in .env.local");
   process.exit(1);
 }
-
-// Initialize new SDK Client
 const client = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-const parser = new Parser({
-  headers: {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-  }
-});
+// --- Helper Functions ---
 
-async function fetchTrends() {
-  console.log('Fetching comparison topics...');
-  // Pivot to Daily Necessities / Lifestyle (mybest/LDK style)
-  return [
-    'ドラム式洗濯機 vs 縦型洗濯機',
-    '人気の食器用洗剤 徹底比較',
-    'ロボット掃除機 ルンバ vs エコバックス',
-    '無印良品 vs ニトリ 収納ボックス',
-    '最新ヘアドライヤー ナノケア vs ダイソン',
-    'フライパン 鉄 vs テフロン'
-  ];
-}
-
-async function fetchNews(query) {
-  console.log(`Simulating fetching news for: ${query}`);
-  return [
-    { title: `${query}の主婦の口コミ`, snippet: `${query}は汚れ落ちが抜群と評判。一方で価格が高めという声も。` },
-    { title: `【2025年】${query}のおすすめランキング`, snippet: `今年のベストバイはこれ！${query}を実際に使って検証しました。` },
-    { title: `${query} コスパ最強はどっち？`, snippet: `毎日使うものだからこそ、安くて良いものを選びたい。${query}のコスパを徹底調査。` },
-  ];
-}
-
-async function generateImage(topic) {
-  console.log(`Generating lifestyle image for: ${topic}`);
-
-  // LDK/Magazine Style Image Prompt
-  const imagePrompt = `
-    A bright, clean, high-quality lifestyle photography of ${topic}.
-    Style: Japanese lifestyle magazine (like LDK or mybest), bright natural lighting, clean white background or cozy living room setting.
-    Composition: Product comparison shot, neatly arranged, professional product photography.
-    Mood: Trustworthy, fresh, organized, domestic bliss.
-    Quality: 8k resolution, highly detailed, photorealistic.
-    No text, no watermarks.
-  `;
-
+async function downloadImage(url, filename) {
+  if (!url || !url.startsWith('http')) return null;
   try {
-    const response = await client.models.generateContent({
-      model: 'gemini-3-pro-image-preview',
-      contents: imagePrompt
+    // Basic Fetch with simple headers
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
     });
 
-    // Inspect response structure
-    const candidate = response.candidates?.[0];
-    const part = candidate?.content?.parts?.[0];
+    if (!response.ok) throw new Error(`Status ${response.status}`);
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    if (part && part.inlineData) {
-      const base64Image = part.inlineData.data;
-      const buffer = Buffer.from(base64Image, 'base64');
-      const filename = `img-${Date.now()}.png`;
-
-      const filepath = path.join(process.cwd(), 'public', 'images', filename);
-
-      const dir = path.dirname(filepath);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
-      fs.writeFileSync(filepath, buffer);
-      console.log(`Image saved to ${filepath}`);
-      return `/images/${filename}`;
-    } else {
-      console.warn("Unexpected image response structure. Full response:", JSON.stringify(response, null, 2));
-      throw new Error("No image data in response");
+    // Filter out 1x1 pixels (usually < 100 bytes)
+    if (buffer.length < 1000) {
+      console.warn(`[Imager] Skipped small image (${buffer.length} bytes): ${url}`);
+      return null;
     }
 
+    const relativePath = `/images/products/${filename}`;
+    const filepath = path.join(process.cwd(), 'public', relativePath);
+
+    const dir = path.dirname(filepath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+    fs.writeFileSync(filepath, buffer);
+    console.log(`[Imager] Saved: ${filename}`);
+    return relativePath;
   } catch (error) {
-    console.warn(`Image generation failed (or model unavailable): ${error.message}`);
-    console.log("Using fallback gradient image.");
+    console.warn(`[Imager] Failed to download ${url}: ${error.message}`);
     return null;
   }
 }
 
+import { verifyProducts, getHeroImage } from './verify_products.mjs';
+
+// ... (previous imports)
+
+// ...
+
+async function generateHeroImage(topic) {
+  try {
+    const heroUrl = await getHeroImage(topic);
+    if (heroUrl) {
+      const filename = `hero-${topic.replace(/\s+/g, '-')}.jpg`;
+      const localPath = await downloadImage(heroUrl, filename);
+      if (localPath) return localPath;
+    }
+    console.warn("Failed to download hero image, using fallback.");
+    return "/images/hero-shampoo.png"; // Ultimate fallback
+  } catch (e) {
+    console.warn("Hero generation failed:", e);
+    return "/images/hero-shampoo.png";
+  }
+}
+
+// --- Main Logic ---
+
 async function generateArticle(topic) {
-  console.log(`Generating comparison review for: ${topic}`);
+  console.log(`\n🚀 Starting Generation Pipeline for: ${topic}`);
 
-  const newsItems = await fetchNews(topic);
-  const newsContext = newsItems.map((n, i) => `[Source ${i + 1}] ${n.title}\n${n.snippet}`).join('\n\n');
+  // PHASE 1: Candidate Selection
+  console.log("Phase 1: Selecting Candidates (AI)...");
+  const selectionPrompt = `
+    You are a commercial editor for a high-end electronics magazine.
+    Task: Select 8 top-tier "High-Spec Hair Dryers" available on Amazon Japan.
+    
+    CRITICAL CONSTRAINTS:
+    1. META-ANALYSIS: Simulate a cross-check of "Kakaku.com" and "MyBest". Select products that appear in Top 20 on multiple sites.
+    2. USE CASES: ensuring variety:
+       - Speed Freak (e.g. Dyson, Panasonic Nanocare)
+       - Damage Care/Gloss (e.g. ReFa, Bioprogramming/Repronizer)
+       - Lightweight/Travel (e.g. Kinijo, Salonia)
+    3. DATA: You must provide the specific ASIN for the main current model (JP Plug).
+    
+    Return STRICT JSON array of strings only (Product Names).
+    Example: ["Panasonic Nanocare EH-NA0J", "Dyson Supersonic Shine"]
+    `;
 
-  const imageUrl = await generateImage(topic);
+  let candidates = [];
+  try {
+    const selectionResp = await client.models.generateContent({
+      model: 'gemini-3-pro-preview',
+      contents: [{ role: 'user', parts: [{ text: selectionPrompt }] }],
+      config: {
+        thinkingConfig: { thinkingLevel: "high" }
+      }
+    });
+
+    const selectionText = selectionResp.candidates[0].content.parts[0].text;
+    candidates = JSON.parse(selectionText.replace(/```json/g, '').replace(/```/g, '').trim());
+    console.log(`Candidates: ${candidates.join(', ')}`);
+  } catch (e) {
+    console.error("Failed to select candidates:", e);
+    throw e;
+  }
+
+  // PHASE 2: Verification (Yahoo Search -> ASIN)
+  console.log("Phase 2: Verifying ASINs via Yahoo Search...");
+  let topProducts = [];
+  try {
+    const verifiedItems = await verifyProducts(candidates);
+    // STRICT FILTER: Only use products where we successfully scraped an image
+    topProducts = verifiedItems.filter(p => p.image).slice(0, 5);
+  } catch (e) {
+    console.error("Verification script failed:", e);
+    throw e;
+  }
+
+  console.log(`Verified ${topProducts.length} products having ASINs AND Images.`);
+  if (topProducts.length < 3) {
+    throw new Error("Failed to verify enough products with images. Check scraper.");
+  }
+
+  // PHASE 3: Content Generation with VERIFIED Data
+  console.log("Phase 3: Writing Article with Verified Data...");
+
+  // Construct context string
+  // Use image from scraper (Guaranteed to be present now)
+  const productsContext = topProducts.map((p, i) => `
+    Rank ${i + 1}:
+    Name: ${p.verifiedName} (Original: ${p.originalName})
+    ASIN: ${p.asin}
+    ImageURL: ${p.image}
+    `).join('\n');
 
   const prompt = `
-  You are a "Lifestyle & Home Goods Expert" writing for a popular Japanese comparison media (like mybest or LDK).
-  The user is a busy housewife or working mom deciding between daily necessities related to: "${topic}".
-  
-  **Context from Web:**
-  ${newsContext}
-  
-  **Goal:** Write a "Thorough Verification & Ranking" article in **JAPANESE (日本語)**.
-  
-  **Tone:**
-  - Trustworthy, Helpful, Empathetic.
-  - Use "We verified" (検証しました) perspective.
-  - Focus on "Life benefits" (e.g., saves time, easy to clean) rather than just specs.
-  
-  **CRITICAL STRUCTURE (Markdown):**
-  
-  # [Title: Catchy Japanese Title, e.g., "【2025徹底比較】食器用洗剤のおすすめ人気ランキング10選！汚れ落ち最強は？"]
-  
-  ## 検証の結論 (The Verdict)
-  (Summarize the winner clearly. "If you want X, buy A. If you want Y, buy B.")
-  
-  ## 比較表 (Comparison Table)
-  | 項目 (Item) | 商品A (Product A) | 商品B (Product B) |
-  | :--- | :--- | :--- |
-  | 価格 | ... | ... |
-  | 使いやすさ | ... | ... |
-  | コスパ | ... | ... |
-  (Use ◎, ◯, △ for easy reading)
-  
-  ## 徹底検証レビュー (Detailed Review)
-  ### 1. 汚れ落ち・効果
-  ...
-  ### 2. 使い勝手・収納性
-  ...
-  ### 3. コスパ
-  ...
-  
-  ## メリット・デメリット (Pros & Cons)
-  ### 商品A
-  *   ✅ ...
-  *   ❌ ...
-  
-  ### 商品B
-  *   ✅ ...
-  *   ❌ ...
-  
-  ## 🏆 編集部のおすすめ (Editor's Choice)
-  **【商品A】はこんな人におすすめ:**
-  *   ...
-  
-  **【商品B】はこんな人におすすめ:**
-  *   ...
-  
-  **Frontmatter:**
-  - title: (Japanese Title)
-  - date: (Current date)
-  - description: (Japanese Summary)
-  - tags: [Life, Home, Comparison, Review]
-  - image: ${imageUrl || ''} 
-  
-  Output raw Markdown only.
-  `;
+    You are an expert affiliate marketer and copywriter using Gemini 3 Pro.
+    
+    **YOUR MISSION: Create the Ultimate "Fail-Proof" Hair Dryer Ranking.**
+    Do not just list popular items. Select items based on **"Use Case"**:
+    - Speed freak (Dyson/Panasonic)
+    - Damage care (Bioprogramming/ReFa)
+    - Lightweight/Travel (Kinijo/Salonia)
+    
+    **Thinking Process (Implicit):**
+    1.  Compare specs: Airflow (m3/min), Weight (g), Temp Control.
+    2.  Analyze "Real" reviews: Ignore paid influencers. Look for "Heavy," "Loud," "Buttons hard to press."
+    3.  Create a "Meta-Ranking" that balances Performance vs Price.
 
-  const response = await client.models.generateContent({
+    **Task:** Write a high-converting ranking article for "${topic}".
+    
+    **CRITICAL: USE THESE VERIFIED PRODUCTS ONLY.**
+    Do NOT invent products. Do NOT change the ASINs. Use the provided ImageURLs.
+    
+    ${productsContext}
+
+    **Structure & Requirements (MDX)**:
+    1.  **Frontmatter**:
+        - title: "High CTR Title" (e.g., 【2025年最新】美容師が選ぶ！速乾＆ツヤ髪ドライヤー神7選【比較】)
+        - date: ${(new Date()).toISOString().split('T')[0]}
+        - description: "Compare top models from Panasonic, Dyson, ReFa. Speed, Weight, and Finish verified."
+        - image: /images/hero-dryer.png
+
+    2.  **Imports**:
+        - \`import { RankingCard } from '@/components/affiliate/RankingCard';\`
+        - \`import { ComparisonTable } from '@/components/affiliate/ComparisonTable';\`
+        - \`import { QuickSummary } from '@/components/affiliate/QuickSummary';\`
+        - \`import { FloatingCTA } from '@/components/ui/FloatingCTA';\`
+
+    3.  **QuickSummary**:
+        - Use \`<QuickSummary products={[...]} />\`.
+        - **Fields**: rank, name, image, rating, price, id, asin.
+
+    4.  **Intro**: 
+        - Hook: "Does drying hair take forever?" "Is heat damaging your ends?"
+
+    5.  **Buying Guide**: 
+        - **Airflow**: 1.5m3/min+ is standards.
+        - **Weight**: Under 500g is best for long hair.
+        - **Technology**: Ion, Far Infrared, etc.
+
+    6.  **The Ranking (1 to 5)**:
+        - Use \`<RankingCard ... />\` for each product.
+        - **Props**:
+          - rank={N}
+          - name="Clean Product Name (e.g. Panasonic Nanocare NE0E, ReFa Beautech)"
+          - image="The Amazon Image URL provided"
+          - rating={4.x}
+          - ratings={{ airflow: N, weight: N, heatControl: N, care: N, quietness: N, design: N }} (1-5 scale)
+          - description="**SALES COPY**: Focus on the experience. 'Dries in 3 mins.' 'Salon finish at home.' (200-300 chars)"
+          - bestFor="Target Persona (e.g. 'Long hair users', 'Frizzy hair')"
+          - pros={["Quick Dry", "Lightweight", "Scalp Mode"]}
+          - cons={["Expensive", "Code length", "Loud"]}
+          - affiliateLinks={{ amazon: "SEARCH:Product Name", rakuten: "SEARCH:Product Name" }}
+          - asin="THE VERIFIED ASIN"
+
+        **RATING KEYS MAPPING**: airflow(風量), weight(軽さ), heatControl(温度調節), care(ケア効果), quietness(静音性), design(デザイン)
+
+    7.  **Comparison Table**:
+        - \`<ComparisonTable specLabels={{...}} products={[...]} />\`
+        - specLabels: { airflow: "風量", weight: "重量", mode: "モード", price: "価格" }
+        - products objects must match RankingCard data.
+        - **specs**: { airflow: "1.6m3", weight: "550g", mode: "Scalp/Hot/Cold", price: "¥38,000" } (Use strings for specs)
+
+    8.  **Floating CTA**:
+        - \`<FloatingCTA productName="Rank 1 Name" affiliateLink="SEARCH:Rank 1 Name" />\`
+        - Only for Rank 1 product.
+
+    9.  **Conclusion**: Final recommendation.
+    `;
+
+  const result = await client.models.generateContent({
     model: 'gemini-3-pro-preview',
-    contents: prompt
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    config: {
+      thinkingConfig: { thinkingLevel: "low" }
+    }
   });
 
-  return response.candidates[0].content.parts[0].text;
+  let mdxContent = result.candidates[0].content.parts[0].text;
+
+  // Clean MDX
+  mdxContent = mdxContent.replace(/^```(markdown|mdx)?\n/, '').replace(/\n```$/, '');
+
+  // PHASE 4: Image Download & Replacement
+  console.log("Phase 4: Downloading Images & Finalizing...");
+
+  // 4a. Hero Image Strategy
+  // 4a. Hero Image Strategy
+  // const heroPath = await generateHeroImage(topic);
+  // if (heroPath) {
+  //   // Replace the placeholder in frontmatter
+  //   mdxContent = mdxContent.replace(/image: \/images\/hero-.*\.png/, `image: ${heroPath}`);
+  // }
+
+  const urlRegex = /image="(https?:\/\/[^"]+)"/g;
+  let match;
+  const downloads = [];
+  while ((match = urlRegex.exec(mdxContent)) !== null) {
+    const originalUrl = match[1];
+    const filename = `prod-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+    downloads.push({ originalUrl, filename });
+  }
+
+  // Deduplicate downloads
+  const uniqueDownloads = [...new Map(downloads.map(item => [item.originalUrl, item])).values()];
+
+  for (const { originalUrl, filename } of uniqueDownloads) {
+    const localPath = await downloadImage(originalUrl, filename);
+    if (localPath) {
+      // Replace ALL occurrences of this URL
+      mdxContent = mdxContent.split(originalUrl).join(`${localPath}?v=${Date.now()}`);
+    }
+  }
+
+  return mdxContent;
 }
 
 async function saveArticle(content, topic) {
@@ -177,29 +275,12 @@ async function saveArticle(content, topic) {
   const filename = `${dateStr}-${safeTopic}.mdx`;
   const filepath = path.join(process.cwd(), 'content', 'posts', filename);
 
-  let cleanContent = content.replace(/^```markdown\n/, '').replace(/\n```$/, '');
-
-  if (cleanContent.includes('date:')) {
-    cleanContent = cleanContent.replace(/date: .*/, `date: ${dateStr}`);
-  } else {
-    cleanContent = cleanContent.replace(/title: .*/, `$&
-date: ${dateStr}`);
-  }
-
-  cleanContent = cleanContent.replace(/title: (.*)/, 'title: "$1"');
-
-  fs.writeFileSync(filepath, cleanContent, 'utf8');
+  fs.writeFileSync(filepath, content, 'utf8');
   console.log(`Saved article to ${filepath}`);
 }
 
 async function main() {
-  const trends = await fetchTrends();
-  console.log('Comparison topics:', trends);
-
-  const targetTrend = trends[Math.floor(Math.random() * trends.length)];
-
-  const article = await generateArticle(targetTrend);
-  await saveArticle(article, targetTrend);
+  await saveArticle(await generateArticle('最新ヘアドライヤー'), '最新ヘアドライヤー');
 }
 
 main();

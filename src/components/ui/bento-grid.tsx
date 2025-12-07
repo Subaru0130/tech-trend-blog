@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export const BentoGrid = ({
     className,
@@ -11,7 +11,7 @@ export const BentoGrid = ({
     return (
         <div
             className={cn(
-                "grid md:auto-rows-[20rem] grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto",
+                "grid md:auto-rows-[18rem] grid-cols-1 md:grid-cols-3 gap-4 max-w-7xl mx-auto ",
                 className
             )}
         >
@@ -25,7 +25,6 @@ export const BentoGridItem = ({
     title,
     description,
     header,
-    icon,
     slug,
     date,
 }: {
@@ -33,41 +32,28 @@ export const BentoGridItem = ({
     title?: string | React.ReactNode;
     description?: string | React.ReactNode;
     header?: React.ReactNode;
-    icon?: React.ReactNode;
-    slug?: string;
+    slug: string;
     date?: string;
 }) => {
     return (
         <Link
             href={`/posts/${slug}`}
             className={cn(
-                "friendly-card row-span-1 p-0 flex flex-col justify-between overflow-hidden group/bento",
+                "row-span-1 rounded-xl group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none p-4 bg-white border border-slate-200 justify-between flex flex-col space-y-4",
                 className
             )}
         >
-            {/* Header / Image Area */}
-            <div className="w-full h-48 bg-slate-50 relative overflow-hidden">
-                {header}
-            </div>
-
-            {/* Content Area */}
-            <div className="p-5 flex flex-col flex-1">
-                <div className="group-hover/bento:translate-x-1 transition duration-200 flex-1">
-                    {icon}
-                    <h3 className="font-sans font-bold text-lg text-slate-800 mb-2 leading-tight">
-                        {title}
-                    </h3>
-                    <p className="font-sans font-normal text-slate-600 text-sm line-clamp-2">
-                        {description}
-                    </p>
+            {header}
+            <div className="group-hover/bento:translate-x-2 transition duration-200">
+                <div className="font-bold text-slate-600 mb-2 mt-2">
+                    {title}
                 </div>
-
+                <div className="font-normal text-slate-600 text-xs line-clamp-2 mb-4">
+                    {description}
+                </div>
                 {date && (
-                    <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-                        <span>{date}</span>
-                        <span className="text-blue-400 font-medium group-hover/bento:text-blue-500 transition-colors">
-                            記事を読む &rarr;
-                        </span>
+                    <div className="flex items-center text-slate-400 text-xs">
+                        <span className="bg-slate-100 px-2 py-1 rounded-md">{date}</span>
                     </div>
                 )}
             </div>

@@ -1,63 +1,62 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
-import { Check, X, Minus } from 'lucide-react';
+import { Check, Minus } from 'lucide-react';
 
-interface Product {
+interface ProductSpec {
     id: string;
     name: string;
-    image: string;
-    isBestBuy?: boolean;
-    ratings: {
-        [key: string]: '◎' | '◯' | '△' | '×' | string;
-    };
+    specs: { [key: string]: string };
+    bestBuy?: boolean;
+    image?: string; // Added image for sticky column
+    rank?: number; // Added rank for sticky column
 }
 
 interface ComparisonTableProps {
-    features: string[];
-    products: Product[];
+    products: ProductSpec[];
+    specLabels: { [key: string]: string };
 }
 
-export function ComparisonTable({ features, products }: ComparisonTableProps) {
+export function ComparisonTable({ products, specLabels }: ComparisonTableProps) {
+    const specKeys = Object.keys(specLabels);
+
     return (
-        <div className="w-full overflow-x-auto pb-4">
-            <table className="min-w-[600px] w-full border-collapse text-sm md:text-base">
+        <div className="my-16 overflow-x-auto pb-6 -mx-4 px-4 md:mx-0 md:px-0">
+            <h3 className="text-2xl font-bold text-center mb-6 text-slate-800">スペック比較表</h3>
+            <table className="w-full min-w-[900px] border-collapse text-base text-slate-700 shadow-sm rounded-xl overflow-hidden">
                 <thead>
-                    <tr>
-                        <th className="p-3 bg-slate-50 border border-slate-200 min-w-[120px] sticky left-0 z-10">
-                            <span className="font-bold text-slate-700">比較項目</span>
+                    <tr className="bg-slate-100/80">
+                        <th className="p-5 text-left font-bold text-slate-700 border-b border-slate-300 min-w-[200px] sticky left-0 z-20 bg-[#f1f5f9] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)]">
+                            商品名
                         </th>
-                        {products.map((product) => (
-                            <th key={product.id} className={cn("p-3 border border-slate-200 min-w-[140px] relative", product.isBestBuy ? "bg-yellow-50 border-yellow-200" : "bg-white")}>
-                                {product.isBestBuy && (
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded shadow-sm whitespace-nowrap">
-                                        ベストバイ
-                                    </div>
-                                )}
-                                <div className="flex flex-col items-center gap-2">
-                                    <img src={product.image} alt={product.name} className="w-16 h-16 object-contain" />
-                                    <span className="text-slate-800 font-bold leading-tight">{product.name}</span>
-                                </div>
+                        {specKeys.map((key) => (
+                            <th key={key} className="p-4 text-center font-bold text-slate-600 border-b border-slate-300 min-w-[140px]">
+                                {specLabels[key]}
                             </th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {features.map((feature) => (
-                        <tr key={feature}>
-                            <td className="p-3 bg-slate-50 border border-slate-200 font-bold text-slate-700 sticky left-0 z-10">
-                                {feature}
+                    {products.map((product, index) => (
+                        <tr key={product.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
+                            <td className="p-5 font-bold text-slate-900 border-b border-slate-200 sticky left-0 z-20 bg-inherit shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)]">
+                                <div className={`absolute inset-0 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'} -z-10`} />
+                                <div className="relative flex items-center gap-4">
+                                    {product.bestBuy && (
+                                        <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-[10px] px-2 py-1 rounded-full font-bold whitespace-nowrap shadow-sm">
+                                            1位
+                                        </span>
+                                    )}
+                                    <span className="leading-snug">{product.name}</span>
+                                </div>
                             </td>
-                            {products.map((product) => {
-                                const rating = product.ratings[feature];
-                                let colorClass = "text-slate-500";
-                                if (rating === '◎') colorClass = "text-red-500 font-extrabold text-lg";
-                                if (rating === '◯') colorClass = "text-orange-500 font-bold text-lg";
-                                if (rating === '△') colorClass = "text-slate-500";
-                                if (rating === '×') colorClass = "text-blue-500";
+                            {specKeys.map((key) => {
+                                let value = product.specs[key];
+                                if (typeof value === 'boolean') value = value ? '〇' : '-';
+                                const strValue = String(value);
+                                const isBest = strValue === '5.0' || strValue.includes('◎') || (key === 'price' && product.bestBuy);
 
                                 return (
-                                    <td key={`${product.id}-${feature}`} className={cn("p-3 border border-slate-200 text-center align-middle", product.isBestBuy ? "bg-yellow-50/30" : "bg-white")}>
-                                        <span className={colorClass}>{rating}</span>
+                                    <td key={key} className={`p-4 text-center border-b border-slate-200 ${isBest ? 'bg-orange-50/50 font-bold text-slate-900' : ''}`}>
+                                        {value || <Minus className="w-4 h-4 mx-auto text-slate-300" />}
                                     </td>
                                 );
                             })}
