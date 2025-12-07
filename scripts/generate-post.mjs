@@ -216,7 +216,7 @@ async function generateArticle(topic) {
         - **specs**: { airflow: "1.6m3", weight: "550g", mode: "Scalp/Hot/Cold", price: "¥38,000" } (Use strings for specs)
 
     8.  **Floating CTA**:
-        - \`<FloatingCTA productName="Rank 1 Name" affiliateLink="SEARCH:Rank 1 Name" />\`
+        - \`<FloatingCTA productName="Rank 1 Name" affiliateLink="SEARCH:Rank 1 Name" asin="RANK 1 ASIN" />\`
         - Only for Rank 1 product.
 
     9.  **Conclusion**: Final recommendation.
