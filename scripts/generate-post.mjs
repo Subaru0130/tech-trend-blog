@@ -196,17 +196,25 @@ async function generateArticle(topic) {
 
         **RATING KEYS** (Use these exact keys): filtration, taste, flow, cost, ease, design.
 
-    7.  **Comparison Table**:
+    8.  **Comparison Table**:
         - \`<ComparisonTable specLabels={{...}} products={[...]} />\`
         - specLabels: { type: "タイプ", capacity: "ろ過水量", life: "カートリッジ寿命", cost: "ランニングコスト" }
-        - products objects must match RankingCard data.
-        - **specs**: { type: "蛇口直結型", capacity: "900L", life: "3ヶ月", cost: "約2.5円/L" } (Use strings for specs)
+        - **IMPORTANT**: Each product object MUST include the \`asin\` field.
+        - **Example**:
+          \`\`\`js
+          products={[
+            { rank: 1, name: "Model A", image: "...", asin: "B00xxxx", specs: {...} },
+            { rank: 2, name: "Model B", image: "...", asin: "B00yyyy", specs: {...} }
+          ]}
+          \`\`\`
 
-    8.  **Floating CTA**:
+    9.  **Floating CTA**:
         - \`<FloatingCTA productName="Rank 1 Name" affiliateLink="SEARCH:Rank 1 Name" asin="RANK 1 ASIN" />\`
         - Only for Rank 1 product.
 
-    9.  **Conclusion**: Final recommendation.
+    10. **Conclusion**: 
+        - Final recommendation.
+        - **MANDATORY**: Include a text-based link to the Rank 1 product in the body text (e.g. "If you are unsure, [Product Name] is the best choice.").
     `;
 
   const result = await client.models.generateContent({
@@ -221,6 +229,26 @@ async function generateArticle(topic) {
 
   // Clean MDX
   mdxContent = mdxContent.replace(/^```(markdown|mdx)?\n/, '').replace(/\n```$/, '');
+
+  // --- POST-PROCESSING: Ensure Comparison Table has ASINs ---
+  // The AI sometimes forgets to add ASINs to the table. We extract them from RankingCards and inject them.
+  const rankToAsin = {};
+  const cardRegex = /rank=\{?(\d+)\}?[\s\S]*?asin="([^"]+)"/g;
+  let cardMatch;
+  while ((cardMatch = cardRegex.exec(mdxContent)) !== null) {
+    rankToAsin[cardMatch[1]] = cardMatch[2];
+  }
+
+  // Inject into ComparisonTable
+  mdxContent = mdxContent.replace(/<ComparisonTable[\s\S]*?\/>/, (tableBlock) => {
+    return tableBlock.replace(/rank:\s*(\d+),/g, (match, rank) => {
+      if (rankToAsin[rank]) {
+        return `rank: ${rank},\n      asin: "${rankToAsin[rank]}",`;
+      }
+      return match;
+    });
+  });
+  console.log("Fixed ComparisonTable ASINs using RankingCard data.");
 
   // PHASE 4: Image Download & Replacement
   console.log("Phase 4: Downloading Images & Finalizing...");
