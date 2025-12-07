@@ -1,10 +1,9 @@
 import { getHeroImage } from './verify_products.mjs';
-import { downloadImage } from './generate-post.mjs'; // Trying to reuse or just reimplement simple download
 import fs from 'fs';
 import path from 'path';
 import https from 'https';
 
-// Simple download function if not importing
+// Standalone download function
 async function download(url, filepath) {
     return new Promise((resolve, reject) => {
         https.get(url, res => {
@@ -25,16 +24,14 @@ async function download(url, filepath) {
 }
 
 async function main() {
-    console.log("Fetching Hero Image for: 高級ヘアドライヤー");
-    // Search for a stylish, high-quality image
-    const imageUrl = await getHeroImage("premium hair dryer lifestyle aesthetic");
+    console.log("Fetching Hero Image for: 高級ヘアドライヤー (Stylish/Warm)");
+    const imageUrl = await getHeroImage("luxury hair dryer warm interior aesthetic");
 
     if (imageUrl) {
         console.log("Found URL:", imageUrl);
-        // Save as hero-dryer.png to fix the thumbnail
         const targetPath = path.join(process.cwd(), 'public', 'images', 'hero-dryer.png');
         await download(imageUrl, targetPath);
-        console.log("✅ Hero Image Saved!");
+        console.log("✅ Hero Image Saved to:", targetPath);
     } else {
         console.log("No hero image found.");
     }
