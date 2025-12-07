@@ -22,7 +22,6 @@ const client = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 async function downloadImage(url, filename) {
   if (!url || !url.startsWith('http')) return null;
   try {
-    // Basic Fetch with simple headers
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -33,7 +32,6 @@ async function downloadImage(url, filename) {
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Filter out 1x1 pixels (usually < 100 bytes)
     if (buffer.length < 1000) {
       console.warn(`[Imager] Skipped small image (${buffer.length} bytes): ${url}`);
       return null;
@@ -54,28 +52,6 @@ async function downloadImage(url, filename) {
   }
 }
 
-import { verifyProducts, getHeroImage } from './verify_products.mjs';
-
-// ... (previous imports)
-
-// ...
-
-async function generateHeroImage(topic) {
-  try {
-    const heroUrl = await getHeroImage(topic);
-    if (heroUrl) {
-      const filename = `hero-${topic.replace(/\s+/g, '-')}.jpg`;
-      const localPath = await downloadImage(heroUrl, filename);
-      if (localPath) return localPath;
-    }
-    console.warn("Failed to download hero image, using fallback.");
-    return "/images/hero-shampoo.png"; // Ultimate fallback
-  } catch (e) {
-    console.warn("Hero generation failed:", e);
-    return "/images/hero-shampoo.png";
-  }
-}
-
 // --- Main Logic ---
 
 async function generateArticle(topic) {
@@ -84,19 +60,20 @@ async function generateArticle(topic) {
   // PHASE 1: Candidate Selection
   console.log("Phase 1: Selecting Candidates (AI)...");
   const selectionPrompt = `
-    You are a commercial editor for a high-end electronics magazine.
-    Task: Select 8 top-tier "High-Spec Hair Dryers" available on Amazon Japan.
+    You are a commercial editor for a home appliance magazine.
+    Task: Select 8 top-tier "Countertop/Faucet Water Purifiers (浄水器)" available on Amazon Japan.
     
     CRITICAL CONSTRAINTS:
     1. META-ANALYSIS: Simulate a cross-check of "Kakaku.com" and "MyBest". Select products that appear in Top 20 on multiple sites.
     2. USE CASES: ensuring variety:
-       - Speed Freak (e.g. Dyson, Panasonic Nanocare)
-       - Damage Care/Gloss (e.g. ReFa, Bioprogramming/Repronizer)
-       - Lightweight/Travel (e.g. Kinijo, Salonia)
-    3. DATA: You must provide the specific ASIN for the main current model (JP Plug).
+       - Faucet Mount (e.g. Cleansui, Toray)
+       - Pot Type (e.g. Brita)
+       - High Performance/Long Life (e.g. Panasonic)
+    3. DATA: You must provide the specific ASIN for the main current model.
+    4. EXCLUDE: Cartridges only. Must be the main unit.
     
     Return STRICT JSON array of strings only (Product Names).
-    Example: ["Panasonic Nanocare EH-NA0J", "Dyson Supersonic Shine"]
+    Example: ["Panasonic TK-CJ12", "Mitsubishi Cleansui CSP901"]
     `;
 
   let candidates = [];
@@ -131,14 +108,14 @@ async function generateArticle(topic) {
 
   console.log(`Verified ${topProducts.length} products having ASINs AND Images.`);
   if (topProducts.length < 3) {
+    // Retry logic or just proceed? Throwing error stops everything.
+    // Let's optimize: if < 3, maybe try one more time? For now, throw.
     throw new Error("Failed to verify enough products with images. Check scraper.");
   }
 
   // PHASE 3: Content Generation with VERIFIED Data
   console.log("Phase 3: Writing Article with Verified Data...");
 
-  // Construct context string
-  // Use image from scraper (Guaranteed to be present now)
   const productsContext = topProducts.map((p, i) => `
     Rank ${i + 1}:
     Name: ${p.verifiedName} (Original: ${p.originalName})
@@ -149,16 +126,16 @@ async function generateArticle(topic) {
   const prompt = `
     You are an expert affiliate marketer and copywriter using Gemini 3 Pro.
     
-    **YOUR MISSION: Create the Ultimate "Fail-Proof" Hair Dryer Ranking.**
-    Do not just list popular items. Select items based on **"Use Case"**:
-    - Speed freak (Dyson/Panasonic)
-    - Damage care (Bioprogramming/ReFa)
-    - Lightweight/Travel (Kinijo/Salonia)
+    **YOUR MISSION: Create the Ultimate "Safe & Tasty Water" Ranking.**
+    Select items based on **"Use Case"**:
+    - High filtration performance (Cleansui/Toray)
+    - Easy to use/Pot type (Brita)
+    - Long cartridge life (Panasonic)
     
     **Thinking Process (Implicit):**
-    1.  Compare specs: Airflow (m3/min), Weight (g), Temp Control.
-    2.  Analyze "Real" reviews: Ignore paid influencers. Look for "Heavy," "Loud," "Buttons hard to press."
-    3.  Create a "Meta-Ranking" that balances Performance vs Price.
+    1.  Compare specs: Filtration capacity (L), Cartridge life (months), Flow rate.
+    2.  Analyze "Real" reviews: Look for "Taste," "Ease of installation," "Flow speed."
+    3.  Create a "Meta-Ranking" that balances Cost vs Safety.
 
     **Task:** Write a high-converting ranking article for "${topic}".
     
@@ -169,10 +146,11 @@ async function generateArticle(topic) {
 
     **Structure & Requirements (MDX)**:
     1.  **Frontmatter**:
-        - title: "High CTR Title" (e.g., 【2025年最新】美容師が選ぶ！速乾＆ツヤ髪ドライヤー神7選【比較】)
+        - title: "High CTR Title" (e.g., 【2025年版】水道水が激変！本当に美味しい浄水器おすすめ5選【コスパ最強】)
         - date: ${(new Date()).toISOString().split('T')[0]}
-        - description: "Compare top models from Panasonic, Dyson, ReFa. Speed, Weight, and Finish verified."
-        - image: /images/hero-dryer.png
+        - description: "Are you buying bottled water? Stop. We compared Mitsubishi, Panasonic, and Brita to find the best water purifier for taste and cost."
+        - image: /images/hero-water.png
+        - category: "Kitchen"
 
     2.  **Imports**:
         - \`import { RankingCard } from '@/components/affiliate/RankingCard';\`
@@ -185,35 +163,36 @@ async function generateArticle(topic) {
         - **Fields**: rank, name, image, rating, price, id, asin.
 
     4.  **Intro**: 
-        - Hook: "Does drying hair take forever?" "Is heat damaging your ends?"
+        - Hook: "Heavy bottles, plastic waste... isn't it time to graduate from bottled water?"
+        - Benefit: "Delicious water for cooking and coffee, straight from the tap."
 
     5.  **Buying Guide**: 
-        - **Airflow**: 1.5m3/min+ is standards.
-        - **Weight**: Under 500g is best for long hair.
-        - **Technology**: Ion, Far Infrared, etc.
+        - **Type**: Faucet vs Pot.
+        - **Removal Capacity**: 13+ substances is the standard (JIS S 3201).
+        - **Running Cost**: Cost per liter is key (vs bottles).
 
     6.  **The Ranking (1 to 5)**:
         - Use \`<RankingCard ... />\` for each product.
         - **Props**:
           - rank={N}
-          - name="Clean Product Name (e.g. Panasonic Nanocare NE0E, ReFa Beautech)"
+          - name="Clean Product Name (e.g. Panasonic TK-CJ12, Cleansui CSP901)"
           - image="The Amazon Image URL provided"
           - rating={4.x}
-          - ratings={{ airflow: N, weight: N, heatControl: N, care: N, quietness: N, design: N }} (1-5 scale)
-          - description="**SALES COPY**: Focus on the experience. 'Dries in 3 mins.' 'Salon finish at home.' (200-300 chars)"
-          - bestFor="Target Persona (e.g. 'Long hair users', 'Frizzy hair')"
-          - pros={["Quick Dry", "Lightweight", "Scalp Mode"]}
-          - cons={["Expensive", "Code length", "Loud"]}
+          - ratings={{ filtration: N, taste: N, flow: N, cost: N, ease: N, design: N }} (1-5 scale)
+          - description="**SALES COPY**: Focus on the experience. 'Taste is unrecognizable.' 'Coffee tastes better.' (200-300 chars)"
+          - bestFor="Target Persona (e.g. 'Families', 'Cooking lovers')"
+          - pros={["Removes 17 substances", "Digital display", "High flow rate"]}
+          - cons={["Cartridge is expensive", "Hard to install"]}
           - affiliateLinks={{ amazon: "SEARCH:Product Name", rakuten: "SEARCH:Product Name" }}
           - asin="THE VERIFIED ASIN"
 
-        **RATING KEYS MAPPING**: airflow(風量), weight(軽さ), heatControl(温度調節), care(ケア効果), quietness(静音性), design(デザイン)
+        **RATING KEYS** (Use these exact keys): filtration, taste, flow, cost, ease, design.
 
     7.  **Comparison Table**:
         - \`<ComparisonTable specLabels={{...}} products={[...]} />\`
-        - specLabels: { airflow: "風量", weight: "重量", mode: "モード", price: "価格" }
+        - specLabels: { type: "タイプ", capacity: "ろ過水量", life: "カートリッジ寿命", cost: "ランニングコスト" }
         - products objects must match RankingCard data.
-        - **specs**: { airflow: "1.6m3", weight: "550g", mode: "Scalp/Hot/Cold", price: "¥38,000" } (Use strings for specs)
+        - **specs**: { type: "蛇口直結型", capacity: "900L", life: "3ヶ月", cost: "約2.5円/L" } (Use strings for specs)
 
     8.  **Floating CTA**:
         - \`<FloatingCTA productName="Rank 1 Name" affiliateLink="SEARCH:Rank 1 Name" asin="RANK 1 ASIN" />\`
@@ -238,14 +217,6 @@ async function generateArticle(topic) {
   // PHASE 4: Image Download & Replacement
   console.log("Phase 4: Downloading Images & Finalizing...");
 
-  // 4a. Hero Image Strategy
-  // 4a. Hero Image Strategy
-  // const heroPath = await generateHeroImage(topic);
-  // if (heroPath) {
-  //   // Replace the placeholder in frontmatter
-  //   mdxContent = mdxContent.replace(/image: \/images\/hero-.*\.png/, `image: ${heroPath}`);
-  // }
-
   const urlRegex = /image="(https?:\/\/[^"]+)"/g;
   let match;
   const downloads = [];
@@ -255,15 +226,19 @@ async function generateArticle(topic) {
     downloads.push({ originalUrl, filename });
   }
 
-  // Deduplicate downloads
   const uniqueDownloads = [...new Map(downloads.map(item => [item.originalUrl, item])).values()];
 
   for (const { originalUrl, filename } of uniqueDownloads) {
     const localPath = await downloadImage(originalUrl, filename);
     if (localPath) {
-      // Replace ALL occurrences of this URL
       mdxContent = mdxContent.split(originalUrl).join(`${localPath}?v=${Date.now()}`);
     }
+  }
+
+  // Hero Image for Water Purifier
+  const heroUrl = await getHeroImage("modern kitchen water faucet purifier clean water glass");
+  if (heroUrl) {
+    await downloadImage(heroUrl, 'hero-water.png');
   }
 
   return mdxContent;
@@ -280,7 +255,7 @@ async function saveArticle(content, topic) {
 }
 
 async function main() {
-  await saveArticle(await generateArticle('最新ヘアドライヤー'), '最新ヘアドライヤー');
+  await saveArticle(await generateArticle('家庭用浄水器'), '家庭用浄水器');
 }
 
 main();

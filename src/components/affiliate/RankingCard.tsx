@@ -132,7 +132,12 @@ export function RankingCard({
                                     heatControl: "温度調節",
                                     care: "ケア効果",
                                     design: "デザイン",
-                                    quietness: "静音性"
+                                    quietness: "静音性",
+                                    // Water Purifier Keys
+                                    filtration: "除去力",
+                                    taste: "おいしさ",
+                                    flow: "水量",
+                                    ease: "使いやすさ"
                                 };
                                 const label = translationMap[key] || key;
                                 return (
