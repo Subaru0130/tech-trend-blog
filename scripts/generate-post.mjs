@@ -230,6 +230,9 @@ async function generateArticle(topic) {
   // Clean MDX
   mdxContent = mdxContent.replace(/^```(markdown|mdx)?\n/, '').replace(/\n```$/, '');
 
+  // Strip imports (Next-MDX-Remote handles components via props)
+  mdxContent = mdxContent.replace(/^import\s+.*?from\s+['"].*?['"];?\n?/gm, '');
+
   // --- POST-PROCESSING: Ensure Comparison Table has ASINs ---
   // The AI sometimes forgets to add ASINs to the table. We extract them from RankingCards and inject them.
   const rankToAsin = {};
@@ -290,8 +293,16 @@ async function saveArticle(content, topic) {
   console.log(`Saved article to ${filepath}`);
 }
 
+
+// Import verification script
+import { verifyMdxFiles } from './verify-mdx.mjs';
+
 async function main() {
   await saveArticle(await generateArticle('家庭用浄水器'), '家庭用浄水器');
+
+  // Run verification
+  console.log("--- Running Final Verification ---");
+  verifyMdxFiles();
 }
 
 main();
