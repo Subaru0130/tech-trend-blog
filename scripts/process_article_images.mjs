@@ -110,7 +110,13 @@ async function downloadImage(page, product, targetDir) {
             try {
                 const view = await page.goto(src);
                 const buffer = await view.buffer();
-                if (buffer.length < 3000) continue; // Ignore tiny files/icons
+                if (buffer.length < 15000) { // Increased to 15KB min to avoid blurriness
+                    console.log(`[Rank ${product.rank}] Skipped: Image too small (${buffer.length} bytes)`);
+                    continue;
+                }
+
+                // Check dimensions using Puppeteer evaluation before buffer if possible, but buffer check is easier here.
+                // We rely on 'img.width > 300' from the searchCandidates step essentially.
 
                 const isGood = await checkImageQuality(buffer, product.name);
                 if (isGood) {
