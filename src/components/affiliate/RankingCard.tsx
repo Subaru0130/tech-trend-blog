@@ -231,7 +231,7 @@ export function RankingCard({
                             href={links.amazon}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 bg-slate-900 hover:bg-black text-white font-bold py-3 px-8 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] shadow-xl hover:shadow-2xl text-lg"
+                            className="flex-1 bg-slate-900 hover:bg-black !text-white font-bold py-3 px-8 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] shadow-xl hover:shadow-2xl text-lg"
                         >
                             <ShoppingCart className="w-6 h-6" />
                             <div className="flex flex-col items-start leading-none">
