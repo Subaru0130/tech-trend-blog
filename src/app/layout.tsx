@@ -52,10 +52,10 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               name: 'Best Buy Guide',
-              url: 'https://tech-trend-blog.vercel.app',
+              url: 'https://tech-trend-blog-27mo.vercel.app',
               potentialAction: {
                 '@type': 'SearchAction',
-                target: 'https://tech-trend-blog.vercel.app/search?q={search_term_string}',
+                target: 'https://tech-trend-blog-27mo.vercel.app/search?q={search_term_string}',
                 'query-input': 'required name=search_term_string',
               },
             }),

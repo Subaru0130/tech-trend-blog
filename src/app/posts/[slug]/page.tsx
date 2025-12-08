@@ -46,7 +46,7 @@ export default function Post({ params }: { params: { slug: string } }) {
         '@type': 'BlogPosting',
         headline: frontmatter.title,
         description: frontmatter.description,
-        image: frontmatter.image ? [`https://tech-trend-blog.vercel.app${frontmatter.image}`] : [],
+        image: frontmatter.image ? [`https://tech-trend-blog-27mo.vercel.app${frontmatter.image}`] : [],
         datePublished: frontmatter.date,
         author: {
             '@type': 'Organization',

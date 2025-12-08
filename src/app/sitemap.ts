@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getSortedPostsData } from '@/lib/posts';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://tech-trend-blog.vercel.app'; // Replace with actual domain if custom
+    const baseUrl = 'https://tech-trend-blog-27mo.vercel.app'; // Correct Vercel domain
     const posts = getSortedPostsData();
 
     const postUrls = posts.map((post) => ({
