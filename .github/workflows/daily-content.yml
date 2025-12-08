@@ -24,14 +24,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # - name: Generate New Article (PAUSED)
-      #   env:
-      #     GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      #   run: |
-      #     TOPICS=("最新ロボット掃除機" "人気の空気清浄機" "おすすめのドラム式洗濯機")
-      #     RANDOM_TOPIC=${TOPICS[$RANDOM % ${#TOPICS[@]}]}
-      #     echo "Generating article for: $RANDOM_TOPIC"
-      #     node scripts/generate-post.mjs "$RANDOM_TOPIC"
+      - name: Generate New Article (Active)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          # Use a random topic for variety
+          TOPICS=("最新ロボット掃除機" "人気の空気清浄機" "おすすめのドラム式洗濯機" "最新4Kモニター" "高音質ワイヤレスイヤホン")
+          RANDOM_TOPIC=${TOPICS[$RANDOM % ${#TOPICS[@]}]}
+          echo "Generating article for: $RANDOM_TOPIC"
+          node scripts/generate-post.mjs "$RANDOM_TOPIC"
 
       - name: Check Affiliate Links (ASINs)
         run: node scripts/check-affiliate-links.mjs
@@ -39,5 +40,22 @@ jobs:
       - name: Check SEO Configuration
         run: node scripts/check-seo.mjs
 
-      # - name: Commit and Push (Only if maintenance fixed something, otherwise skip)
-      #   run: ...
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add content/posts public/images
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          git commit -m "chore: generate daily tech trend post [skip ci]"
+          
+          # Pull latest changes to avoid conflicts (Rebase strategy)
+          git pull --rebase origin main
+          
+          # Push changes
+          git push origin main
