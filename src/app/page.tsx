@@ -56,7 +56,7 @@ export default function Home() {
                   <div className="flex items-center gap-6 text-sm font-medium text-stone-400">
                     <span className="flex items-center gap-2">
                       <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                      {featuredPost.date instanceof Date ? featuredPost.date.toISOString().split('T')[0] : featuredPost.date}
+                      {featuredPost.date}
                     </span>
                     <Link href={`/posts/${featuredPost.slug}`} className="px-6 py-3 bg-white text-stone-900 font-bold rounded-full hover:bg-amber-400 transition-colors flex items-center gap-2">
                       記事を読む <ArrowRight className="w-4 h-4" />
