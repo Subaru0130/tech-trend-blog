@@ -30,8 +30,8 @@ export async function generateStaticParams() {
     }));
 }
 
-export default function Post({ params }: { params: { slug: string } }) {
-    const { slug } = params;
+export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
     const decodedSlug = decodeURIComponent(slug);
     const markdownWithMeta = fs.readFileSync(
         path.join(process.cwd(), 'content/posts', `${decodedSlug}.mdx`),
