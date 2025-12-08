@@ -78,7 +78,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                         <div className="flex items-center justify-center gap-2 text-stone-400 text-sm font-medium mb-6 uppercase tracking-widest">
                             <span>Review</span>
                             <span>•</span>
-                            <span>{frontmatter.date}</span>
+                            <span>{frontmatter.date instanceof Date ? frontmatter.date.toISOString().split('T')[0] : frontmatter.date}</span>
                             <span>•</span>
                             <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> 5 min read</span>
                         </div>
