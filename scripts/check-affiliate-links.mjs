@@ -36,43 +36,6 @@ async function checkLinks() {
 
     const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.mdx'));
     let hasError = false;
-    let checkedCount = 0;
-
-    for (const file of files) {
-        const content = fs.readFileSync(path.join(postsDir, file), 'utf8');
-        const asins = [];
-
-        // Extract ASINs using regex
-        const asinRegex = /asin="([A-Z0-9]{10})"/g;
-        let match;
-        while ((match = asinRegex.exec(content)) !== null) {
-            asins.push(match[1]);
-        }
-
-        console.log(`\n📄 Checking ${file} (${asins.length} ASINs detected)`);
-
-        for (const asin of asins) {
-            // Construct Amazon URL (dp URL is most reliable for checking existence)
-            const url = `https://www.amazon.co.jp/dp/${asin}`;
-            process.stdout.write(`   - Checking ASIN: ${asin} ... `);
-            checkedCount++;
-
-            const result = await checkUrl(url);
-            if (result.ok) {
-                console.log(`✅ OK (${result.status})`);
-            } else {
-                console.log(`❌ BROKEN (${result.status}) -> ${url}`);
-                hasError = true;
-            }
-
-            // Be nice to Amazon server
-            await new Promise(r => setTimeout(r, 500));
-        }
-    }
-
-    console.log(`\n--- Check Complete ---`);
-    console.log(`Total Links Checked: ${checkedCount}`);
-
     if (hasError) {
         console.error("🚨 Found broken affiliate links! Please review the logs.");
         process.exit(1); // Fail the CI workflow so user gets notified

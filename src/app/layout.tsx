@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   description: '専門家と編集部が徹底検証。後悔しない買い物ができる比較検証メディア。',
   verification: {
-    google: '767HspWPI5qpvxs1yKvz5otcilg3CdSv_fyZ_9SX0IQ',
+    google: '767HspWPI5qpvxs1yKvz5otcilg3CdSv_fyZ_9SX0IQ', // Google Search Console Verification
   },
 };
 
