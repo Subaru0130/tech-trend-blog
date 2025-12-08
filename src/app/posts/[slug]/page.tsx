@@ -66,7 +66,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                 <div className="container mx-auto flex h-16 items-center px-4 max-w-4xl">
                     <Link href="/" className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors">
                         <ArrowLeft className="w-5 h-5" />
-                        <span className="font-bold text-sm">Back to Home</span>
+                        <span className="font-bold text-sm">ホームに戻る</span>
                     </Link>
                 </div>
             </header>
@@ -76,11 +76,11 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                     {/* Article Header */}
                     <div className="mb-12 text-center">
                         <div className="flex items-center justify-center gap-2 text-stone-400 text-sm font-medium mb-6 uppercase tracking-widest">
-                            <span>Review</span>
+                            <span>レビュー</span>
                             <span>•</span>
                             <span>{frontmatter.date instanceof Date ? frontmatter.date.toISOString().split('T')[0] : frontmatter.date}</span>
                             <span>•</span>
-                            <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> 5 min read</span>
+                            <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> 5分で読めます</span>
                         </div>
                         <h1 className="font-serif text-3xl md:text-5xl font-bold leading-tight mb-8 text-stone-900">
                             {frontmatter.title}

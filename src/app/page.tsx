@@ -19,9 +19,9 @@ export default function Home() {
             </span>
           </Link>
           <nav className="hidden md:flex gap-8 text-sm font-medium text-stone-500">
-            <Link href="#" className="hover:text-stone-900 transition-colors">Reviews</Link>
-            <Link href="#" className="hover:text-stone-900 transition-colors">Rankings</Link>
-            <Link href="#" className="hover:text-stone-900 transition-colors">About</Link>
+            <Link href="#" className="hover:text-stone-900 transition-colors">レビュー</Link>
+            <Link href="#" className="hover:text-stone-900 transition-colors">ランキング</Link>
+            <Link href="#" className="hover:text-stone-900 transition-colors">当サイトについて</Link>
           </nav>
           <button className="p-2 hover:bg-stone-100 rounded-full transition-colors">
             <Search className="w-5 h-5 text-stone-600" />
@@ -44,7 +44,7 @@ export default function Home() {
               <div className="grid md:grid-cols-12 gap-12 items-center">
                 {/* Text Side (Left this time for balance) */}
                 <div className="md:col-span-6 order-2 md:order-1">
-                  <span className="inline-block px-3 py-1 bg-amber-500 text-white text-xs font-bold tracking-widest uppercase mb-6 rounded-sm">Featured Review</span>
+                  <span className="inline-block px-3 py-1 bg-amber-500 text-white text-xs font-bold tracking-widest uppercase mb-6 rounded-sm">注目のレビュー</span>
                   <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-white drop-shadow-md">
                     <Link href={`/posts/${featuredPost.slug}`} className="hover:text-amber-400 transition-colors">
                       {featuredPost.title}
@@ -59,7 +59,7 @@ export default function Home() {
                       {featuredPost.date instanceof Date ? featuredPost.date.toISOString().split('T')[0] : featuredPost.date}
                     </span>
                     <Link href={`/posts/${featuredPost.slug}`} className="px-6 py-3 bg-white text-stone-900 font-bold rounded-full hover:bg-amber-400 transition-colors flex items-center gap-2">
-                      Read Review <ArrowRight className="w-4 h-4" />
+                      記事を読む <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
                 </div>
@@ -88,9 +88,9 @@ export default function Home() {
         <section className="py-20">
           <div className="container mx-auto px-6 max-w-6xl">
             <div className="flex items-end justify-between mb-12 border-b border-stone-200 pb-4">
-              <h2 className="font-serif text-2xl md:text-3xl font-bold text-stone-900">Latest Reviews</h2>
+              <h2 className="font-serif text-2xl md:text-3xl font-bold text-stone-900">新着レビュー</h2>
               <Link href="#" className="flex items-center gap-1 text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors">
-                View All <ChevronRight className="w-4 h-4" />
+                記事一覧へ <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
 
@@ -133,25 +133,25 @@ export default function Home() {
         <section className="py-20 bg-stone-50 border-t border-stone-100">
           <div className="container mx-auto px-6 max-w-4xl text-center">
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-stone-900 mb-6">
-              "We test it, so you don't have to."
+              "徹底検証で、ベストな選択を。"
             </h2>
             <p className="text-stone-500 leading-loose text-lg mb-8">
-              情報過多の時代、本当に価値のあるモノを見つけるのは困難です。<br className="hidden md:inline" />
-              私たちは、宣伝文句ではなく「実際の使用感」だけを信じます。<br className="hidden md:inline" />
-              あなたの生活を少しだけ豊かにする「正解」を、ここで探してください。
+              広告や宣伝文句に惑わされたくないあなたへ。<br className="hidden md:inline" />
+              私たちは実際に製品を手に取り、公平な視点で検証します。<br className="hidden md:inline" />
+              あなたの生活を変える「本物」が、きっと見つかります。
             </p>
             <div className="flex justify-center gap-8">
               <div className="flex flex-col items-center">
                 <span className="font-bold text-stone-900 text-xl">100%</span>
-                <span className="text-xs text-stone-400 uppercase tracking-widest mt-1">Independent</span>
+                <span className="text-xs text-stone-400 uppercase tracking-widest mt-1">中立・公平</span>
               </div>
               <div className="flex flex-col items-center">
-                <span className="font-bold text-stone-900 text-xl">Zero</span>
-                <span className="text-xs text-stone-400 uppercase tracking-widest mt-1">Ads</span>
+                <span className="font-bold text-stone-900 text-xl">No</span>
+                <span className="text-xs text-stone-400 uppercase tracking-widest mt-1">ステルスマーケティング</span>
               </div>
               <div className="flex flex-col items-center">
                 <span className="font-bold text-stone-900 text-xl">Real</span>
-                <span className="text-xs text-stone-400 uppercase tracking-widest mt-1">Reviews</span>
+                <span className="text-xs text-stone-400 uppercase tracking-widest mt-1">本音レビュー</span>
               </div>
             </div>
           </div>
