@@ -7,7 +7,7 @@
     - [x] Vercelへのデプロイ (一般公開)
     - [x] GitHubへのプッシュ (Agent完遂)
 - [x] **デザインの刷新 (Family Friendly)**
-    - [x] カラーパレットの適用 (Warm/Orange)
+    - [x] カラーパレットの適用 (Warm/Orange to Premium Stone)
     - [x] フォントとUIの丸み調整
     - [x] 親しみやすいコピーライティング
 - [x] **コンテンツ生成**
@@ -21,11 +21,11 @@
     - [x] Refactor `page.tsx` for a clean, sophisticated grid layout.
     - [x] Remove confusing buttons/badges; focus on content readability.
     - [x] Improve typography (Premium feel).
-- [/] **Advanced SEO & Analytics**
+- [x] **Advanced SEO & Analytics**
     - [x] Implement `sitemap.ts` and `robots.ts` for automated indexing.
-    - [ ] Add Structured Data (JSON-LD) for Article and Product Review.
-    - [ ] Add Structured Data (JSON-LD) for Article and Product Review.
-- [ ] **Zero-Touch Automation (GitHub Actions)**
-    - [ ] Create GitHub Actions workflow for scheduled generation.
+    - [x] Add Structured Data (JSON-LD) for Article and Product Review.
+- [x] **Zero-Touch Automation (Maintenance Mode)**
+    - [x] Create GitHub Actions workflow (`daily-content.yml`).
+    - [x] **Link Health Check**: Automated ASIN verification script.
+    - [x] **SEO Integrity Check**: Automated Sitemap & JSON-LD verification.
     - [ ] Configure Git authentication for auto-committing.
-
