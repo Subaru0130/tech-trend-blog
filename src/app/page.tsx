@@ -33,12 +33,40 @@ export default function Home() {
 
         {/* Hero Section (Featured Article) */}
         {featuredPost && (
-          <section className="py-12 md:py-20 border-b border-stone-100">
-            <div className="container mx-auto px-6 max-w-6xl">
+          <section className="relative py-20 md:py-32 overflow-hidden bg-stone-900 text-white">
+            <div className="absolute inset-0 z-0">
+              {/* Gradients */}
+              <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-stone-800 to-transparent opacity-50"></div>
+              <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-stone-900 to-transparent"></div>
+            </div>
+
+            <div className="container mx-auto px-6 max-w-6xl relative z-10">
               <div className="grid md:grid-cols-12 gap-12 items-center">
+                {/* Text Side (Left this time for balance) */}
+                <div className="md:col-span-6 order-2 md:order-1">
+                  <span className="inline-block px-3 py-1 bg-amber-500 text-white text-xs font-bold tracking-widest uppercase mb-6 rounded-sm">Featured Review</span>
+                  <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-white drop-shadow-md">
+                    <Link href={`/posts/${featuredPost.slug}`} className="hover:text-amber-400 transition-colors">
+                      {featuredPost.title}
+                    </Link>
+                  </h1>
+                  <p className="text-stone-300 text-lg leading-relaxed mb-8 line-clamp-3">
+                    {featuredPost.description}
+                  </p>
+                  <div className="flex items-center gap-6 text-sm font-medium text-stone-400">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      {featuredPost.date instanceof Date ? featuredPost.date.toISOString().split('T')[0] : featuredPost.date}
+                    </span>
+                    <Link href={`/posts/${featuredPost.slug}`} className="px-6 py-3 bg-white text-stone-900 font-bold rounded-full hover:bg-amber-400 transition-colors flex items-center gap-2">
+                      Read Review <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </div>
+
                 {/* Image Side */}
-                <div className="md:col-span-7 order-2 md:order-1">
-                  <Link href={`/posts/${featuredPost.slug}`} className="block group overflow-hidden bg-stone-100 aspect-[16/10]">
+                <div className="md:col-span-6 order-1 md:order-2">
+                  <Link href={`/posts/${featuredPost.slug}`} className="block relative group rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 aspect-[4/3]">
                     {featuredPost.image ? (
                       <img
                         src={featuredPost.image}
@@ -46,29 +74,10 @@ export default function Home() {
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-stone-300">No Image</div>
+                      <div className="w-full h-full flex items-center justify-center bg-stone-800 text-stone-600">No Image</div>
                     )}
+                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                   </Link>
-                </div>
-
-                {/* Text Side */}
-                <div className="md:col-span-5 order-1 md:order-2 flex flex-col justify-center">
-                  <span className="text-xs font-bold tracking-widest text-stone-400 uppercase mb-4">Featured Story</span>
-                  <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 text-stone-900">
-                    <Link href={`/posts/${featuredPost.slug}`} className="hover:underline decoration-stone-300 underline-offset-4">
-                      {featuredPost.title}
-                    </Link>
-                  </h1>
-                  <p className="text-stone-500 text-lg leading-relaxed mb-8 line-clamp-3">
-                    {featuredPost.description}
-                  </p>
-                  <div className="flex items-center gap-4 text-sm font-medium text-stone-600">
-                    <span>{featuredPost.date}</span>
-                    <span className="w-1 h-1 bg-stone-300 rounded-full"></span>
-                    <Link href={`/posts/${featuredPost.slug}`} className="flex items-center gap-1 hover:text-stone-900 transition-colors">
-                      Read Review <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>
