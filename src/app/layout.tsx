@@ -42,6 +42,22 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable} ${notoSerifJP.variable} antialiased font-sans`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Best Buy Guide',
+              url: 'https://tech-trend-blog.vercel.app',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: 'https://tech-trend-blog.vercel.app/search?q={search_term_string}',
+                'query-input': 'required name=search_term_string',
+              },
+            }),
+          }}
+        />
         {children}
       </body>
     </html>

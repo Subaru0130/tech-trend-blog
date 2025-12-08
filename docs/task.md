@@ -17,4 +17,15 @@
 - [x] **収益化 (Affiliate)**
     - [x] 比較表へのAmazonリンク埋め込み (自動化)
     - [x] 記事結論部への推奨リンク埋め込み (自動化)
-    - [x] モバイル用Floating CTAの実装
+- [x] **Design Overhaul (Premium Magazine)**
+    - [x] Refactor `page.tsx` for a clean, sophisticated grid layout.
+    - [x] Remove confusing buttons/badges; focus on content readability.
+    - [x] Improve typography (Premium feel).
+- [/] **Advanced SEO & Analytics**
+    - [x] Implement `sitemap.ts` and `robots.ts` for automated indexing.
+    - [ ] Add Structured Data (JSON-LD) for Article and Product Review.
+    - [ ] Add Structured Data (JSON-LD) for Article and Product Review.
+- [ ] **Zero-Touch Automation (GitHub Actions)**
+    - [ ] Create GitHub Actions workflow for scheduled generation.
+    - [ ] Configure Git authentication for auto-committing.
+

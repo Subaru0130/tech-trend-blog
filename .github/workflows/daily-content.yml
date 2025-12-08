@@ -1,0 +1,61 @@
+name: Daily Content Generation
+
+on:
+  schedule:
+    # Run every Monday and Thursday at 10:00 AM JST (1:00 AM UTC)
+    - cron: '0 1 * * 1,4'
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Allow pushing back to repo
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate New Article
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          # Pick a topic randomly or sequentially (logic handled in script or simple list here)
+          # For now, we rely on the script's default or we could randomize it here.
+          # Let's use a list of topics and pick one based on day of year
+          TOPICS=("最新ロボット掃除機" "人気の空気清浄機" "おすすめのドラム式洗濯機" "高音質ワイヤレスイヤホン" "疲れにくいオフィスチェア" "時短キッチン家電" "最新スマートウォッチ" "家庭用プロジェクター")
+          RANDOM_TOPIC=${TOPICS[$RANDOM % ${#TOPICS[@]}]}
+          
+          echo "Generating article for: $RANDOM_TOPIC"
+          
+          # Modify the script execution to accept an argument if we updated it, 
+          # but normally we need to update generate-post.mjs to accept args via process.argv
+          # For now, we will just use the default logic or update the script to accept args.
+          # Let's assume we update generate-post.mjs to take a topic as an argument.
+          
+          node scripts/generate-post.mjs "$RANDOM_TOPIC"
+
+      - name: Verify Content
+        run: node scripts/verify-mdx.mjs
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "actions@github.com"
+          git add content/posts/ public/images/
+          
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-generate content: $(date +'%Y-%m-%d')"
+            git push
+          fi
