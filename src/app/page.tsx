@@ -13,9 +13,9 @@ export default function Home() {
       <header className="sticky top-0 z-50 w-full border-b border-stone-100 bg-white/95 backdrop-blur-sm">
         <div className="container mx-auto flex h-20 items-center justify-between px-6 max-w-6xl">
           <Link href="/" className="group flex items-center gap-2">
-            <div className="w-8 h-8 bg-black text-white rounded-none flex items-center justify-center font-serif font-bold text-xl">B</div>
-            <span className="text-xl font-serif font-bold tracking-tight text-stone-900 group-hover:text-stone-600 transition-colors">
-              Best Buy Guide
+            <div className="w-8 h-8 bg-stone-900 text-white rounded-lg flex items-center justify-center font-bold text-xl leading-none pt-1">T</div>
+            <span className="text-xl font-bold tracking-tight text-stone-900 group-hover:text-stone-600 transition-colors font-sans">
+              Tech Trend <span className="text-xs font-normal text-stone-400 ml-1">テックトレンド</span>
             </span>
           </Link>
           <nav className="hidden md:flex gap-8 text-sm font-medium text-stone-500">
@@ -33,11 +33,13 @@ export default function Home() {
 
         {/* Hero Section (Featured Article) */}
         {featuredPost && (
-          <section className="relative py-20 md:py-32 overflow-hidden bg-stone-900 text-white">
+          <section className="relative py-20 md:py-32 overflow-hidden bg-stone-900 text-white group">
             <div className="absolute inset-0 z-0">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#444 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
               {/* Gradients */}
-              <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-stone-800 to-transparent opacity-50"></div>
-              <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-stone-900 to-transparent"></div>
+              <div className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-stone-800 via-stone-900/50 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-stone-900 via-stone-900/80 to-transparent"></div>
             </div>
 
             <div className="container mx-auto px-6 max-w-6xl relative z-10">
@@ -162,11 +164,11 @@ export default function Home() {
       <footer className="bg-white border-t border-stone-100 py-12">
         <div className="container mx-auto px-6 max-w-6xl flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-black text-white rounded-none flex items-center justify-center font-serif font-bold text-sm">B</div>
-            <span className="font-serif font-bold text-stone-900">Best Buy Guide</span>
+            <div className="w-6 h-6 bg-stone-900 text-white rounded-lg flex items-center justify-center font-bold text-sm leading-none pt-0.5">T</div>
+            <span className="font-bold text-stone-900">Tech Trend <span className="font-normal text-xs text-stone-400">テックトレンド</span></span>
           </div>
           <p className="text-xs text-stone-400">
-            &copy; {new Date().getFullYear()} Best Buy Guide. All rights reserved.
+            &copy; {new Date().getFullYear()} Tech Trend. All rights reserved.
           </p>
         </div>
       </footer>
