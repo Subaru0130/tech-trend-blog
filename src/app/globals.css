@@ -2,67 +2,68 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  /* Lifestyle Magazine Theme (Global) */
-  --background: #FAFAFA; /* Warm off-white */
-  --foreground: #333333; /* Dark Gray (Not Black) */
+  /* Premium Magazine Theme */
+  --background: #FFFFFF;
+  --foreground: #1c1917; /* Stone 900 */
 
-  --card: #FFFFFF;
-  --card-foreground: #333333;
+  --card: #F5F5F4; /* Stone 100 */
+  --card-foreground: #1c1917;
 
   --popover: #FFFFFF;
-  --popover-foreground: #333333;
+  --popover-foreground: #1c1917;
 
-  --primary: #333333;
+  --primary: #1c1917; /* Black/Stone 900 */
   --primary-foreground: #FFFFFF;
 
-  --secondary: #EEEEEE;
-  --secondary-foreground: #333333;
+  --secondary: #E7E5E4; /* Stone 200 */
+  --secondary-foreground: #1c1917;
 
-  --muted: #F5F5F5;
-  --muted-foreground: #666666;
+  --muted: #F5F5F4;
+  --muted-foreground: #78716c; /* Stone 500 */
 
-  --accent: #F5F5F5;
-  --accent-foreground: #333333;
+  --accent: #F5F5F4;
+  --accent-foreground: #1c1917;
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  --border: #EEEEEE;
-  --input: #EEEEEE;
-  --ring: #333333;
+  --border: #E7E5E4; /* Stone 200 */
+  --input: #E7E5E4;
+  --ring: #1c1917;
 
-  --radius: 0.25rem; /* 4px for modern feel */
+  --radius: 0.5rem; /* Sharper corners */
 
   /* Font Variables */
   --font-sans: var(--font-noto-sans-jp);
+  --font-serif: var(--font-noto-serif-jp);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-sans), "Hiragino Kaku Gothic ProN", sans-serif;
+  /* Gothic for readability */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Utilities - Flat & Clean */
+/* Custom Utilities */
 .ranking-badge {
-  background: #333333;
+  background: linear-gradient(135deg, #ffd700 0%, #fdb931 100%);
+  /* Gold */
   color: white;
   font-weight: bold;
   padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  /* No Shadow, No Gradient */
+  border-radius: 9999px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Silver/Bronze can just be opacity or generic gray for simplicity in this theme, 
-   or we keep them but flat colors */
 .ranking-badge.silver {
-  background: #999999;
+  background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
 }
 
 .ranking-badge.bronze {
-  background: #C39886; /* Muted Bronze */
+  background: linear-gradient(135deg, #cd7f32 0%, #a0522d 100%);
 }
 
 .cv-button {
@@ -71,33 +72,35 @@ body {
   justify-content: center;
   font-weight: bold;
   color: white;
-  border-radius: 4px;
+  border-radius: 0.5rem;
   transition: opacity 0.2s;
-  /* No Shadow */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .cv-button:hover {
-  opacity: 0.8;
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 .cv-amazon {
-  background-color: #333333; /* Use theme color instead of Brand Orange for neutrality, or keep subtle? User said "No Cheap". Black/Dark Gray is safe. */
+  background-color: #ff9900;
 }
 
 .cv-rakuten {
-  background-color: #BF0000; /* Keep Rakuten Red but maybe muted? Let's stick to brand for conversion but clean shape. */
+  background-color: #bf0000;
 }
 
 .cv-yahoo {
-  background-color: #FF0033;
+  background-color: #ff0033;
 }
+
+/* Yahoo usually red/pinkish in Japan or Yellow */
 
 .section-title {
   font-size: 1.5rem;
   font-weight: bold;
-  border-bottom: 2px solid #EEEEEE;
+  border-bottom: 3px solid var(--primary);
   padding-bottom: 0.5rem;
   margin-bottom: 1.5rem;
   display: inline-block;
-  color: #333333;
 }
