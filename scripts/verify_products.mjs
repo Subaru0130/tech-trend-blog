@@ -140,8 +140,7 @@ export async function verifyProducts(productNames) {
 // Maps keywords to verified Unsplash Source URLs (or specific IDs)
 const SAFE_HERO_IMAGES = {
     'hair dryer': [
-        'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=1600&auto=format&fit=crop', // Salon/Tools (Bright & Colorful)
-        'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600&auto=format&fit=crop', // Salon/Woman (Bright)
+        'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=1600&auto=format&fit=crop', // Pink/Colorful
     ],
     'water purifier': [
         'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?q=80&w=1600&auto=format&fit=crop', // Glass of water (Bright/Blue)
