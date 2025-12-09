@@ -40,18 +40,41 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
 
     const { data: frontmatter, content } = matter(markdownWithMeta);
 
-    // JSON-LD for BlogPosting
+    // Extract products for ItemList Schema
+    const productsRegex = /name:\s*"([^"]+)"[\s\S]*?image/g;
+    const productsMatch = [...content.matchAll(productsRegex)];
+    const itemListElement = productsMatch.map((match, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: match[1],
+        // url: defined in RankingCard but hard to extract here without parsing props. 
+        // Ideally we keep it simple for now.
+    }));
+
+    // JSON-LD for BlogPosting + ItemList (Ranking)
     const jsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'BlogPosting',
-        headline: frontmatter.title,
-        description: frontmatter.description,
-        image: frontmatter.image ? [`https://tech-trend-blog-27mo.vercel.app${frontmatter.image}`] : [],
-        datePublished: frontmatter.date,
-        author: {
-            '@type': 'Organization',
-            name: 'Best Buy Guide Editorial',
-        },
+        '@graph': [
+            {
+                '@type': 'BlogPosting',
+                headline: frontmatter.title,
+                description: frontmatter.description,
+                image: frontmatter.image ? [`https://tech-trend-blog-27mo.vercel.app${frontmatter.image}`] : [],
+                datePublished: frontmatter.date,
+                author: {
+                    '@type': 'Organization',
+                    name: 'Best Buy Guide Editorial',
+                },
+                mainEntityOfPage: {
+                    '@type': 'WebPage',
+                    '@id': `https://tech-trend-blog-27mo.vercel.app/posts/${decodedSlug}`
+                }
+            },
+            {
+                '@type': 'ItemList',
+                itemListElement: itemListElement
+            }
+        ]
     };
 
     return (

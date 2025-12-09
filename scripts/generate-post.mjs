@@ -148,9 +148,12 @@ async function generateArticle(topic) {
 
     **Structure & Requirements (MDX)**:
     1.  **Frontmatter**:
-        - title: "High CTR Title" (e.g., 【2025年版】水道水が激変！本当に美味しい浄水器おすすめ5選【コスパ最強】)
+        - title: "SEO Optimized Title"
+          - **MUST FOLLOW THIS PATTERN**: "【2025年(or Current Month)】Topic Recommendation Ranking N Selection【BrandA vs BrandB vs BrandC】"
+          - **Example**: "【2025年12月】加湿器のおすすめ人気ランキング5選【象印・ダイニチ・パナソニック徹底比較】"
+          - Include concrete brand names of the top 3 products.
         - date: ${(new Date()).toISOString().split('T')[0]}
-        - description: "Are you buying bottled water? Stop. We compared Mitsubishi, Panasonic, and Brita to find the best water purifier for taste and cost."
+        - description: "SEO Description (120 chars). Include keywords: 'Comparison', 'Review', 'Reccomendation'."
         - image: /images/hero-water.png
         - category: "Kitchen"
 
@@ -207,8 +210,12 @@ async function generateArticle(topic) {
         - Only for Rank 1 product.
 
     10. **Conclusion**: 
-        - Final recommendation.
-        - **MANDATORY**: Include a text-based link to the Rank 1 product in the body text (e.g. "If you are unsure, [Product Name] is the best choice.").
+        - Final recommendation ONLY.
+        - **CRITICAL**: Every time you mention a product name here, you **MUST** format it as a link to Amazon.
+          - **Bad**: "If you want silence, choose Dainichi."
+          - **Good**: "If you want silence, choose **[Dainichi HD-RX500A](SEARCH:Dainichi HD-RX500A)**."
+          - **Good**: "For budget, **[Panasonic FE-KXW05](SEARCH:Panasonic FE-KXW05)** is best."
+        - Include at least links to the Rank 1, 2, and 3 products in the text.
     `;
 
   const result = await client.models.generateContent({
