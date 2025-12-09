@@ -136,41 +136,49 @@ export async function verifyProducts(productNames) {
 
 // ... existing code ...
 
+// Safe Hero Image Dictionary
+// Maps keywords to verified Unsplash Source URLs (or specific IDs)
+const SAFE_HERO_IMAGES = {
+    'hair dryer': [
+        'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600&auto=format&fit=crop', // Salon/Woman
+        'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=1600&auto=format&fit=crop'  // Salon/Tools (verified)
+    ],
+    'water purifier': [
+        'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?q=80&w=1600&auto=format&fit=crop', // Glass of water
+        'https://images.unsplash.com/photo-1542013936693-884638332954?q=80&w=1600&auto=format&fit=crop'  // Drinking water
+    ],
+    'shampoo': [
+        'https://images.unsplash.com/photo-1585232351009-31a316b186bf?q=80&w=1600&auto=format&fit=crop', // Bottles
+        'https://images.unsplash.com/photo-1556228720-191739b83b38?q=80&w=1600&auto=format&fit=crop'  // Spa vibe
+    ],
+    'shower head': [
+        'https://images.unsplash.com/photo-1517646331032-9e8563c523a1?q=80&w=1600&auto=format&fit=crop', // Bathroom
+    ],
+    'default': [
+        'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1600&auto=format&fit=crop' // Tech/Work general
+    ]
+};
+
 export async function getHeroImage(topic) {
-    console.log(`Searching for Hero Image: ${topic}...`);
-    const browser = await puppeteer.launch({
-        headless: 'new',
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await browser.newPage();
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    console.log(`Getting Safe Hero Image for topic: ${topic}...`);
 
-    try {
-        const query = `${topic} おしゃれ 壁紙 高画質`; // "Stylish Wallpaper High Res"
-        const searchUrl = `https://search.yahoo.co.jp/image/search?p=${encodeURIComponent(query)}`;
-        await page.goto(searchUrl, { waitUntil: 'networkidle2', timeout: 30000 });
+    // Normalize topic
+    const lowerTopic = topic.toLowerCase();
 
-        const imageUrl = await page.evaluate(() => {
-            // Find a landscape oriented image if possible
-            const imgs = Array.from(document.querySelectorAll('div.sw-Thumbnail img'));
-            for (const img of imgs) {
-                if (img.src && img.src.startsWith('http')) {
-                    // Prefer larger images logic could act here, but Yahoo thumbnails are uniform.
-                    // Just take the first nice one.
-                    return img.src;
-                }
-            }
-            return null;
-        });
+    let candidates = SAFE_HERO_IMAGES['default'];
 
-        await browser.close();
-        return imageUrl;
-
-    } catch (e) {
-        console.warn(`Hero Image Search failed: ${e.message}`);
-        await browser.close();
-        return null;
+    if (lowerTopic.includes('dryer') || lowerTopic.includes('ドライヤー')) {
+        candidates = SAFE_HERO_IMAGES['hair dryer'];
+    } else if (lowerTopic.includes('water') || lowerTopic.includes('purifier') || lowerTopic.includes('浄水')) {
+        candidates = SAFE_HERO_IMAGES['water purifier'];
+    } else if (lowerTopic.includes('shampoo') || lowerTopic.includes('シャンプー')) {
+        candidates = SAFE_HERO_IMAGES['shampoo'];
     }
+
+    // Pick random candidate to vary slightly if multiple exist
+    const selected = candidates[Math.floor(Math.random() * candidates.length)];
+    console.log(`✅ Selected Verified Image: ${selected}`);
+    return selected;
 }
 
 // Standalone test

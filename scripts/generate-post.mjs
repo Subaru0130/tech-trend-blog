@@ -283,8 +283,8 @@ async function generateArticle(topic) {
     }
   }
 
-  // Hero Image for Water Purifier
-  const heroUrl = await getHeroImage("modern kitchen water faucet purifier clean water glass");
+  // Hero Image (Safe Selection)
+  const heroUrl = await getHeroImage(topic);
   if (heroUrl) {
     await downloadImage(heroUrl, 'hero-water.png');
   }
