@@ -15,7 +15,7 @@ export default function Home() {
           <Link href="/" className="group flex items-center gap-2">
             <div className="w-8 h-8 bg-stone-900 text-white rounded-lg flex items-center justify-center font-bold text-xl leading-none pt-1">B</div>
             <span className="text-xl font-bold tracking-tight text-stone-900 group-hover:text-stone-600 transition-colors font-sans">
-              Best Buy Guide <span className="text-xs font-normal text-stone-400 ml-1">ベストバイガイド</span>
+              ベストバイガイド
             </span>
           </Link>
           <nav className="hidden md:flex gap-8 text-sm font-medium text-stone-500">
@@ -165,7 +165,7 @@ export default function Home() {
         <div className="container mx-auto px-6 max-w-6xl flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-stone-900 text-white rounded-lg flex items-center justify-center font-bold text-sm leading-none pt-0.5">B</div>
-            <span className="font-bold text-stone-900">Best Buy Guide <span className="font-normal text-xs text-stone-400">ベストバイガイド</span></span>
+            <span className="font-bold text-stone-900">ベストバイガイド</span>
           </div>
           <p className="text-xs text-stone-400">
             &copy; {new Date().getFullYear()} Best Buy Guide. All rights reserved.
