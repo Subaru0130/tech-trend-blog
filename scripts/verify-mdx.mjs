@@ -33,8 +33,8 @@ export function verifyMdxFiles() {
         }
 
         // Check 2: Frontmatter Fields (Title, Date, Image)
-        const titleMatch = content.match(/title:\s*"(.*?)"/);
-        const imageMatch = content.match(/image:\s*(.*?)\n/);
+        const titleMatch = content.match(/^title:\s*"(.*?)"/m);
+        const imageMatch = content.match(/^image:\s*(.+)$/m);
 
         if (!titleMatch || !titleMatch[1].trim()) {
             console.error(`❌ ERROR in ${file}: Missing or empty 'title' in frontmatter.`);

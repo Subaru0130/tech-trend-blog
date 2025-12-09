@@ -33,50 +33,45 @@ export default function Home() {
 
         {/* Hero Section (Featured Article) */}
         {featuredPost && (
-          <section className="relative py-20 md:py-32 overflow-hidden bg-slate-950 text-white group">
-            <div className="absolute inset-0 z-0">
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#334155 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
-              {/* Gradients */}
-              <div className="absolute top-0 right-0 w-3/4 h-full bg-gradient-to-l from-slate-900 via-slate-950/80 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 w-full h-3/4 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent"></div>
+          <section className="relative py-20 md:py-28 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-50/30 text-slate-800">
+            <div className="absolute inset-0 z-0 opacity-40">
+              {/* Subtle Pattern */}
+              <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#fca5a5 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }}></div>
             </div>
 
             <div className="container mx-auto px-6 max-w-6xl relative z-10">
               <div className="grid md:grid-cols-12 gap-12 items-center">
                 {/* Text Side */}
                 <div className="md:col-span-6 order-2 md:order-1">
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className="px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-[10px] font-bold tracking-widest uppercase rounded-full shadow-lg shadow-orange-500/20">featured</span>
-                    <span className="text-slate-400 text-sm font-medium tracking-wide">{featuredPost.date}</span>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold tracking-widest uppercase rounded-full">New Arrival</span>
+                    <span className="text-slate-500 text-sm font-medium">{featuredPost.date}</span>
                   </div>
-                  <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-300 drop-shadow-sm">
-                    <Link href={`/posts/${featuredPost.slug}`} className="hover:to-white transition-all duration-300">
+                  <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-slate-900 tracking-tight">
+                    <Link href={`/posts/${featuredPost.slug}`} className="hover:text-amber-600 transition-colors">
                       {featuredPost.title}
                     </Link>
                   </h1>
-                  <p className="text-slate-400 text-lg leading-relaxed mb-8 line-clamp-3 font-light">
+                  <p className="text-slate-600 text-lg leading-relaxed mb-8 line-clamp-3 font-normal">
                     {featuredPost.description}
                   </p>
-                  <Link href={`/posts/${featuredPost.slug}`} className="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-950 font-bold rounded-full hover:bg-amber-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(251,191,36,0.4)] hover:-translate-y-1">
-                    記事を読む <ArrowRight className="w-4 h-4" />
+                  <Link href={`/posts/${featuredPost.slug}`} className="inline-flex items-center gap-2 px-8 py-4 bg-amber-500 text-white font-bold rounded-full hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/30 hover:shadow-xl hover:-translate-y-1">
+                    レビューを読む <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
 
                 {/* Image Side */}
                 <div className="md:col-span-6 order-1 md:order-2">
-                  <Link href={`/posts/${featuredPost.slug}`} className="block relative group rounded-3xl overflow-hidden shadow-2xl border border-white/10 aspect-[4/3] transform transition-all duration-500 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)]">
+                  <Link href={`/posts/${featuredPost.slug}`} className="block relative group rounded-3xl overflow-hidden shadow-2xl shadow-orange-100 border border-slate-100 aspect-[4/3] transform transition-all duration-500 hover:shadow-orange-200 hover:-translate-y-1">
                     {featuredPost.image ? (
                       <img
                         src={featuredPost.image}
                         alt={featuredPost.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-slate-900 text-slate-700 font-mono">No Image</div>
+                      <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400 font-medium">No Image</div>
                     )}
-                    {/* Glassmorphism Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500"></div>
                   </Link>
                 </div>
               </div>
