@@ -13,9 +13,9 @@ export default function Home() {
       <header className="sticky top-0 z-50 w-full border-b border-stone-100 bg-white/95 backdrop-blur-sm">
         <div className="container mx-auto flex h-20 items-center justify-between px-6 max-w-6xl">
           <Link href="/" className="group flex items-center gap-2">
-            <div className="w-8 h-8 bg-stone-900 text-white rounded-lg flex items-center justify-center font-bold text-xl leading-none pt-1">T</div>
+            <div className="w-8 h-8 bg-stone-900 text-white rounded-lg flex items-center justify-center font-bold text-xl leading-none pt-1">B</div>
             <span className="text-xl font-bold tracking-tight text-stone-900 group-hover:text-stone-600 transition-colors font-sans">
-              Tech Trend <span className="text-xs font-normal text-stone-400 ml-1">テックトレンド</span>
+              Best Buy Guide <span className="text-xs font-normal text-stone-400 ml-1">ベストバイガイド</span>
             </span>
           </Link>
           <nav className="hidden md:flex gap-8 text-sm font-medium text-stone-500">
@@ -164,11 +164,11 @@ export default function Home() {
       <footer className="bg-white border-t border-stone-100 py-12">
         <div className="container mx-auto px-6 max-w-6xl flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-stone-900 text-white rounded-lg flex items-center justify-center font-bold text-sm leading-none pt-0.5">T</div>
-            <span className="font-bold text-stone-900">Tech Trend <span className="font-normal text-xs text-stone-400">テックトレンド</span></span>
+            <div className="w-6 h-6 bg-stone-900 text-white rounded-lg flex items-center justify-center font-bold text-sm leading-none pt-0.5">B</div>
+            <span className="font-bold text-stone-900">Best Buy Guide <span className="font-normal text-xs text-stone-400">ベストバイガイド</span></span>
           </div>
           <p className="text-xs text-stone-400">
-            &copy; {new Date().getFullYear()} Tech Trend. All rights reserved.
+            &copy; {new Date().getFullYear()} Best Buy Guide. All rights reserved.
           </p>
         </div>
       </footer>
