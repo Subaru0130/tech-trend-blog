@@ -79,7 +79,8 @@ export function ComparisonTable({ products, specLabels }: ComparisonTableProps) 
                                         href={getAmazonUrl(product.asin)}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-bold text-white transition-all bg-slate-900 rounded-lg hover:bg-black shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                                        style={{ backgroundColor: '#0f172a', color: '#ffffff' }}
+                                        className="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-bold transition-all rounded-lg hover:bg-black shadow-md hover:shadow-lg hover:-translate-y-0.5"
                                     >
                                         Amazonで見る <ExternalLink className="w-4 h-4 ml-1" />
                                     </a>

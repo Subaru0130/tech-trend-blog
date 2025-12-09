@@ -224,8 +224,20 @@ async function generateArticle(topic) {
 
   let mdxContent = result.candidates[0].content.parts[0].text;
 
-  // Clean MDX
-  mdxContent = mdxContent.replace(/^```(markdown|mdx)?\n/, '').replace(/\n```$/, '');
+  // Clean MDX: Extract content from markdown code blocks if present
+  const codeBlockMatch = mdxContent.match(/```(?:markdown|mdx)?\n([\s\S]*?)```/);
+  if (codeBlockMatch) {
+    mdxContent = codeBlockMatch[1];
+  }
+
+  // Fallback: If no code blocks, look for the first '---' (start of frontmatter)
+  const frontmatterStart = mdxContent.indexOf('---');
+  if (frontmatterStart !== -1) {
+    mdxContent = mdxContent.substring(frontmatterStart);
+  }
+
+  // Final trim
+  mdxContent = mdxContent.trim();
 
   // Strip imports (Next-MDX-Remote handles components via props)
   mdxContent = mdxContent.replace(/^import\s+.*?from\s+['"].*?['"];?\n?/gm, '');

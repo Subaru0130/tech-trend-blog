@@ -41,10 +41,27 @@ async function main() {
         });
 
         if (noImageText) {
-            console.warn("❌ FAIL: 'No Image' placeholder detected on Homepage! (Might be acceptable if fresh, but checking...)");
-            // hasError = true; // Warning only for now to not block if user deleted posts
+            console.error("❌ FAIL: 'No Image' placeholder detected on Homepage!");
+            hasError = true;
         } else {
             console.log("✅ PASS: No placeholders found on Homepage.");
+        }
+
+        // --- CHECK 1.5: Hero Title Existence (Void Check) ---
+        const heroTitle = await page.$eval('section h1', el => el.textContent).catch(() => null);
+        if (!heroTitle || heroTitle.trim() === '') {
+            console.error("❌ FAIL: Hero section has no title! Frontmatter parsing likely failed.");
+            hasError = true;
+        }
+
+        // --- CHECK 1.6: Broken Images ---
+        const brokenImages = await page.evaluate(() => {
+            return Array.from(document.images).filter(img => img.naturalWidth === 0).map(img => img.src);
+        });
+
+        if (brokenImages.length > 0) {
+            console.error("❌ FAIL: Found broken images:", brokenImages);
+            hasError = true;
         }
 
         // --- CHECK 2: Featured Post Visuals ---
