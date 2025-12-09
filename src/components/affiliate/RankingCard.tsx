@@ -81,39 +81,40 @@ export function RankingCard({
     };
 
     return (
-        <div id={`rank-${rank}`} className={`relative flex flex-col md:flex-row gap-8 p-8 md:p-10 rounded-3xl mb-16 scroll-mt-32 transition-all duration-500 ${isFirst ? 'bg-white shadow-2xl ring-4 ring-primary/20' : 'bg-white shadow-lg hover:shadow-xl'}`}>
+    return (
+        <div id={`rank-${rank}`} className={`relative flex flex-col md:flex-row gap-8 p-8 md:p-10 rounded-[4px] mb-12 scroll-mt-32 transition-all duration-500 bg-white ${isFirst ? 'border border-[#EEEEEE] shadow-[0_4px_24px_rgba(0,0,0,0.06)]' : 'border border-[transparent] shadow-[0_2px_8px_rgba(0,0,0,0.03)]'}`}>
 
-            {/* No.1 Ribbon */}
+            {/* No.1 Badge (Minimal) */}
             {isFirst && (
-                <div className="absolute -top-4 -left-4 z-20">
-                    <div className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white font-serif font-bold px-8 py-3 rounded-br-3xl rounded-tl-2xl shadow-xl flex items-center gap-2 text-lg">
-                        <Crown className="w-6 h-6" />
-                        総合ランキング 1位
+                <div className="absolute -top-3 -left-3 z-20">
+                    <div className="bg-[#333333] text-white text-sm font-bold px-4 py-2 rounded-[4px] shadow-sm flex items-center gap-2">
+                        <Crown className="w-4 h-4" />
+                        総合 1位
                     </div>
                 </div>
             )}
 
             {/* Rank Badge (Non-1st) */}
             {!isFirst && (
-                <div className="absolute -top-5 -left-5 w-14 h-14 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-xl z-10 border-4 border-white font-serif">
+                <div className="absolute -top-3 -left-3 w-10 h-10 bg-[#EEEEEE] text-[#333333] rounded-[4px] flex items-center justify-center font-bold text-lg shadow-sm z-10">
                     {rank}
                 </div>
             )}
 
             {/* Left Column: Image & Basic Info */}
-            <div className="w-full md:w-1/3 flex flex-col gap-8">
-                <div className="aspect-square bg-white rounded-3xl overflow-hidden p-8 flex items-center justify-center relative group shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] border border-slate-100">
+            <div className="w-full md:w-1/3 flex flex-col gap-6">
+                <div className="aspect-square bg-white rounded-[4px] overflow-hidden p-6 flex items-center justify-center relative border border-[#EEEEEE]">
                     <img
                         src={displayImage}
                         alt={displayTitle}
-                        className="w-full h-full object-contain mx-auto mix-blend-multiply hover:scale-110 transition-transform duration-500"
+                        className="w-full h-full object-contain mx-auto mix-blend-multiply hover:scale-105 transition-transform duration-500"
                     />
                 </div>
 
-                {/* Visual Score Chart */}
+                {/* Visual Score Chart (Clean) */}
                 {ratings && (
-                    <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 text-center">検証スコア</h4>
+                    <div className="bg-[#FAFAFA] rounded-[4px] p-6 border border-[#EEEEEE]">
+                        <h4 className="text-[10px] font-bold text-[#999999] uppercase tracking-widest mb-4 text-center">検証スコア</h4>
                         <div className="grid grid-cols-3 gap-y-6 gap-x-2">
                             {Object.entries(ratings).map(([key, score]) => {
                                 const translationMap: { [key: string]: string } = {
@@ -126,14 +127,12 @@ export function RankingCard({
                                     moisture: "保湿力",
                                     cleansing: "洗浄力",
                                     finish: "仕上がり",
-                                    // Hair Dryer Keys
                                     airflow: "風量",
                                     weight: "軽さ",
                                     heatControl: "温度調節",
                                     care: "ケア効果",
                                     design: "デザイン",
                                     quietness: "静音性",
-                                    // Water Purifier Keys
                                     filtration: "除去力",
                                     taste: "おいしさ",
                                     flow: "水量",
@@ -142,15 +141,10 @@ export function RankingCard({
                                 const label = translationMap[key] || key;
                                 return (
                                     <div key={key} className="flex flex-col items-center">
-                                        <div className="relative w-14 h-14 flex items-center justify-center rounded-full bg-white shadow-sm"
-                                            style={{
-                                                background: `conic-gradient(var(--primary) ${score * 20}%, #e2e8f0 0)`
-                                            }}>
-                                            <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
-                                                <span className="text-sm font-bold text-slate-800">{score}</span>
-                                            </div>
+                                        <div className="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-[#EEEEEE]">
+                                            <span className="text-sm font-bold text-[#333333]">{score}</span>
                                         </div>
-                                        <span className="text-[10px] text-slate-600 mt-2 font-medium whitespace-nowrap">{label}</span>
+                                        <span className="text-[10px] text-[#666666] mt-2 font-medium whitespace-nowrap">{label}</span>
                                     </div>
                                 );
                             })}
@@ -163,61 +157,55 @@ export function RankingCard({
             <div className="flex-1 flex flex-col py-2">
                 <div className="mb-8">
                     {bestFor && (
-                        <span className="inline-block bg-primary/10 text-primary text-sm font-bold px-4 py-1.5 rounded-full mb-4">
+                        <span className="inline-block bg-[#F5F5F5] text-[#666666] text-xs font-medium px-3 py-1 rounded-[2px] mb-4">
                             {bestFor}
                         </span>
                     )}
-                    <h3 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 leading-tight mb-6">
+                    <h3 className="text-2xl font-bold text-[#333333] leading-snug mb-5">
                         {displayTitle}
                     </h3>
-                    <div className="flex items-center gap-6 mb-6 p-4 bg-slate-50 rounded-xl w-fit">
+                    <div className="flex items-center gap-6 mb-6 pb-2 border-b border-[#EEEEEE] w-full">
                         <div className="flex items-center gap-2">
-                            <Star className="w-6 h-6 text-yellow-400 fill-current" />
-                            <span className="text-2xl font-bold text-slate-900">{rating}</span>
+                            <span className="text-[10px] text-[#999999] font-bold uppercase">Rating</span>
+                            <span className="text-xl font-bold text-[#333333]">{rating}</span>
                         </div>
                         {reviewCount && (
-                            <span className="text-sm text-slate-500 font-medium">
-                                ({reviewCount}件の口コミ)
+                            <span className="text-xs text-[#999999]">
+                                ({reviewCount}件)
                             </span>
                         )}
-                        <span className="text-slate-300 text-xl">|</span>
-                        <span className="text-slate-600 font-bold text-lg">{price}</span>
+                        <span className="text-[#EEEEEE]">|</span>
+                        <span className="text-[#333333] font-bold text-lg">{price}</span>
                     </div>
-                    <p className="text-slate-600 leading-relaxed text-base md:text-lg">
+                    <p className="text-[#666666] leading-[1.9] text-base">
                         {displayDescription}
                     </p>
                 </div>
 
-                {/* Pros & Cons Grid */}
+                {/* Pros & Cons Grid (Subtle) */}
                 <div className="grid md:grid-cols-2 gap-6 mb-10">
-                    <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
-                        <h4 className="font-bold text-blue-700 text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-                                <Check className="w-4 h-4 text-blue-600" />
-                            </div>
-                            良いところ
+                    <div className="bg-[#FAFAFA] p-6 rounded-[4px]">
+                        <h4 className="font-bold text-[#333333] text-xs mb-3 flex items-center gap-2">
+                            <span className="text-[#666666] text-lg">●</span>
+                            良い点
                         </h4>
-                        <ul className="space-y-3">
+                        <ul className="space-y-2">
                             {pros.map((pro, i) => (
-                                <li key={i} className="text-sm md:text-base text-slate-700 flex items-start leading-snug">
-                                    <span className="text-blue-400 mr-2 font-bold">・</span>
-                                    {pro}
+                                <li key={i} className="text-sm text-[#666666] leading-relaxed pl-4 -indent-4">
+                                    ・{pro}
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    <div className="bg-red-50/50 p-6 rounded-2xl border border-red-100">
-                        <h4 className="font-bold text-red-700 text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center">
-                                <X className="w-4 h-4 text-red-600" />
-                            </div>
-                            気になるところ
+                    <div className="bg-[#FAFAFA] p-6 rounded-[4px]">
+                        <h4 className="font-bold text-[#333333] text-xs mb-3 flex items-center gap-2">
+                            <span className="text-[#999999] text-lg">●</span>
+                            気になる点
                         </h4>
-                        <ul className="space-y-3">
+                        <ul className="space-y-2">
                             {cons.map((con, i) => (
-                                <li key={i} className="text-sm md:text-base text-slate-700 flex items-start leading-snug">
-                                    <span className="text-red-400 mr-2 font-bold">・</span>
-                                    {con}
+                                <li key={i} className="text-sm text-[#666666] leading-relaxed pl-4 -indent-4">
+                                    ・{con}
                                 </li>
                             ))}
                         </ul>
@@ -231,13 +219,10 @@ export function RankingCard({
                             href={links.amazon}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 bg-slate-900 hover:bg-black !text-white font-bold py-3 px-8 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] shadow-xl hover:shadow-2xl text-lg"
+                            className="flex-1 bg-[#333333] hover:opacity-90 text-white font-bold py-3 px-8 rounded-[4px] flex items-center justify-center gap-3 transition-all shadow-sm text-sm"
                         >
-                            <ShoppingCart className="w-6 h-6" />
-                            <div className="flex flex-col items-start leading-none">
-                                <span className="text-base">Amazonで在庫を確認</span>
-                                <span className="text-[10px] font-normal opacity-80 mt-1">本日のタイムセールをチェック</span>
-                            </div>
+                            <ShoppingCart className="w-4 h-4" />
+                            Amazonで詳細を見る
                         </a>
                     )}
                     {links.rakuten && (
@@ -245,10 +230,10 @@ export function RankingCard({
                             href={links.rakuten}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-bold py-4 px-8 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] text-lg"
+                            className="flex-1 bg-white border border-[#DDDDDD] text-[#333333] hover:bg-[#FAFAFA] font-bold py-3 px-8 rounded-[4px] flex items-center justify-center gap-3 transition-all text-sm"
                         >
-                            <ExternalLink className="w-6 h-6" />
-                            楽天で見る
+                            <ExternalLink className="w-4 h-4 text-[#999999]" />
+                            楽天でチェック
                         </a>
                     )}
                 </div>
