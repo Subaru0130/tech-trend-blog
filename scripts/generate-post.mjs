@@ -309,9 +309,20 @@ import { verifyMdxFiles } from './verify-mdx.mjs';
 async function main() {
   await saveArticle(await generateArticle('家庭用浄水器'), '家庭用浄水器');
 
-  // Run verification
-  console.log("--- Running Final Verification ---");
-  verifyMdxFiles();
+  // Run STRICT Quality Gate
+  console.log("--- Running Strict Quality Gate ---");
+  // verifyMdxFiles only checks MDX. We want the full suite.
+  // We execute check-quality.mjs as a child process to isolate it.
+  try {
+    const { execSync } = await import('child_process');
+    execSync('node scripts/check-quality.mjs', { stdio: 'inherit' });
+    console.log("✅ Generation & Verification Complete.");
+  } catch (e) {
+    console.error("❌ GENERATION REJECTED: Quality Gate Failed.");
+    // Optional: Delete the file if it failed? 
+    // check-quality.mjs logs the errors.
+    process.exit(1);
+  }
 }
 
 main();

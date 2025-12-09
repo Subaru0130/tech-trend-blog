@@ -16,7 +16,15 @@ export function verifyMdxFiles() {
     let hasError = false;
 
     for (const file of files) {
-        const content = fs.readFileSync(path.join(postsDir, file), 'utf8');
+        const filePath = path.join(postsDir, file);
+        const content = fs.readFileSync(filePath, 'utf8');
+
+        // Check 0: Basic Frontmatter Existence
+        if (!content.startsWith('---')) {
+            console.error(`❌ ERROR in ${file}: No Frontmatter found (must start with ---).`);
+            hasError = true;
+            continue;
+        }
 
         // Check 1: No import statements (Next-MDX-Remote limitation)
         if (/^import\s+.*from/m.test(content)) {
@@ -24,15 +32,48 @@ export function verifyMdxFiles() {
             hasError = true;
         }
 
-        // Check 2: ComparisonTable should have ASINs if products exist
-        // Simple heuristic: if ComparisonTable exists, 'asin:' should appear roughly as many times as 'rank:'
+        // Check 2: Frontmatter Fields (Title, Date, Image)
+        const titleMatch = content.match(/title:\s*"(.*?)"/);
+        const imageMatch = content.match(/image:\s*(.*?)\n/);
+
+        if (!titleMatch || !titleMatch[1].trim()) {
+            console.error(`❌ ERROR in ${file}: Missing or empty 'title' in frontmatter.`);
+            hasError = true;
+        }
+
+        if (!imageMatch || !imageMatch[1].trim()) {
+            console.error(`❌ ERROR in ${file}: Missing 'image' in frontmatter.`);
+            hasError = true;
+        } else {
+            // Check 3: Local Image Existence
+            const imagePath = imageMatch[1].trim();
+            const localImagePath = path.join(process.cwd(), 'public', imagePath.startsWith('/') ? imagePath.slice(1) : imagePath);
+            if (!fs.existsSync(localImagePath)) {
+                console.error(`❌ ERROR in ${file}: Image file not found: ${localImagePath}`);
+                hasError = true;
+            }
+        }
+
+        // Check 4: ComparisonTable Integrity
         if (content.includes('<ComparisonTable')) {
             const ranks = (content.match(/rank:/g) || []).length;
             const asins = (content.match(/asin:/g) || []).length;
-            // This is a loose check, but good for catching complete failure
             if (asins < (ranks / 2)) {
-                console.warn(`⚠️ WARNING in ${file}: Low ASIN count in ComparisonTable? Ranks: ${ranks}, ASINs: ${asins}`);
+                console.error(`❌ FAIL in ${file}: ComparisonTable missing ASINs. Ranks: ${ranks}, ASINs: ${asins}`);
+                hasError = true;
             }
+        }
+
+        // Check 5: Forbidden Patterns (AI conversational filler, undefined)
+        if (content.match(/Here is the article/i) || content.match(/Here is the high-converting/i)) {
+            console.error(`❌ FAIL in ${file}: Found AI conversational filler ('Here is...').`);
+            hasError = true;
+        }
+
+        // Check for 'undefined' in visible text (simple heuristic)
+        if (content.match(/>undefined</) || content.match(/\sundefined\s/)) {
+            console.warn(`⚠️ WARN in ${file}: Found 'undefined' in text body. Check generation.`);
+            // Warning only for now as it might be code snippet
         }
     }
 
