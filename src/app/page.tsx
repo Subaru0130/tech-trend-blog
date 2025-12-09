@@ -8,55 +8,54 @@ export default function Home() {
   const recentPosts = allPosts.slice(1);
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-stone-900 bg-stone-50 selection:bg-stone-200">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-stone-200 bg-stone-50/95 backdrop-blur-sm">
+    <div className="min-h-screen flex flex-col font-sans text-[#333333] bg-[#FAFAFA] selection:bg-stone-100">
+      {/* Header: Clean & White */}
+      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-[#EEEEEE]">
         <div className="container mx-auto flex h-20 items-center justify-between px-6 max-w-6xl">
           <Link href="/" className="group flex items-center gap-3">
-            <div className="w-10 h-10 bg-stone-900 text-white rounded-none flex items-center justify-center font-serif font-bold text-xl pt-1">B</div>
             <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-tight text-stone-900 font-serif leading-none">
+              <span className="text-xl font-bold tracking-tight text-[#333333] leading-none">
                 ベストバイガイド
               </span>
             </div>
           </Link>
-          <nav className="hidden md:flex gap-8 text-sm font-medium text-stone-500">
-            <Link href="#" className="hover:text-stone-900 transition-colors">最新記事</Link>
-            <Link href="#" className="hover:text-stone-900 transition-colors">ランキング</Link>
-            <Link href="#" className="hover:text-stone-900 transition-colors">編集部について</Link>
+          <nav className="hidden md:flex gap-8 text-sm text-[#666666]">
+            <Link href="#" className="hover:text-[#333333] transition-colors">最新記事</Link>
+            <Link href="#" className="hover:text-[#333333] transition-colors">ランキング</Link>
+            <Link href="#" className="hover:text-[#333333] transition-colors">編集部について</Link>
           </nav>
         </div>
       </header>
 
       <main className="flex-1">
 
-        {/* Hero Section (Editorial Style) */}
+        {/* Hero Section: Airbnb/Kinfolk style (Airy) */}
         {featuredPost && (
-          <section className="py-20 md:py-28 px-6">
+          <section className="py-20 md:py-24 px-6">
             <div className="container mx-auto max-w-6xl">
               <div className="grid md:grid-cols-12 gap-12 items-center">
                 {/* Text Side */}
                 <div className="md:col-span-5 order-2 md:order-1">
                   <div className="flex items-center gap-3 mb-6">
-                    <span className="px-3 py-1 border border-stone-900 text-stone-900 text-xs font-bold tracking-widest bg-white">最新記事</span>
-                    <span className="text-stone-500 text-sm font-serif">{featuredPost.date}</span>
+                    <span className="px-3 py-1 bg-[#333333] text-white text-xs font-medium rounded-[4px]">最新記事</span>
+                    <span className="text-[#666666] text-sm">{featuredPost.date}</span>
                   </div>
-                  <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1] mb-8 text-stone-900">
-                    <Link href={`/posts/${featuredPost.slug}`} className="hover:underline decoration-1 underline-offset-8 decoration-stone-300 transition-all">
+                  <h1 className="text-3xl md:text-4xl font-medium leading-[1.6] mb-8 text-[#333333]">
+                    <Link href={`/posts/${featuredPost.slug}`} className="hover:text-[#666666] transition-colors">
                       {featuredPost.title}
                     </Link>
                   </h1>
-                  <p className="text-stone-600 text-lg leading-loose mb-10 font-light line-clamp-3">
+                  <p className="text-[#666666] text-base leading-[1.9] mb-10 font-normal line-clamp-3">
                     {featuredPost.description}
                   </p>
-                  <Link href={`/posts/${featuredPost.slug}`} className="group inline-flex items-center gap-3 text-stone-900 font-bold border-b-2 border-stone-900 pb-1 hover:text-stone-600 hover:border-stone-600 transition-colors">
+                  <Link href={`/posts/${featuredPost.slug}`} className="group inline-flex items-center gap-2 text-[#333333] font-medium border-b border-[#333333] pb-0.5 hover:opacity-70 transition-opacity">
                     記事を読む <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </div>
 
-                {/* Image Side - Simple & Clean */}
+                {/* Image Side */}
                 <div className="md:col-span-7 order-1 md:order-2">
-                  <Link href={`/posts/${featuredPost.slug}`} className="block relative aspect-[4/3] overflow-hidden rounded-sm bg-stone-200">
+                  <Link href={`/posts/${featuredPost.slug}`} className="block relative aspect-[4/3] overflow-hidden rounded-[8px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] bg-white">
                     {featuredPost.image ? (
                       <img
                         src={featuredPost.image}
@@ -64,7 +63,7 @@ export default function Home() {
                         className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-stone-400 font-serif">No Image</div>
+                      <div className="w-full h-full flex items-center justify-center text-[#999999] bg-[#F5F5F5]">No Image</div>
                     )}
                   </Link>
                 </div>
@@ -73,18 +72,18 @@ export default function Home() {
           </section>
         )}
 
-        {/* Latest Reviews (Bento Grid) */}
-        <section className="py-20 bg-white border-t border-stone-100">
+        {/* Recent Loop: Clean Cards */}
+        <section className="py-20 bg-[#FAFAFA]">
           <div className="container mx-auto px-6 max-w-6xl">
-            <div className="flex items-baseline justify-between mb-16">
-              <h2 className="font-serif text-3xl font-medium text-stone-900">最新の検証レビュー</h2>
-              <span className="text-sm text-stone-400 font-serif italic">毎日の暮らしを豊かにするアイテム</span>
+            <div className="flex items-baseline justify-between mb-12">
+              <h2 className="text-2xl font-medium text-[#333333]">最新の検証レビュー</h2>
+              <span className="text-sm text-[#666666]">毎日の暮らしを整える</span>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {recentPosts.map((post) => (
-                <article key={post.slug} className="group flex flex-col">
-                  <Link href={`/posts/${post.slug}`} className="block overflow-hidden bg-stone-100 aspect-[16/10] mb-6 rounded-sm">
+                <article key={post.slug} className="group flex flex-col bg-white rounded-[4px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all duration-500">
+                  <Link href={`/posts/${post.slug}`} className="block overflow-hidden aspect-[16/10] bg-[#F5F5F5]">
                     {post.image ? (
                       <img
                         src={post.image}
@@ -92,20 +91,20 @@ export default function Home() {
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-stone-300">No Image</div>
+                      <div className="w-full h-full flex items-center justify-center text-[#CCCCCC]">No Image</div>
                     )}
                   </Link>
-                  <div className="flex flex-col flex-1">
+                  <div className="p-6 flex flex-col flex-1">
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="text-[10px] font-bold text-stone-500 border border-stone-200 px-2 py-0.5 tracking-wider">検証</span>
-                      <span className="text-xs text-stone-400 font-serif">{post.date}</span>
+                      <span className="text-[11px] font-medium text-[#666666] bg-[#F5F5F5] px-2 py-1 rounded-[2px]">検証</span>
+                      <span className="text-xs text-[#999999]">{post.date}</span>
                     </div>
-                    <h3 className="font-serif text-xl font-medium text-stone-900 leading-snug mb-3 pr-4">
-                      <Link href={`/posts/${post.slug}`} className="hover:text-stone-600 transition-colors">
+                    <h3 className="text-lg font-medium text-[#333333] leading-[1.6] mb-3">
+                      <Link href={`/posts/${post.slug}`} className="hover:text-[#666666] transition-colors">
                         {post.title}
                       </Link>
                     </h3>
-                    <p className="text-sm text-stone-500 leading-relaxed line-clamp-2 mb-4">
+                    <p className="text-sm text-[#666666] leading-[1.8] line-clamp-2 mt-auto">
                       {post.description}
                     </p>
                   </div>
@@ -115,40 +114,48 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Trust Statement */}
-        <section className="py-24 bg-stone-100">
-          <div className="container mx-auto px-6 max-w-4xl text-center">
-            <Star className="w-8 h-8 text-stone-900 mx-auto mb-6" />
-            <h2 className="font-serif text-3xl md:text-4xl font-medium text-stone-900 mb-8">
+        {/* Philosophy Section: Calm & Text-only */}
+        <section className="py-24 bg-white border-t border-[#FAFAFA]">
+          <div className="container mx-auto px-6 max-w-3xl text-center">
+            <h2 className="text-2xl font-medium text-[#333333] mb-8">
               生活を変える、本物だけを。
             </h2>
-            <p className="text-stone-600 leading-loose text-lg mb-12 font-light">
+            <p className="text-[#666666] leading-[2.0] text-base mb-16">
               私たちは、メーカーからの提供を受けず、すべて自社で購入して検証しています。<br className="hidden md:inline" />
               日用品選びにおける「失敗」をなくし、あなたの暮らしを少しだけ豊かにするために。
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-stone-200 pt-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               <div>
-                <span className="block font-serif text-2xl text-stone-900 mb-2">Independent</span>
-                <span className="text-xs text-stone-500 tracking-widest">完全中立・公平</span>
+                <span className="block text-lg font-medium text-[#333333] mb-3">公平な検証</span>
+                <p className="text-xs text-[#666666] leading-[1.8]">
+                  広告費や提供品に依存せず<br />
+                  消費者目線で評価します
+                </p>
               </div>
               <div>
-                <span className="block font-serif text-2xl text-stone-900 mb-2">Data Driven</span>
-                <span className="text-xs text-stone-500 tracking-widest">数値に基づく検証</span>
+                <span className="block text-lg font-medium text-[#333333] mb-3">数値に基づく</span>
+                <p className="text-xs text-[#666666] leading-[1.8]">
+                  感覚だけでなく<br />
+                  データで性能を証明します
+                </p>
               </div>
               <div>
-                <span className="block font-serif text-2xl text-stone-900 mb-2">Daily Life</span>
-                <span className="text-xs text-stone-500 tracking-widest">生活者視点</span>
+                <span className="block text-lg font-medium text-[#333333] mb-3">生活者視点</span>
+                <p className="text-xs text-[#666666] leading-[1.8]">
+                  スペックよりも<br />
+                  「使いやすさ」を重視します
+                </p>
               </div>
             </div>
           </div>
         </section>
       </main>
 
-      {/* Minimal Footer */}
-      <footer className="bg-stone-50 border-t border-stone-200 py-12">
+      {/* Footer */}
+      <footer className="bg-[#FAFAFA] border-t border-[#EEEEEE] py-12">
         <div className="container mx-auto px-6 max-w-6xl flex flex-col md:flex-row justify-between items-center gap-6">
-          <span className="font-serif font-bold text-stone-900 text-lg">ベストバイガイド</span>
-          <p className="text-xs text-stone-400 font-sans">
+          <span className="font-bold text-[#333333] text-sm">ベストバイガイド</span>
+          <p className="text-xs text-[#999999]">
             &copy; {new Date().getFullYear()} Best Buy Guide Editorial.
           </p>
         </div>
