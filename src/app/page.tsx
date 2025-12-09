@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/posts';
-import { Search, ArrowRight, ChevronRight, Star } from 'lucide-react';
+import { Search, ArrowRight, ChevronRight } from 'lucide-react';
 
 export default function Home() {
   const allPosts = getSortedPostsData();
