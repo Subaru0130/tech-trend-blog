@@ -149,8 +149,10 @@ async function generateArticle(topic) {
     **Structure & Requirements (MDX)**:
     1.  **Frontmatter**:
         - title: "SEO Optimized Title"
-          - **MUST FOLLOW THIS PATTERN**: "【2025年(or Current Month)】Topic Recommendation Ranking N Selection【BrandA vs BrandB vs BrandC】"
-          - **Example**: "【2025年12月】加湿器のおすすめ人気ランキング5選【象印・ダイニチ・パナソニック徹底比較】"
+          - **MUST FOLLOW THIS PATTERN**: "【Topic】Recommendation Ranking N Selection【BrandA vs BrandB vs BrandC】"
+          - **CRITICAL**: The TOPIC (${topic}) MUST be the VERY FIRST word.
+          - **Example**: "【加湿器】おすすめ人気ランキング5選【象印・ダイニチ・パナソニック徹底比較】"
+          - **Example**: "【ドライヤー】美容師おすすめ5選【パナソニック・ダイソン・リファ比較】"
           - Include concrete brand names of the top 3 products.
         - date: ${(new Date()).toISOString().split('T')[0]}
         - description: "SEO Description (120 chars). Include keywords: 'Comparison', 'Review', 'Reccomendation'."
