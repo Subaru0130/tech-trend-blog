@@ -33,52 +33,50 @@ export default function Home() {
 
         {/* Hero Section (Featured Article) */}
         {featuredPost && (
-          <section className="relative py-20 md:py-32 overflow-hidden bg-stone-900 text-white group">
+          <section className="relative py-20 md:py-32 overflow-hidden bg-slate-950 text-white group">
             <div className="absolute inset-0 z-0">
               {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#444 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
+              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#334155 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
               {/* Gradients */}
-              <div className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-stone-800 via-stone-900/50 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-stone-900 via-stone-900/80 to-transparent"></div>
+              <div className="absolute top-0 right-0 w-3/4 h-full bg-gradient-to-l from-slate-900 via-slate-950/80 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 w-full h-3/4 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent"></div>
             </div>
 
             <div className="container mx-auto px-6 max-w-6xl relative z-10">
               <div className="grid md:grid-cols-12 gap-12 items-center">
-                {/* Text Side (Left this time for balance) */}
+                {/* Text Side */}
                 <div className="md:col-span-6 order-2 md:order-1">
-                  <span className="inline-block px-3 py-1 bg-amber-500 text-white text-xs font-bold tracking-widest uppercase mb-6 rounded-sm">注目のレビュー</span>
-                  <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-white drop-shadow-md">
-                    <Link href={`/posts/${featuredPost.slug}`} className="hover:text-amber-400 transition-colors">
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-[10px] font-bold tracking-widest uppercase rounded-full shadow-lg shadow-orange-500/20">featured</span>
+                    <span className="text-slate-400 text-sm font-medium tracking-wide">{featuredPost.date}</span>
+                  </div>
+                  <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-300 drop-shadow-sm">
+                    <Link href={`/posts/${featuredPost.slug}`} className="hover:to-white transition-all duration-300">
                       {featuredPost.title}
                     </Link>
                   </h1>
-                  <p className="text-stone-300 text-lg leading-relaxed mb-8 line-clamp-3">
+                  <p className="text-slate-400 text-lg leading-relaxed mb-8 line-clamp-3 font-light">
                     {featuredPost.description}
                   </p>
-                  <div className="flex items-center gap-6 text-sm font-medium text-stone-400">
-                    <span className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                      {featuredPost.date}
-                    </span>
-                    <Link href={`/posts/${featuredPost.slug}`} className="px-6 py-3 bg-white text-stone-900 font-bold rounded-full hover:bg-amber-400 transition-colors flex items-center gap-2">
-                      記事を読む <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
+                  <Link href={`/posts/${featuredPost.slug}`} className="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-950 font-bold rounded-full hover:bg-amber-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(251,191,36,0.4)] hover:-translate-y-1">
+                    記事を読む <ArrowRight className="w-4 h-4" />
+                  </Link>
                 </div>
 
                 {/* Image Side */}
                 <div className="md:col-span-6 order-1 md:order-2">
-                  <Link href={`/posts/${featuredPost.slug}`} className="block relative group rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 aspect-[4/3]">
+                  <Link href={`/posts/${featuredPost.slug}`} className="block relative group rounded-3xl overflow-hidden shadow-2xl border border-white/10 aspect-[4/3] transform transition-all duration-500 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)]">
                     {featuredPost.image ? (
                       <img
                         src={featuredPost.image}
                         alt={featuredPost.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-stone-800 text-stone-600">No Image</div>
+                      <div className="w-full h-full flex items-center justify-center bg-slate-900 text-slate-700 font-mono">No Image</div>
                     )}
-                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                    {/* Glassmorphism Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500"></div>
                   </Link>
                 </div>
               </div>

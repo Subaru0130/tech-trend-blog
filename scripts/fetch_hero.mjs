@@ -65,8 +65,8 @@ async function main() {
         console.log("Downloading High-Res Hair Dryer Image...");
         // 2. Hair Dryer
         console.log("Downloading High-Res Hair Dryer Image...");
-        // Fallback to reliable 'Beauty Salon/Hair' image to avoid 404s and 'Nails'
-        await download("https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600&auto=format&fit=crop", "hero-dryer.png");
+        // Fallback to reliable 'Beauty Salon/Hair' image (Warm lighting) to avoid B&W look
+        await download("https://images.unsplash.com/photo-1522337360705-8754d3d700e8?q=80&w=1600&auto=format&fit=crop", "hero-dryer.png");
 
         console.log("✅ High-Resolution Hero Images Updated (Unsplash)");
     } catch (e) {
