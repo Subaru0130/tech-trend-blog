@@ -63,8 +63,10 @@ async function main() {
 
         // 2. Hair Dryer
         console.log("Downloading High-Res Hair Dryer Image...");
-        // Updated to a known reliable Unsplash ID (Hair salon/tools) - avoiding the broken 404 link
-        await download("https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=1600&auto=format&fit=crop", "hero-dryer.png");
+        // 2. Hair Dryer
+        console.log("Downloading High-Res Hair Dryer Image...");
+        // Fallback to reliable 'Beauty Salon/Hair' image to avoid 404s and 'Nails'
+        await download("https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600&auto=format&fit=crop", "hero-dryer.png");
 
         console.log("✅ High-Resolution Hero Images Updated (Unsplash)");
     } catch (e) {
