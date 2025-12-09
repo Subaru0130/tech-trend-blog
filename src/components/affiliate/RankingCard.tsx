@@ -81,7 +81,6 @@ export function RankingCard({
     };
 
     return (
-    return (
         <div id={`rank-${rank}`} className={`relative flex flex-col md:flex-row gap-8 p-8 md:p-10 rounded-3xl mb-16 scroll-mt-32 transition-all duration-500 ${isFirst ? 'bg-white shadow-2xl ring-4 ring-primary/20' : 'bg-white shadow-lg hover:shadow-xl'}`}>
 
             {/* No.1 Ribbon */}

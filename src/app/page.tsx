@@ -29,9 +29,50 @@ export default function Home() {
 
       <main className="flex-1">
 
-        {/* Hero Section: Airbnb/Kinfolk style (Airy) */}
+        {/* Concept Hero: First Impression */}
+        <section className="py-32 md:py-40 bg-white">
+          <div className="container mx-auto px-6 max-w-3xl text-center">
+            <span className="inline-block py-1 px-3 rounded-full bg-stone-100 text-[#666666] text-xs font-medium mb-6 tracking-wider">
+              ベストバイガイド編集部
+            </span>
+            <h2 className="text-3xl md:text-4xl font-medium text-[#333333] mb-10 leading-relaxed tracking-tight">
+              生活を変える、<br className="md:hidden" />本物だけを。
+            </h2>
+            <p className="text-[#666666] leading-[2.2] text-base md:text-lg mb-16 font-normal">
+              毎日使うものだからこそ、後悔したくない。<br className="hidden md:inline" />
+              私たちは、日用品選びの「正解」を探求する検証メディアです。<br />
+              メーカーへの忖度を一切排除し、全て自社で購入してテストすることで、<br className="hidden md:inline" />
+              あなたにとっての「本物」を見つけ出します。
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-[#FAFAFA] pt-12">
+              <div>
+                <span className="block text-base font-medium text-[#333333] mb-3">公平な検証</span>
+                <p className="text-sm text-[#999999] leading-[1.8]">
+                  広告費や提供品に依存せず<br />
+                  消費者目線で評価します
+                </p>
+              </div>
+              <div>
+                <span className="block text-base font-medium text-[#333333] mb-3">数値に基づく</span>
+                <p className="text-sm text-[#999999] leading-[1.8]">
+                  感覚だけでなく<br />
+                  データで性能を証明します
+                </p>
+              </div>
+              <div>
+                <span className="block text-base font-medium text-[#333333] mb-3">生活者視点</span>
+                <p className="text-sm text-[#999999] leading-[1.8]">
+                  スペックよりも<br />
+                  「使いやすさ」を重視します
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Hero Section: Featured Post */}
         {featuredPost && (
-          <section className="py-20 md:py-24 px-6">
+          <section className="py-20 md:py-24 px-6 bg-[#FAFAFA] border-t border-[#EEEEEE]">
             <div className="container mx-auto max-w-6xl">
               <div className="grid md:grid-cols-12 gap-12 items-center">
                 {/* Text Side */}
@@ -73,7 +114,7 @@ export default function Home() {
         )}
 
         {/* Recent Loop: Clean Cards */}
-        <section className="py-20 bg-[#FAFAFA]">
+        <section className="py-20 bg-white">
           <div className="container mx-auto px-6 max-w-6xl">
             <div className="flex items-baseline justify-between mb-12">
               <h2 className="text-2xl font-medium text-[#333333]">最新の検証レビュー</h2>
@@ -82,7 +123,7 @@ export default function Home() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {recentPosts.map((post) => (
-                <article key={post.slug} className="group flex flex-col bg-white rounded-[4px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all duration-500">
+                <article key={post.slug} className="group flex flex-col bg-white rounded-[4px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all duration-500 border border-[#FAFAFA]">
                   <Link href={`/posts/${post.slug}`} className="block overflow-hidden aspect-[16/10] bg-[#F5F5F5]">
                     {post.image ? (
                       <img
@@ -110,42 +151,6 @@ export default function Home() {
                   </div>
                 </article>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Philosophy Section: Calm & Text-only */}
-        <section className="py-24 bg-white border-t border-[#FAFAFA]">
-          <div className="container mx-auto px-6 max-w-3xl text-center">
-            <h2 className="text-2xl font-medium text-[#333333] mb-8">
-              生活を変える、本物だけを。
-            </h2>
-            <p className="text-[#666666] leading-[2.0] text-base mb-16">
-              私たちは、メーカーからの提供を受けず、すべて自社で購入して検証しています。<br className="hidden md:inline" />
-              日用品選びにおける「失敗」をなくし、あなたの暮らしを少しだけ豊かにするために。
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-              <div>
-                <span className="block text-lg font-medium text-[#333333] mb-3">公平な検証</span>
-                <p className="text-xs text-[#666666] leading-[1.8]">
-                  広告費や提供品に依存せず<br />
-                  消費者目線で評価します
-                </p>
-              </div>
-              <div>
-                <span className="block text-lg font-medium text-[#333333] mb-3">数値に基づく</span>
-                <p className="text-xs text-[#666666] leading-[1.8]">
-                  感覚だけでなく<br />
-                  データで性能を証明します
-                </p>
-              </div>
-              <div>
-                <span className="block text-lg font-medium text-[#333333] mb-3">生活者視点</span>
-                <p className="text-xs text-[#666666] leading-[1.8]">
-                  スペックよりも<br />
-                  「使いやすさ」を重視します
-                </p>
-              </div>
             </div>
           </div>
         </section>

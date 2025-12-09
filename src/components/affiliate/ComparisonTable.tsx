@@ -49,7 +49,7 @@ export function ComparisonTable({ products, specLabels }: ComparisonTableProps) 
                 </thead>
                 <tbody>
                     {products.map((product, index) => (
-                        <tr key={product.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
+                        <tr key={product.id || product.asin || `product-${index}`} className={`${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
                             <td className="p-5 font-bold text-slate-900 border-b border-slate-100 sticky left-0 z-20 bg-inherit shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)]">
                                 <div className={`absolute inset-0 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'} -z-10`} />
                                 <div className="relative flex items-center gap-3">
