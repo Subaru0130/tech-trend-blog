@@ -18,7 +18,6 @@ export default function Home() {
               <span className="text-lg font-bold tracking-tight text-stone-900 font-serif leading-none">
                 ベストバイガイド
               </span>
-              <span className="text-[10px] text-stone-500 tracking-widest uppercase mt-0.5">TRUSTED REVIEWS</span>
             </div>
           </Link>
           <nav className="hidden md:flex gap-8 text-sm font-medium text-stone-500">
@@ -39,8 +38,8 @@ export default function Home() {
                 {/* Text Side */}
                 <div className="md:col-span-5 order-2 md:order-1">
                   <div className="flex items-center gap-3 mb-6">
-                    <span className="px-3 py-1 border border-stone-900 text-stone-900 text-xs font-bold tracking-widest uppercase">New Issue</span>
-                    <span className="text-stone-500 text-sm font-serif italic">{featuredPost.date}</span>
+                    <span className="px-3 py-1 border border-stone-900 text-stone-900 text-xs font-bold tracking-widest bg-white">最新記事</span>
+                    <span className="text-stone-500 text-sm font-serif">{featuredPost.date}</span>
                   </div>
                   <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1] mb-8 text-stone-900">
                     <Link href={`/posts/${featuredPost.slug}`} className="hover:underline decoration-1 underline-offset-8 decoration-stone-300 transition-all">
@@ -68,7 +67,6 @@ export default function Home() {
                       <div className="w-full h-full flex items-center justify-center text-stone-400 font-serif">No Image</div>
                     )}
                   </Link>
-                  <p className="mt-3 text-xs text-stone-400 text-right font-serif italic">Feature Photography</p>
                 </div>
               </div>
             </div>
@@ -80,7 +78,7 @@ export default function Home() {
           <div className="container mx-auto px-6 max-w-6xl">
             <div className="flex items-baseline justify-between mb-16">
               <h2 className="font-serif text-3xl font-medium text-stone-900">最新の検証レビュー</h2>
-              <span className="text-sm text-stone-400 font-serif italic">Curated for your daily life</span>
+              <span className="text-sm text-stone-400 font-serif italic">毎日の暮らしを豊かにするアイテム</span>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -99,7 +97,7 @@ export default function Home() {
                   </Link>
                   <div className="flex flex-col flex-1">
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="text-[10px] font-bold text-stone-400 border border-stone-200 px-2 py-0.5 uppercase tracking-wider">Review</span>
+                      <span className="text-[10px] font-bold text-stone-500 border border-stone-200 px-2 py-0.5 tracking-wider">検証</span>
                       <span className="text-xs text-stone-400 font-serif">{post.date}</span>
                     </div>
                     <h3 className="font-serif text-xl font-medium text-stone-900 leading-snug mb-3 pr-4">
@@ -122,7 +120,7 @@ export default function Home() {
           <div className="container mx-auto px-6 max-w-4xl text-center">
             <Star className="w-8 h-8 text-stone-900 mx-auto mb-6" />
             <h2 className="font-serif text-3xl md:text-4xl font-medium text-stone-900 mb-8">
-              "生活を変える、本物だけを。"
+              生活を変える、本物だけを。
             </h2>
             <p className="text-stone-600 leading-loose text-lg mb-12 font-light">
               私たちは、メーカーからの提供を受けず、すべて自社で購入して検証しています。<br className="hidden md:inline" />
@@ -131,15 +129,15 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-stone-200 pt-12">
               <div>
                 <span className="block font-serif text-2xl text-stone-900 mb-2">Independent</span>
-                <span className="text-xs text-stone-500 uppercase tracking-widest">完全中立・公平</span>
+                <span className="text-xs text-stone-500 tracking-widest">完全中立・公平</span>
               </div>
               <div>
                 <span className="block font-serif text-2xl text-stone-900 mb-2">Data Driven</span>
-                <span className="text-xs text-stone-500 uppercase tracking-widest">数値に基づく検証</span>
+                <span className="text-xs text-stone-500 tracking-widest">数値に基づく検証</span>
               </div>
               <div>
                 <span className="block font-serif text-2xl text-stone-900 mb-2">Daily Life</span>
-                <span className="text-xs text-stone-500 uppercase tracking-widest">生活者視点</span>
+                <span className="text-xs text-stone-500 tracking-widest">生活者視点</span>
               </div>
             </div>
           </div>
