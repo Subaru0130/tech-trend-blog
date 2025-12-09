@@ -140,21 +140,21 @@ export async function verifyProducts(productNames) {
 // Maps keywords to verified Unsplash Source URLs (or specific IDs)
 const SAFE_HERO_IMAGES = {
     'hair dryer': [
-        'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600&auto=format&fit=crop', // Salon/Woman (Working)
+        'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=1600&auto=format&fit=crop', // Salon/Tools (Bright & Colorful)
+        'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600&auto=format&fit=crop', // Salon/Woman (Bright)
     ],
     'water purifier': [
-        'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?q=80&w=1600&auto=format&fit=crop', // Glass of water
-        'https://images.unsplash.com/photo-1542013936693-884638332954?q=80&w=1600&auto=format&fit=crop'  // Drinking water
+        'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?q=80&w=1600&auto=format&fit=crop', // Glass of water (Bright/Blue)
     ],
     'shampoo': [
-        'https://images.unsplash.com/photo-1585232351009-31a316b186bf?q=80&w=1600&auto=format&fit=crop', // Bottles
-        'https://images.unsplash.com/photo-1556228720-191739b83b38?q=80&w=1600&auto=format&fit=crop'  // Spa vibe
+        'https://images.unsplash.com/photo-1585232351009-31a316b186bf?q=80&w=1600&auto=format&fit=crop', // Pastel Bottles (Colorful)
+        'https://images.unsplash.com/photo-1556228720-191739b83b38?q=80&w=1600&auto=format&fit=crop'  // Spa (Warm)
     ],
     'shower head': [
-        'https://images.unsplash.com/photo-1517646331032-9e8563c523a1?q=80&w=1600&auto=format&fit=crop', // Bathroom
+        'https://images.unsplash.com/photo-1517646331032-9e8563c523a1?q=80&w=1600&auto=format&fit=crop', // Bathroom (Bright)
     ],
     'default': [
-        'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1600&auto=format&fit=crop' // Tech/Work general
+        'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1600&auto=format&fit=crop' // Office/Bright (Replaced dark tech)
     ]
 };
 

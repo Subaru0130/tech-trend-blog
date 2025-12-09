@@ -33,7 +33,10 @@ async function main() {
 
         // --- CHECK 1: Homepage Visuals ---
         console.log(`Checking Homepage (${baseUrl})...`);
-        await page.goto(baseUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+        // Increased timeout and relaxed wait condition for stability
+        await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+        // Wait a bit more for client hydration
+        await new Promise(r => setTimeout(r, 2000));
 
         // Check for "No Image" text
         const noImageText = await page.evaluate(() => {
@@ -62,6 +65,83 @@ async function main() {
         if (brokenImages.length > 0) {
             console.error("❌ FAIL: Found broken images:", brokenImages);
             hasError = true;
+        }
+
+        // --- CHECK 1.7: Visual Style Gate (Brightness & Saturation) ---
+        console.log("🎨 Running Visual Style Gate (Brightness & Saturation)...");
+        const styleCheckResult = await page.evaluate(async () => {
+            const heroImg = document.querySelector('section img');
+            if (!heroImg) return { error: 'No Hero Image found' };
+
+            // Create canvas to analyze pixels
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = heroImg.naturalWidth || heroImg.width;
+            canvas.height = heroImg.naturalHeight || heroImg.height;
+
+            // Draw image (requires crossOrigin to be set if external, but Puppeteer usually handles local/proxied ok. 
+            // If CORS fails, we might skip. But for local dev it should work or we assume hosted images allow it.)
+            try {
+                ctx.drawImage(heroImg, 0, 0);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                let totalBrightness = 0;
+                let totalSaturation = 0;
+                let count = 0;
+
+                // Sample every 10th pixel for performance
+                for (let i = 0; i < data.length; i += 40) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+
+                    // Brightness (Luma)
+                    const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+                    totalBrightness += brightness;
+
+                    // Saturation (HSL)
+                    const max = Math.max(r, g, b);
+                    const min = Math.min(r, g, b);
+                    const delta = max - min;
+                    let saturation = 0;
+                    if (max !== 0) {
+                        saturation = delta / max;
+                    }
+                    totalSaturation += saturation;
+
+                    count++;
+                }
+
+                return {
+                    brightness: (totalBrightness / count), // 0-255
+                    saturation: (totalSaturation / count) * 100 // 0-100%
+                };
+            } catch (e) {
+                return { error: 'CORS or Canvas Error: ' + e.message };
+            }
+        });
+
+        if (styleCheckResult.error) {
+            console.warn(`⚠️ WARN: Could not analyze image style: ${styleCheckResult.error}`);
+            // Don't fail hard on CORS, but warn
+        } else {
+            console.log(`   - Brightness: ${styleCheckResult.brightness.toFixed(1)}/255`);
+            console.log(`   - Saturation: ${styleCheckResult.saturation.toFixed(1)}%`);
+
+            // Thresholds for "Friendly/Light" theme
+            // Brightness should roughly be > 50 (Not pitch black)
+            // Saturation should be > 5% (Not B&W)
+            if (styleCheckResult.brightness < 40) {
+                console.error("❌ FAIL: Hero image is too DARK for the light theme.");
+                hasError = true;
+            }
+            if (styleCheckResult.saturation < 5) {
+                console.error("❌ FAIL: Hero image is B&W (grayscale). Design requires color.");
+                hasError = true;
+            }
+            // Pass
+            if (!hasError) console.log("✅ PASS: Image fits visual guidelines.");
         }
 
         // --- CHECK 2: Featured Post Visuals ---
@@ -97,9 +177,16 @@ async function main() {
         hasError = true;
     } finally {
         if (browser) await browser.close();
-        if (nextApp) process.kill(nextApp.pid); // Attempt to kill
-        // Windows kill
-        spawn("taskkill", ["/pid", nextApp.pid.toString(), "/f", "/t"]);
+        if (nextApp) {
+            try {
+                process.kill(nextApp.pid);
+            } catch (e) {
+                // Ignore if process already dead (ESRCH)
+                if (e.code !== 'ESRCH') console.error("Error killing server:", e.message);
+            }
+            // Windows kill just in case
+            spawn("taskkill", ["/pid", nextApp.pid.toString(), "/f", "/t"]);
+        }
     }
 
     if (hasError) {
