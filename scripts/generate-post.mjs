@@ -61,19 +61,16 @@ async function generateArticle(topic) {
   console.log("Phase 1: Selecting Candidates (AI)...");
   const selectionPrompt = `
     You are a commercial editor for a home appliance magazine.
-    Task: Select 8 top-tier "Countertop/Faucet Water Purifiers (浄水器)" available on Amazon Japan.
+    Task: Select 8 top-tier "${topic}" available on Amazon Japan.
     
     CRITICAL CONSTRAINTS:
     1. META-ANALYSIS: Simulate a cross-check of "Kakaku.com" and "MyBest". Select products that appear in Top 20 on multiple sites.
-    2. USE CASES: ensuring variety:
-       - Faucet Mount (e.g. Cleansui, Toray)
-       - Pot Type (e.g. Brita)
-       - High Performance/Long Life (e.g. Panasonic)
+    2. USE CASES: ensuring variety (e.g. diff types, prices).
     3. DATA: You must provide the specific ASIN for the main current model.
-    4. EXCLUDE: Cartridges only. Must be the main unit.
+    4. EXCLUDE: Cartridges/Accessories only. Must be the main unit.
     
     Return STRICT JSON array of strings only (Product Names).
-    Example: ["Panasonic TK-CJ12", "Mitsubishi Cleansui CSP901"]
+    Example: ["BrandA ModelX", "BrandB ModelY"]
     `;
 
   let candidates = [];
@@ -218,7 +215,7 @@ async function generateArticle(topic) {
     model: 'gemini-3-pro-preview',
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: {
-      thinkingConfig: { thinkingLevel: "low" }
+      thinkingConfig: { thinkingLevel: "high" }
     }
   });
 
@@ -286,7 +283,20 @@ async function generateArticle(topic) {
   // Hero Image (Safe Selection)
   const heroUrl = await getHeroImage(topic);
   if (heroUrl) {
-    await downloadImage(heroUrl, 'hero-water.png');
+    const heroFilename = `hero-${verifiedItems[0] ? 'custom' : topic}.png`.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    // Actually simplicity is better: `hero-${topic-safe}.png`
+    const safeTopicName = topic.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    // But better to trust the AI's intuition or frontmatter? 
+    // The AI put `hero-humidifier.png` in frontmatter.
+    // Let's match what we put in frontmatter. 
+    // But we don't parse frontmatter here easily. 
+    // Let's just use `hero-${safeTopic}.png` and Assume AI does same? 
+    // No, AI is unpredictable. 
+    // Best: We overwrite the `image:` frontmatter field with OUR filename.
+
+    const safeHeroName = `hero-${Date.now()}.png`; // Unique to avoid collision
+    await downloadImage(heroUrl, safeHeroName);
+    mdxContent = mdxContent.replace(/image:.*\n/, `image: /images/products/${safeHeroName}\n`);
   }
 
   return mdxContent;
@@ -307,7 +317,7 @@ async function saveArticle(content, topic) {
 import { verifyMdxFiles } from './verify-mdx.mjs';
 
 async function main() {
-  await saveArticle(await generateArticle('家庭用浄水器'), '家庭用浄水器');
+  await saveArticle(await generateArticle('加湿器'), '加湿器');
 
   // Run STRICT Quality Gate
   console.log("--- Running Strict Quality Gate ---");

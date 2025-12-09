@@ -42,11 +42,13 @@ async function checkImageQuality(buffer, productName) {
 
     try {
         const response = await client.models.generateContent({
-            model: 'gemini-2.0-flash-exp',
+            model: 'gemini-3-pro-preview',
             contents: [
-                { text: prompt },
-                { inlineData: { mimeType: 'image/jpeg', data: buffer.toString('base64') } }
-            ]
+                { role: 'user', parts: [{ text: prompt }, { inlineData: { mimeType: 'image/jpeg', data: buffer.toString('base64') } }] }
+            ],
+            config: {
+                thinkingConfig: { thinkingLevel: "high" }
+            }
         });
 
         const text = response.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
