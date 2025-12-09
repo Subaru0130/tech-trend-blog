@@ -21,6 +21,34 @@ const components = {
     ul: (props: any) => <ul className="list-disc list-inside space-y-2 mb-8 text-stone-600 ml-4" {...props} />,
     li: (props: any) => <li className="pl-2" {...props} />,
     strong: (props: any) => <strong className="font-bold text-stone-900" {...props} />,
+    a: (props: any) => {
+        const { href, children, ...rest } = props;
+        let finalHref = href;
+
+        // Amazon Tag Injection
+        if (href && href.includes('amazon.co.jp')) {
+            const tag = process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG || 'demo-22';
+            const separator = href.includes('?') ? '&' : '?';
+            if (!href.includes('tag=')) {
+                finalHref = `${href}${separator}tag=${tag}`;
+            }
+        }
+
+        // Rakuten Tag Injection
+        if (href && href.includes('rakuten.co.jp')) {
+            const id = process.env.NEXT_PUBLIC_RAKUTEN_AFFILIATE_ID || 'demo-rakuten';
+            const separator = href.includes('?') ? '&' : '?';
+            if (!href.includes('a_id=')) {
+                finalHref = `${href}${separator}a_id=${id}`;
+            }
+        }
+
+        return (
+            <a href={finalHref} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary-dark underline decoration-primary/30 hover:decoration-primary" {...rest}>
+                {children}
+            </a>
+        );
+    },
 };
 
 export async function generateStaticParams() {

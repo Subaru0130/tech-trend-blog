@@ -152,8 +152,12 @@ const SAFE_HERO_IMAGES = {
     'shower head': [
         'https://images.unsplash.com/photo-1517646331032-9e8563c523a1?q=80&w=1600&auto=format&fit=crop', // Bathroom (Bright)
     ],
+    'humidifier': [
+        'https://images.unsplash.com/photo-1527011046414-4781f1f94f8c?q=80&w=1600&auto=format&fit=crop', // White Minimal Humidifier
+        'https://images.unsplash.com/photo-1613395553229-2ce16474fb23?q=80&w=1600&auto=format&fit=crop' // Cozy Bedroom Humidifier
+    ],
     'default': [
-        'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1600&auto=format&fit=crop' // Office/Bright (Replaced dark tech)
+        'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=1600&auto=format&fit=crop' // Kitchen/Living bright neutral
     ]
 };
 
@@ -171,6 +175,8 @@ export async function getHeroImage(topic) {
         candidates = SAFE_HERO_IMAGES['water purifier'];
     } else if (lowerTopic.includes('shampoo') || lowerTopic.includes('シャンプー')) {
         candidates = SAFE_HERO_IMAGES['shampoo'];
+    } else if (lowerTopic.includes('humidifier') || lowerTopic.includes('加湿')) {
+        candidates = SAFE_HERO_IMAGES['humidifier'];
     }
 
     // Pick random candidate to vary slightly if multiple exist
