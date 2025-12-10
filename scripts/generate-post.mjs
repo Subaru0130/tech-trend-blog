@@ -292,7 +292,7 @@ async function generateArticle(topic) {
   // Hero Image (Safe Selection)
   const heroUrl = await getHeroImage(topic);
   if (heroUrl) {
-    const heroFilename = `hero-${verifiedItems[0] ? 'custom' : topic}.png`.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    const heroFilename = `hero-${topProducts[0] ? 'custom' : topic}.png`.replace(/[^a-z0-9]/gi, '-').toLowerCase();
     // Actually simplicity is better: `hero-${topic-safe}.png`
     const safeTopicName = topic.replace(/[^a-z0-9]/gi, '-').toLowerCase();
     // But better to trust the AI's intuition or frontmatter? 
@@ -326,7 +326,8 @@ async function saveArticle(content, topic) {
 import { verifyMdxFiles } from './verify-mdx.mjs';
 
 async function main() {
-  await saveArticle(await generateArticle('加湿器'), '加湿器');
+  const topic = process.argv[2] || '加湿器';
+  await saveArticle(await generateArticle(topic), topic);
 
   // Run STRICT Quality Gate
   console.log("--- Running Strict Quality Gate ---");

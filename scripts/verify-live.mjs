@@ -16,13 +16,13 @@ async function verifyLiveSite() {
     const pagesToCheck = [
         {
             slug: '/posts/2025-12-09-%E5%8A%A0%E6%B9%BF%E5%99%A8',
-            expectedTitleFragment: '象印・ダイニチ・パナソニック徹底比較',
-            expectedImageFragment: 'hero-humidifier-v2.png'
+            expectedTitleFragment: '【加湿器】おすすめ',
+            expectedImageFragment: 'hero-humidifier-gen.png'
         },
         {
             slug: '/posts/2025-12-07-%E6%9C%80%E6%96%B0%E3%83%98%E3%82%A2%E3%83%89%E3%83%A9%E3%82%A4%E3%83%A4%E3%83%BC',
-            expectedTitleFragment: 'パナソニック・ダイソン・リファ徹底比較',
-            expectedImageFragment: 'hero-humidifier-v2.png' // Wait, dryer should not have humidifier image. Checking logic.
+            expectedTitleFragment: '【ヘアドライヤー】美容師おすすめ',
+            expectedImageFragment: 'hero-dryer-v3.png'
         }
     ];
 
@@ -44,9 +44,30 @@ async function verifyLiveSite() {
                 return hero ? hero.src : 'NO HERO FOUND';
             });
 
+            // Check Affiliate Links in Conclusion/Body
+            const affiliateLinks = await page.evaluate(() => {
+                // Select links inside the prose content
+                const links = Array.from(document.querySelectorAll('.prose a'));
+                return links.map(a => ({
+                    text: a.innerText,
+                    href: a.href
+                }));
+            });
+
             console.log(`[Actual Title]: ${title}`);
             console.log(`[Actual H1]: ${h1}`);
             console.log(`[Actual Hero]: ${heroSrc}`);
+
+            // Filter for amazon/rakuten links
+            const monetizableLinks = affiliateLinks.filter(l => l.href.includes('amazon.co.jp') || l.href.includes('rakuten.co.jp'));
+            console.log(`[Found ${monetizableLinks.length} monetizable links]`);
+
+            let linksOk = true;
+            monetizableLinks.forEach(l => {
+                const isTagged = l.href.includes('tag=') || l.href.includes('a_id=');
+                console.log(` - Link "${l.text}": ${isTagged ? 'OK' : 'MISSING TAG'} (${l.href})`);
+                if (!isTagged) linksOk = false;
+            });
 
             const titleOk = title.includes(check.expectedTitleFragment) || h1.includes(check.expectedTitleFragment);
             // Note: Browser might encode URL in src.
@@ -62,6 +83,10 @@ async function verifyLiveSite() {
                 if (heroSrc.includes(check.expectedImageFragment)) console.log("✅ Image Update Clean: SUCCESS (v2 verified)");
                 else console.error(`❌ Image Mismatch. Expected fragment: "${check.expectedImageFragment}", Got: ${heroSrc}`);
             }
+
+            if (linksOk && monetizableLinks.length > 0) console.log("✅ Affiliate Links: ALL TAGGED");
+            else if (monetizableLinks.length === 0) console.warn("⚠️ No monetizable links found in body.");
+            else console.error("❌ Affiliate Links: FAILED (Some links missing tags)");
 
         } catch (e) {
             console.error(`Error visiting ${url}:`, e.message);
