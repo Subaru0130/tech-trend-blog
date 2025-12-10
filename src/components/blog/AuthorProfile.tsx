@@ -11,7 +11,7 @@ export function AuthorProfile() {
                     </div>
                 </div>
                 <div>
-                    <h3 className="font-bold text-slate-900 leading-tight">Best Buy Guide<br />編集部</h3>
+                    <h3 className="font-bold text-slate-900 leading-tight">ベストバイガイド<br />編集部</h3>
                 </div>
             </div>
             <p className="text-xs text-slate-600 mb-4 leading-relaxed">

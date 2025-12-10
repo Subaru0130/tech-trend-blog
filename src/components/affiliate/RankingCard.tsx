@@ -95,160 +95,78 @@ export function RankingCard({
 
             {/* Rank Badge (Non-1st) */}
             {!isFirst && (
-                <div className="absolute -top-5 -left-5 w-14 h-14 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-xl z-10 border-4 border-white font-serif">
-                    {rank}
+                <div className="absolute -top-5 -left-5 w-16 h-16 bg-slate-800 text-white rounded-full flex flex-col items-center justify-center shadow-xl z-10 border-4 border-white font-serif tracking-tighter">
+                    <span className="text-[10px] font-bold leading-none mt-1">第</span>
+                    <span className="text-2xl font-bold leading-none">{rank}</span>
+                    <span className="text-[10px] font-bold leading-none mb-1">位</span>
                 </div>
             )}
 
-            {/* Left Column: Image & Basic Info */}
-            <div className="w-full md:w-1/3 flex flex-col gap-8">
-                <div className="aspect-square bg-white rounded-3xl overflow-hidden p-8 flex items-center justify-center relative group shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] border border-slate-100">
-                    <img
-                        src={displayImage}
-                        alt={displayTitle}
-                        className="w-full h-full object-contain mx-auto mix-blend-multiply hover:scale-110 transition-transform duration-500"
-                    />
-                </div>
+            {/* ... (Left Column) ... */}
 
-                {/* Visual Score Chart */}
-                {ratings && (
-                    <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 text-center">検証スコア</h4>
-                        <div className="grid grid-cols-3 gap-y-6 gap-x-2">
-                            {Object.entries(ratings).map(([key, score]) => {
-                                const translationMap: { [key: string]: string } = {
-                                    scent: "香り",
-                                    cost: "コスパ",
-                                    usage: "使用感",
-                                    lather: "泡立ち",
-                                    smoothness: "指通り",
-                                    scalpCare: "頭皮ケア",
-                                    moisture: "保湿力",
-                                    cleansing: "洗浄力",
-                                    finish: "仕上がり",
-                                    airflow: "風量",
-                                    weight: "軽さ",
-                                    heatControl: "温度調節",
-                                    care: "ケア効果",
-                                    design: "デザイン",
-                                    quietness: "静音性",
-                                    filtration: "除去力",
-                                    taste: "おいしさ",
-                                    flow: "水量",
-                                    ease: "使いやすさ"
-                                };
-                                const label = translationMap[key] || key;
-                                return (
-                                    <div key={key} className="flex flex-col items-center">
-                                        <div className="relative w-14 h-14 flex items-center justify-center rounded-full bg-white shadow-sm"
-                                            style={{
-                                                background: `conic-gradient(var(--primary) ${score * 20}%, #e2e8f0 0)`
-                                            }}>
-                                            <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
-                                                <span className="text-sm font-bold text-slate-800">{score}</span>
-                                            </div>
-                                        </div>
-                                        <span className="text-[10px] text-slate-600 mt-2 font-medium whitespace-nowrap">{label}</span>
-                                    </div>
-                                );
-                            })}
+            {/* ... (Right Column content) ... */}
+
+            {/* Pros & Cons Grid (Simple Japanese Design) */}
+            <div className="grid md:grid-cols-2 gap-4 mb-10">
+                <div className="bg-blue-50 border border-blue-200 p-5 rounded-xl">
+                    <h4 className="font-bold text-blue-900 text-sm mb-3 flex items-center gap-2">
+                        <Check className="w-5 h-5 text-blue-600" />
+                        メリット
+                    </h4>
+                    <ul className="space-y-2">
+                        {pros.map((pro, i) => (
+                            <li key={i} className="text-sm text-slate-800 flex items-start leading-relaxed">
+                                <span className="text-blue-500 mr-2 font-bold">・</span>
+                                <span>{pro}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div className="bg-red-50 border border-red-200 p-5 rounded-xl">
+                    <h4 className="font-bold text-red-900 text-sm mb-3 flex items-center gap-2">
+                        <X className="w-5 h-5 text-red-600" />
+                        デメリット
+                    </h4>
+                    <ul className="space-y-2">
+                        {cons.map((con, i) => (
+                            <li key={i} className="text-sm text-slate-800 flex items-start leading-relaxed">
+                                <span className="text-red-500 mr-2 font-bold">・</span>
+                                <span>{con}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+
+            {/* CTAs */}
+            <div className="mt-auto flex flex-col sm:flex-row gap-4">
+                {links.amazon && (
+                    <a
+                        href={links.amazon}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 bg-slate-900 hover:bg-black !text-white font-bold py-3 px-8 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] shadow-xl hover:shadow-2xl text-lg"
+                    >
+                        <ShoppingCart className="w-6 h-6" />
+                        <div className="flex flex-col items-start leading-none">
+                            <span className="text-base">Amazonで在庫を確認</span>
+                            <span className="text-[10px] font-normal opacity-80 mt-1">本日のタイムセールをチェック</span>
                         </div>
-                    </div>
+                    </a>
+                )}
+                {links.rakuten && (
+                    <a
+                        href={links.rakuten}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-bold py-4 px-8 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] text-lg"
+                    >
+                        <ExternalLink className="w-6 h-6" />
+                        楽天で見る
+                    </a>
                 )}
             </div>
-
-            {/* Right Column: Content */}
-            <div className="flex-1 flex flex-col py-2">
-                <div className="mb-8">
-                    {bestFor && (
-                        <span className="inline-block bg-primary/10 text-primary text-sm font-bold px-4 py-1.5 rounded-full mb-4">
-                            {bestFor}
-                        </span>
-                    )}
-                    <h3 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 leading-tight mb-6">
-                        {displayTitle}
-                    </h3>
-                    <div className="flex items-center gap-6 mb-6 p-4 bg-slate-50 rounded-xl w-fit">
-                        <div className="flex items-center gap-2">
-                            <Star className="w-6 h-6 text-yellow-400 fill-current" />
-                            <span className="text-2xl font-bold text-slate-900">{rating}</span>
-                        </div>
-                        {reviewCount && (
-                            <span className="text-sm text-slate-500 font-medium">
-                                ({reviewCount}件の口コミ)
-                            </span>
-                        )}
-                        <span className="text-slate-300 text-xl">|</span>
-                        <span className="text-slate-600 font-bold text-lg">{price}</span>
-                    </div>
-                    <p className="text-slate-600 leading-relaxed text-base md:text-lg">
-                        {displayDescription}
-                    </p>
-                </div>
-
-                {/* Pros & Cons Grid */}
-                <div className="grid md:grid-cols-2 gap-6 mb-10">
-                    <div className="bg-white p-6 rounded-2xl border border-blue-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow duration-300">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
-                        <h4 className="font-bold text-slate-900 text-sm tracking-widest mb-4 flex items-center gap-3 border-b border-slate-100 pb-3">
-                            <span className="text-blue-500 font-serif text-lg">PROS</span>
-                            <span className="text-xs text-slate-400 font-normal">メリット</span>
-                        </h4>
-                        <ul className="space-y-3">
-                            {pros.map((pro, i) => (
-                                <li key={i} className="text-sm text-slate-700 flex items-start leading-relaxed">
-                                    <Check className="w-5 h-5 text-blue-500 mr-3 shrink-0" />
-                                    <span>{pro}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div className="bg-white p-6 rounded-2xl border border-red-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow duration-300">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
-                        <h4 className="font-bold text-slate-900 text-sm tracking-widest mb-4 flex items-center gap-3 border-b border-slate-100 pb-3">
-                            <span className="text-red-500 font-serif text-lg">CONS</span>
-                            <span className="text-xs text-slate-400 font-normal">デメリット</span>
-                        </h4>
-                        <ul className="space-y-3">
-                            {cons.map((con, i) => (
-                                <li key={i} className="text-sm text-slate-700 flex items-start leading-relaxed">
-                                    <X className="w-5 h-5 text-red-500 mr-3 shrink-0" />
-                                    <span>{con}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-
-                {/* CTAs */}
-                <div className="mt-auto flex flex-col sm:flex-row gap-4">
-                    {links.amazon && (
-                        <a
-                            href={links.amazon}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1 bg-slate-900 hover:bg-black !text-white font-bold py-3 px-8 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] shadow-xl hover:shadow-2xl text-lg"
-                        >
-                            <ShoppingCart className="w-6 h-6" />
-                            <div className="flex flex-col items-start leading-none">
-                                <span className="text-base">Amazonで在庫を確認</span>
-                                <span className="text-[10px] font-normal opacity-80 mt-1">本日のタイムセールをチェック</span>
-                            </div>
-                        </a>
-                    )}
-                    {links.rakuten && (
-                        <a
-                            href={links.rakuten}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1 bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-bold py-4 px-8 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] text-lg"
-                        >
-                            <ExternalLink className="w-6 h-6" />
-                            楽天で見る
-                        </a>
-                    )}
-                </div>
-            </div>
         </div>
+        </div >
     );
 }

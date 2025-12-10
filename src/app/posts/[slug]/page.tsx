@@ -144,7 +144,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
             <header className="fixed top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-slate-100">
                 <div className="container mx-auto flex h-16 items-center px-4 max-w-7xl justify-between">
                     <Link href="/" className="font-bold text-lg tracking-tight text-slate-900 hover:opacity-70 transition-opacity">
-                        Best Buy Guide
+                        ベストバイガイド
                     </Link>
                     {/* Could add Share buttons here */}
                 </div>
@@ -246,7 +246,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
             <footer className="bg-slate-950 text-slate-400 py-12 mt-12 border-t border-slate-900">
                 <div className="container mx-auto px-6 max-w-4xl text-center">
                     <p className="text-xs">
-                        &copy; {new Date().getFullYear()} Best Buy Guide. Quality First.
+                        &copy; {new Date().getFullYear()} ベストバイガイド. Quality First.
                     </p>
                 </div>
             </footer>
