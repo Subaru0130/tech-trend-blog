@@ -1,7 +1,18 @@
 import { Metadata } from 'next';
 import { getSortedPostsData, PostData } from '@/lib/posts';
-
-// ... (existing imports)
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import Link from 'next/link';
+import { ArrowLeft, Clock } from 'lucide-react';
+import { RankingCard } from '@/components/affiliate/RankingCard';
+import { ComparisonTable } from '@/components/affiliate/ComparisonTable';
+import { QuickSummary } from '@/components/affiliate/QuickSummary';
+import { FloatingCTA } from '@/components/ui/FloatingCTA';
+import { Breadcrumbs } from '@/components/blog/Breadcrumbs';
+import { TableOfContents } from '@/components/blog/TableOfContents';
+import { AuthorProfile } from '@/components/blog/AuthorProfile';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
