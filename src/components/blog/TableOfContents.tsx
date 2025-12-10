@@ -7,9 +7,9 @@ export function TableOfContents() {
     const [activeId, setActiveId] = useState<string>('');
 
     useEffect(() => {
-        // Select styling H2 and H3 elements within the article
+        // Select styling H2 and H3 elements within the article body ONLY
         // Note: In MDX mapping, we need to ensure these have IDs.
-        const elements = document.querySelectorAll('article h2, article h3');
+        const elements = document.querySelectorAll('#article-body h2, #article-body h3');
         const idMap: { id: string; text: string; level: number }[] = [];
 
         elements.forEach((elem) => {

@@ -191,7 +191,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                             {/* Mobile ToC could go here (optional, skipping for now to keep clean) */}
 
                             {/* MDX Content */}
-                            <div className="prose prose-slate prose-lg max-w-none 
+                            <div id="article-body" className="prose prose-slate prose-lg max-w-none 
                                 prose-headings:font-bold prose-headings:text-slate-900 
                                 prose-p:text-slate-600 prose-p:leading-8 
                                 prose-li:text-slate-600
