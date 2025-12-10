@@ -9,9 +9,9 @@ export interface PostData {
     title: string;
     date: string;
     description: string;
-    tags?: string[];
+    image: string;
+    category?: string;
     content: string;
-    image?: string;
 }
 
 export function getSortedPostsData(): PostData[] {
@@ -34,7 +34,7 @@ export function getSortedPostsData(): PostData[] {
             // Use gray-matter to parse the post metadata section
             const matterResult = matter(fileContents);
 
-            const data = matterResult.data as { title: string; date: string | Date; description: string; tags: string[]; image?: string };
+            const data = matterResult.data as { title: string; date: string | Date; description: string; tags: string[]; image?: string; category?: string };
             // Ensure date is a string to avoid React serialization errors
             const dateStr = data.date instanceof Date ? data.date.toISOString().split('T')[0] : data.date;
 
@@ -44,7 +44,8 @@ export function getSortedPostsData(): PostData[] {
                 content: matterResult.content,
                 ...data,
                 date: dateStr,
-                image: data.image,
+                image: data.image || '/images/placeholder.png',
+                category: data.category
             };
         });
 
@@ -66,7 +67,7 @@ export function getPostData(slug: string): PostData {
     // Use gray-matter to parse the post metadata section
     const matterResult = matter(fileContents);
 
-    const data = matterResult.data as { title: string; date: string | Date; description: string; tags: string[]; image?: string };
+    const data = matterResult.data as { title: string; date: string | Date; description: string; tags: string[]; image?: string; category?: string };
     const dateStr = data.date instanceof Date ? data.date.toISOString().split('T')[0] : data.date;
 
     return {
@@ -74,6 +75,7 @@ export function getPostData(slug: string): PostData {
         content: matterResult.content,
         ...data,
         date: dateStr,
-        image: data.image,
+        image: data.image || '/images/placeholder.png',
+        category: data.category
     };
 }

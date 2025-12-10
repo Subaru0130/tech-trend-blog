@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/posts';
 import { Search, ArrowRight, ChevronRight } from 'lucide-react';
 
+import SearchInput from '@/components/SearchInput';
+
 export default function Home() {
   const allPosts = getSortedPostsData();
   const featuredPost = allPosts[0];
@@ -19,18 +21,21 @@ export default function Home() {
               </span>
             </div>
           </Link>
-          <nav className="hidden md:flex gap-8 text-sm text-[#666666]">
-            <Link href="#" className="hover:text-[#333333] transition-colors">最新記事</Link>
-            <Link href="#" className="hover:text-[#333333] transition-colors">ランキング</Link>
-            <Link href="#" className="hover:text-[#333333] transition-colors">編集部について</Link>
-          </nav>
+
+          <div className="flex items-center gap-8">
+            <nav className="hidden md:flex gap-8 text-sm text-[#666666]">
+              <Link href="#latest" className="hover:text-[#333333] transition-colors">最新記事</Link>
+              <Link href="#about" className="hover:text-[#333333] transition-colors">編集部について</Link>
+            </nav>
+            <SearchInput />
+          </div>
         </div>
       </header>
 
       <main className="flex-1">
 
         {/* Concept Hero: First Impression */}
-        <section className="py-32 md:py-40 bg-white">
+        <section id="about" className="py-32 md:py-40 bg-white scroll-mt-20">
           <div className="container mx-auto px-6 max-w-3xl text-center">
             <span className="inline-block py-1 px-3 rounded-full bg-stone-100 text-[#666666] text-xs font-medium mb-6 tracking-wider">
               ベストバイガイド編集部
@@ -72,7 +77,7 @@ export default function Home() {
 
         {/* Hero Section: Featured Post */}
         {featuredPost && (
-          <section className="py-20 md:py-24 px-6 bg-[#FAFAFA] border-t border-[#EEEEEE]">
+          <section id="latest" className="py-20 md:py-24 px-6 bg-[#FAFAFA] border-t border-[#EEEEEE] scroll-mt-20">
             <div className="container mx-auto max-w-6xl">
               <div className="grid md:grid-cols-12 gap-12 items-center">
                 {/* Text Side */}
