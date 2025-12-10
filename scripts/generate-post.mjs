@@ -178,18 +178,18 @@ async function generateArticle(topic) {
         - **Removal Capacity**: 13+ substances is the standard (JIS S 3201).
         - **Running Cost**: Cost per liter is key (vs bottles).
 
-    6.  **The Ranking (1 to 5)**:
+     7.  **The Ranking (1 to 5)**:
         - Use \`<RankingCard ... />\` for each product.
         - **Props**:
           - rank={N}
-          - name="Clean Product Name (e.g. Panasonic TK-CJ12, Cleansui CSP901)"
+          - name="Product Name (Japanese Official Name if possible)"
           - image="The Amazon Image URL provided"
           - rating={4.x}
           - ratings={{ filtration: N, taste: N, flow: N, cost: N, ease: N, design: N }} (1-5 scale)
-          - description="**SALES COPY**: Focus on the experience. 'Taste is unrecognizable.' 'Coffee tastes better.' (200-300 chars)"
-          - bestFor="Target Persona (e.g. 'Families', 'Cooking lovers')"
-          - pros={["Removes 17 substances", "Digital display", "High flow rate"]}
-          - cons={["Cartridge is expensive", "Hard to install"]}
+          - description="Sales Copy: Focus on the experience. Do NOT use markdown (no bold/italic). Write in natural, professional Japanese. (200-300 chars)"
+          - bestFor="Target Persona (e.g. '子育て世帯', '料理好き')"
+          - pros={["Benefit 1 in Japanese", "Benefit 2 in Japanese", "Benefit 3 in Japanese"]}
+          - cons={["Drawback 1 in Japanese", "Drawback 2 in Japanese"]}
           - affiliateLinks={{ amazon: "SEARCH:Product Name", rakuten: "SEARCH:Product Name" }}
           - asin="THE VERIFIED ASIN"
 
@@ -197,13 +197,12 @@ async function generateArticle(topic) {
 
     8.  **Comparison Table**:
         - \`<ComparisonTable specLabels={{...}} products={[...]} />\`
-        - specLabels: { type: "タイプ", capacity: "ろ過水量", life: "カートリッジ寿命", cost: "ランニングコスト" }
-        - **IMPORTANT**: Each product object MUST include the \`asin\` field.
+        - specLabels: { type: "タイプ", capacity: "ろ過水量", life: "カートリッジ寿命", cost: "コスパ" }
+        - **IMPORTANT**: values must be in Japanese.
         - **Example**:
           \`\`\`js
           products={[
-            { rank: 1, name: "Model A", image: "...", asin: "B00xxxx", specs: {...} },
-            { rank: 2, name: "Model B", image: "...", asin: "B00yyyy", specs: {...} }
+            { rank: 1, name: "製品名", image: "...", asin: "B00xxxx", specs: { type: "蛇口直結", capacity: "900L", life: "3ヶ月", cost: "2.5円/L" } },
           ]}
           \`\`\`
 
@@ -214,9 +213,7 @@ async function generateArticle(topic) {
     10. **Conclusion**: 
         - Final recommendation ONLY.
         - **CRITICAL**: Every time you mention a product name here, you **MUST** format it as a link to Amazon.
-          - **Bad**: "If you want silence, choose Dainichi."
-          - **Good**: "If you want silence, choose **[Dainichi HD-RX500A](SEARCH:Dainichi HD-RX500A)**."
-          - **Good**: "For budget, **[Panasonic FE-KXW05](SEARCH:Panasonic FE-KXW05)** is best."
+          - **Good**: "静音性なら **[ダイニチ HD-RX500A](SEARCH:Dainichi HD-RX500A)** がおすすめです。"
         - Include at least links to the Rank 1, 2, and 3 products in the text.
     `;
 

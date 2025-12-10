@@ -187,34 +187,32 @@ export function RankingCard({
                 </div>
 
                 {/* Pros & Cons Grid */}
-                <div className="grid md:grid-cols-2 gap-4 mb-8">
-                    <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 h-full">
-                        <h4 className="font-bold text-blue-800 text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                                <Check className="w-3.5 h-3.5 text-blue-600" />
-                            </div>
-                            メリット
+                <div className="grid md:grid-cols-2 gap-6 mb-10">
+                    <div className="bg-white p-6 rounded-2xl border border-blue-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow duration-300">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                        <h4 className="font-bold text-slate-900 text-sm tracking-widest mb-4 flex items-center gap-3 border-b border-slate-100 pb-3">
+                            <span className="text-blue-500 font-serif text-lg">PROS</span>
+                            <span className="text-xs text-slate-400 font-normal">メリット</span>
                         </h4>
-                        <ul className="space-y-2">
+                        <ul className="space-y-3">
                             {pros.map((pro, i) => (
                                 <li key={i} className="text-sm text-slate-700 flex items-start leading-relaxed">
-                                    <span className="text-blue-400 mr-2 font-bold shrink-0">・</span>
+                                    <Check className="w-5 h-5 text-blue-500 mr-3 shrink-0" />
                                     <span>{pro}</span>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    <div className="bg-red-50/50 p-5 rounded-2xl border border-red-100 h-full">
-                        <h4 className="font-bold text-red-800 text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-                                <X className="w-3.5 h-3.5 text-red-600" />
-                            </div>
-                            デメリット
+                    <div className="bg-white p-6 rounded-2xl border border-red-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow duration-300">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+                        <h4 className="font-bold text-slate-900 text-sm tracking-widest mb-4 flex items-center gap-3 border-b border-slate-100 pb-3">
+                            <span className="text-red-500 font-serif text-lg">CONS</span>
+                            <span className="text-xs text-slate-400 font-normal">デメリット</span>
                         </h4>
-                        <ul className="space-y-2">
+                        <ul className="space-y-3">
                             {cons.map((con, i) => (
                                 <li key={i} className="text-sm text-slate-700 flex items-start leading-relaxed">
-                                    <span className="text-red-400 mr-2 font-bold shrink-0">・</span>
+                                    <X className="w-5 h-5 text-red-500 mr-3 shrink-0" />
                                     <span>{con}</span>
                                 </li>
                             ))}
