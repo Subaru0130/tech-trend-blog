@@ -23,6 +23,11 @@ async function verifyLiveSite() {
             slug: '/posts/2025-12-07-%E6%9C%80%E6%96%B0%E3%83%98%E3%82%A2%E3%83%89%E3%83%A9%E3%82%A4%E3%83%A4%E3%83%BC',
             expectedTitleFragment: '【ヘアドライヤー】美容師おすすめ',
             expectedImageFragment: 'hero-dryer-v3.png'
+        },
+        {
+            slug: '/posts/2025-12-10-%E7%A9%BA%E6%B0%97%E6%B8%85%E6%B5%84%E6%A9%9F',
+            expectedTitleFragment: '【空気清浄機】おすすめ',
+            expectedImageFragment: 'hero-air-purifier-gen.png'
         }
     ];
 
