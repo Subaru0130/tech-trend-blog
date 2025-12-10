@@ -25,11 +25,15 @@ const notoSerifJP = Noto_Serif_JP({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://tech-trend-blog-27mo.vercel.app'),
   title: {
     default: 'ベストバイガイド | 失敗しない「正解」を選ぶ',
     template: '%s | ベストバイガイド',
   },
   description: '専門家と編集部が徹底検証。後悔しない買い物ができる比較検証メディア。',
+  alternates: {
+    canonical: '/',
+  },
   verification: {
     google: '767HspWPI5qpvxs1yKvz5otcilg3CdSv_fyZ_9SX0IQ', // Google Search Console Verification
   },

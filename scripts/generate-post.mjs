@@ -155,7 +155,7 @@ async function generateArticle(topic) {
           - **Example**: "【ドライヤー】美容師おすすめ5選【パナソニック・ダイソン・リファ比較】"
           - Include concrete brand names of the top 3 products.
         - date: ${(new Date()).toISOString().split('T')[0]}
-        - description: "SEO Description (120 chars). Include keywords: 'Comparison', 'Review', 'Reccomendation'."
+        - description: "Generate a compelling, click-worthy meta description (max 120 chars). Mention the benefits of reading this verification. Ex: '彻底比較10選...結論はこれだ'"
         - image: /images/hero-water.png
         - category: "Kitchen"
 
