@@ -1,9 +1,7 @@
 import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/posts';
-import { Search, ArrowRight, ChevronRight } from 'lucide-react';
-
+import { ArrowRight, Star, ShieldCheck, Zap } from 'lucide-react';
 import HeroSearch from '@/components/HeroSearch';
-import SearchInput from '@/components/SearchInput';
 
 export default function Home() {
   const allPosts = getSortedPostsData();
@@ -11,156 +9,121 @@ export default function Home() {
   const recentPosts = allPosts.slice(1);
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-[#333333] bg-[#FAFAFA] selection:bg-stone-100">
-      {/* Header: Clean & White */}
-      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-[#EEEEEE]">
-        <div className="container mx-auto flex h-20 items-center justify-between px-6 max-w-6xl">
-          <Link href="/" className="group flex items-center gap-3">
-            <div className="flex flex-col">
-              <span className="text-xl font-bold tracking-tight text-[#333333] leading-none">
-                ベストバイガイド
-              </span>
-            </div>
+    <div className="min-h-screen flex flex-col font-sans text-slate-900 bg-[#FAFAFA]">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-slate-100">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6 max-w-7xl">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="text-xl font-bold tracking-tighter text-slate-900">
+              Best Buy Guide
+            </span>
           </Link>
-
-          <div className="flex items-center gap-8">
-            <nav className="hidden md:flex gap-8 text-sm text-[#666666]">
-              <Link href="#latest" className="hover:text-[#333333] transition-colors">最新記事</Link>
-              <Link href="#about" className="hover:text-[#333333] transition-colors">編集部について</Link>
-            </nav>
-            {/* Header Search - kept minimal */}
-            <div className="hidden md:block w-64">
-              <SearchInput />
-            </div>
-          </div>
+          <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-600">
+            <Link href="#latest" className="hover:text-slate-900 transition-colors">新着レビュー</Link>
+            <Link href="#philosophy" className="hover:text-slate-900 transition-colors">検証ポリシー</Link>
+          </nav>
         </div>
       </header>
 
       <main className="flex-1">
-
-        {/* Concept Hero: First Impression */}
-        <section id="about" className="py-32 md:py-40 bg-white scroll-mt-20">
-          <div className="container mx-auto px-6 max-w-3xl text-center">
-            <span className="inline-block py-1 px-3 rounded-full bg-stone-100 text-[#666666] text-xs font-medium mb-6 tracking-wider">
-              ベストバイガイド編集部
+        {/* HERO SECTION: Search First */}
+        <section className="relative overflow-hidden bg-white border-b border-slate-100">
+          <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.2]"></div>
+          <div className="container mx-auto px-4 py-20 md:py-32 relative max-w-5xl text-center">
+            <span className="inline-block py-1 px-3 rounded-full bg-blue-50 text-blue-700 text-xs font-bold mb-6 tracking-wide border border-blue-100">
+              専門家による徹底検証メディア
             </span>
-            <h2 className="text-3xl md:text-4xl font-medium text-[#333333] mb-10 leading-relaxed tracking-tight">
-              生活を変える、<br className="md:hidden" />本物だけを。
-            </h2>
-            <p className="text-[#666666] leading-[2.2] text-base md:text-lg mb-16 font-normal">
-              毎日使うものだからこそ、後悔したくない。<br className="hidden md:inline" />
-              私たちは、日用品選びの「正解」を探求する検証メディアです。<br />
-              メーカーへの忖度を一切排除し、全て自社で購入してテストすることで、<br className="hidden md:inline" />
-              あなたにとっての「本物」を見つけ出します。
+            <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight leading-[1.1]">
+              買い物の「正解」を、<br />
+              ここから見つける。
+            </h1>
+            <p className="text-lg text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed">
+              広告費ゼロ、忖度なし。編集部が実際に購入してテストした<br className="hidden md:inline" />
+              「本当に良いもの」だけを紹介します。
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-[#FAFAFA] pt-12">
-              <div>
-                <span className="block text-base font-medium text-[#333333] mb-3">公平な検証</span>
-                <p className="text-sm text-[#999999] leading-[1.8]">
-                  広告費や提供品に依存せず<br />
-                  消費者目線で評価します
-                </p>
-              </div>
-              <div>
-                <span className="block text-base font-medium text-[#333333] mb-3">数値に基づく</span>
-                <p className="text-sm text-[#999999] leading-[1.8]">
-                  感覚だけでなく<br />
-                  データで性能を証明します
-                </p>
-              </div>
-              <div>
-                <span className="block text-base font-medium text-[#333333] mb-3">生活者視点</span>
-                <p className="text-sm text-[#999999] leading-[1.8]">
-                  スペックよりも<br />
-                  「使いやすさ」を重視します
-                </p>
-              </div>
-            </div>
 
-            {/* Main Search Bar Area */}
-            <div className="mt-16 pt-8 border-t border-dashed border-stone-200">
-              <HeroSearch />
-            </div>
-
+            <HeroSearch />
           </div>
         </section>
 
-        {/* Hero Section: Featured Post */}
+        {/* Featured Post: Magazine Style */}
         {featuredPost && (
-          <section id="latest" className="py-20 md:py-24 px-6 bg-[#FAFAFA] border-t border-[#EEEEEE] scroll-mt-20">
-            <div className="container mx-auto max-w-6xl">
-              <div className="grid md:grid-cols-12 gap-12 items-center">
-                {/* Text Side */}
-                <div className="md:col-span-5 order-2 md:order-1">
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className="px-3 py-1 bg-[#333333] text-white text-xs font-medium rounded-[4px]">最新記事</span>
-                    <span className="text-[#666666] text-sm">{featuredPost.date}</span>
-                  </div>
-                  <h1 className="text-3xl md:text-4xl font-medium leading-[1.6] mb-8 text-[#333333]">
-                    <Link href={`/posts/${featuredPost.slug}`} className="hover:text-[#666666] transition-colors">
-                      {featuredPost.title}
-                    </Link>
-                  </h1>
-                  <p className="text-[#666666] text-base leading-[1.9] mb-10 font-normal line-clamp-3">
-                    {featuredPost.description}
-                  </p>
-                  <Link href={`/posts/${featuredPost.slug}`} className="group inline-flex items-center gap-2 text-[#333333] font-medium border-b border-[#333333] pb-0.5 hover:opacity-70 transition-opacity">
-                    記事を読む <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </div>
+          <section id="latest" className="py-20 bg-[#FAFAFA]">
+            <div className="container mx-auto px-4 max-w-6xl">
+              <div className="flex items-center gap-2 mb-8">
+                <Star className="w-5 h-5 text-amber-400 fill-current" />
+                <h2 className="text-xl font-bold text-slate-900">今月のベストバイ</h2>
+              </div>
 
-                {/* Image Side */}
-                <div className="md:col-span-7 order-1 md:order-2">
-                  <Link href={`/posts/${featuredPost.slug}`} className="block relative aspect-[4/3] overflow-hidden rounded-[8px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] bg-white">
+              <div className="group relative rounded-2xl overflow-hidden bg-white shadow-xl shadow-slate-200/50 hover:shadow-2xl transition-all duration-300 border border-slate-100">
+                <div className="grid md:grid-cols-2 gap-0">
+                  <Link href={`/posts/${featuredPost.slug}`} className="relative aspect-[4/3] md:aspect-auto overflow-hidden bg-slate-100">
                     {featuredPost.image ? (
                       <img
                         src={featuredPost.image}
                         alt={featuredPost.title}
-                        className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[#999999] bg-[#F5F5F5]">No Image</div>
+                      <div className="w-full h-full flex items-center justify-center text-slate-300 font-bold">No Image</div>
                     )}
+                    <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wider">
+                      Featured
+                    </div>
                   </Link>
+                  <div className="p-8 md:p-12 flex flex-col justify-center">
+                    <span className="text-sm font-semibold text-blue-600 mb-4">{featuredPost.date}</span>
+                    <h3 className="text-2xl md:text-4xl font-bold text-slate-900 mb-6 leading-tight">
+                      <Link href={`/posts/${featuredPost.slug}`} className="hover:text-blue-600 transition-colors">
+                        {featuredPost.title}
+                      </Link>
+                    </h3>
+                    <p className="text-slate-600 leading-relaxed mb-8 line-clamp-3">
+                      {featuredPost.description}
+                    </p>
+                    <Link href={`/posts/${featuredPost.slug}`} className="inline-flex items-center text-slate-900 font-bold border-b-2 border-slate-200 pb-1 hover:border-slate-900 transition-colors w-fit">
+                      徹底レビューを読む <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
           </section>
         )}
 
-        {/* Recent Loop: Clean Cards */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-6 max-w-6xl">
-            <div className="flex items-baseline justify-between mb-12">
-              <h2 className="text-2xl font-medium text-[#333333]">最新の検証レビュー</h2>
-              <span className="text-sm text-[#666666]">毎日の暮らしを整える</span>
-            </div>
+        {/* Category/Recent Grid */}
+        <section className="py-20 bg-white border-t border-slate-100">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <h2 className="text-2xl font-bold text-slate-900 mb-10 border-l-4 border-slate-900 pl-4">
+              新着記事一覧
+            </h2>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
               {recentPosts.map((post) => (
-                <article key={post.slug} className="group flex flex-col bg-white rounded-[4px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all duration-500 border border-[#FAFAFA]">
-                  <Link href={`/posts/${post.slug}`} className="block overflow-hidden aspect-[16/10] bg-[#F5F5F5]">
+                <article key={post.slug} className="group flex flex-col h-full">
+                  <Link href={`/posts/${post.slug}`} className="block relative aspect-[16/10] overflow-hidden rounded-xl bg-slate-100 mb-4 shadow-sm border border-slate-100">
                     {post.image ? (
                       <img
                         src={post.image}
                         alt={post.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[#CCCCCC]">No Image</div>
+                      <div className="w-full h-full flex items-center justify-center text-slate-300">No Image</div>
                     )}
                   </Link>
-                  <div className="p-6 flex flex-col flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="text-[11px] font-medium text-[#666666] bg-[#F5F5F5] px-2 py-1 rounded-[2px]">検証</span>
-                      <span className="text-xs text-[#999999]">{post.date}</span>
+                  <div className="flex flex-col flex-1">
+                    <div className="flex items-center gap-2 mb-3 text-xs font-bold text-slate-500 uppercase">
+                      <span>Evaluation</span>
+                      <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
+                      <span>{post.date}</span>
                     </div>
-                    <h3 className="text-lg font-medium text-[#333333] leading-[1.6] mb-3">
-                      <Link href={`/posts/${post.slug}`} className="hover:text-[#666666] transition-colors">
+                    <h3 className="text-xl font-bold text-slate-900 mb-3 leading-snug group-hover:text-blue-600 transition-colors">
+                      <Link href={`/posts/${post.slug}`}>
                         {post.title}
                       </Link>
                     </h3>
-                    <p className="text-sm text-[#666666] leading-[1.8] line-clamp-2 mt-auto">
+                    <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-4">
                       {post.description}
                     </p>
                   </div>
@@ -169,14 +132,43 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Philosophy Section (Moved to Bottom) */}
+        <section id="philosophy" className="py-24 bg-slate-900 text-white">
+          <div className="container mx-auto px-4 max-w-4xl text-center">
+            <h2 className="text-3xl font-bold mb-12">私たちのポリシー</h2>
+            <div className="grid md:grid-cols-3 gap-12">
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-6">
+                  <ShieldCheck className="w-6 h-6 text-blue-400" />
+                </div>
+                <h3 className="text-lg font-bold mb-3">自腹検証</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">メーカーからの提供は受けません。<br />全て自社予算で購入します。</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-6">
+                  <Zap className="w-6 h-6 text-yellow-400" />
+                </div>
+                <h3 className="text-lg font-bold mb-3">データ主義</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">感覚値で語りません。<br />計測機器を用いた数値を重視します。</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-6">
+                  <Star className="w-6 h-6 text-purple-400" />
+                </div>
+                <h3 className="text-lg font-bold mb-3">生活者目線</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">スペック上の高性能より<br />実際の使いやすさを評価します。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </main>
 
-      {/* Footer */}
-      <footer className="bg-[#FAFAFA] border-t border-[#EEEEEE] py-12">
-        <div className="container mx-auto px-6 max-w-6xl flex flex-col md:flex-row justify-between items-center gap-6">
-          <span className="font-bold text-[#333333] text-sm">ベストバイガイド</span>
-          <p className="text-xs text-[#999999]">
-            &copy; {new Date().getFullYear()} Best Buy Guide Editorial.
+      <footer className="bg-slate-950 border-t border-slate-900 py-12 text-slate-400">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-xs">
+            &copy; {new Date().getFullYear()} Best Buy Guide Editorial. All verifiable contents.
           </p>
         </div>
       </footer>

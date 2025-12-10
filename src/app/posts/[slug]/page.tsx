@@ -8,6 +8,9 @@ import { RankingCard } from '@/components/affiliate/RankingCard';
 import { ComparisonTable } from '@/components/affiliate/ComparisonTable';
 import { QuickSummary } from '@/components/affiliate/QuickSummary';
 import { FloatingCTA } from '@/components/ui/FloatingCTA';
+import { Breadcrumbs } from '@/components/blog/Breadcrumbs';
+import { TableOfContents } from '@/components/blog/TableOfContents';
+import { AuthorProfile } from '@/components/blog/AuthorProfile';
 
 // Components map for MDX
 const components = {
@@ -15,36 +18,35 @@ const components = {
     ComparisonTable,
     QuickSummary,
     FloatingCTA,
-    h2: (props: any) => <h2 className="text-2xl md:text-3xl font-serif font-bold mt-12 mb-6 text-stone-900 border-b border-stone-200 pb-4" {...props} />,
-    h3: (props: any) => <h3 className="text-xl md:text-2xl font-bold mt-10 mb-4 text-stone-800" {...props} />,
-    p: (props: any) => <p className="text-stone-600 leading-loose mb-6 text-lg" {...props} />,
-    ul: (props: any) => <ul className="list-disc list-inside space-y-2 mb-8 text-stone-600 ml-4" {...props} />,
+    // Add IDs to headings for ToC
+    h2: (props: any) => {
+        const id = props.children?.toString() || '';
+        return <h2 id={id} className="text-2xl md:text-3xl font-bold mt-16 mb-6 text-slate-900 border-b border-slate-200 pb-4 scroll-mt-24" {...props} />
+    },
+    h3: (props: any) => {
+        const id = props.children?.toString() || '';
+        return <h3 id={id} className="text-xl md:text-2xl font-bold mt-12 mb-4 text-slate-800 scroll-mt-24" {...props} />
+    },
+    p: (props: any) => <p className="text-slate-600 leading-8 mb-6 text-lg" {...props} />,
+    ul: (props: any) => <ul className="list-disc list-inside space-y-2 mb-8 text-slate-600 ml-4" {...props} />,
     li: (props: any) => <li className="pl-2" {...props} />,
-    strong: (props: any) => <strong className="font-bold text-stone-900" {...props} />,
+    strong: (props: any) => <strong className="font-bold text-slate-900 bg-yellow-50 px-1" {...props} />,
+    // Affiliate Link Injection (Same as before)
     a: (props: any) => {
         const { href, children, ...rest } = props;
         let finalHref = href;
-
-        // Amazon Tag Injection
         if (href && href.includes('amazon.co.jp')) {
             const tag = process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG || 'demo-22';
             const separator = href.includes('?') ? '&' : '?';
-            if (!href.includes('tag=')) {
-                finalHref = `${href}${separator}tag=${tag}`;
-            }
+            if (!href.includes('tag=')) finalHref = `${href}${separator}tag=${tag}`;
         }
-
-        // Rakuten Tag Injection
         if (href && href.includes('rakuten.co.jp')) {
             const id = process.env.NEXT_PUBLIC_RAKUTEN_AFFILIATE_ID || 'demo-rakuten';
             const separator = href.includes('?') ? '&' : '?';
-            if (!href.includes('a_id=')) {
-                finalHref = `${href}${separator}a_id=${id}`;
-            }
+            if (!href.includes('a_id=')) finalHref = `${href}${separator}a_id=${id}`;
         }
-
         return (
-            <a href={finalHref} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary-dark underline decoration-primary/30 hover:decoration-primary" {...rest}>
+            <a href={finalHref} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline decoration-blue-200 hover:decoration-blue-600 transition-colors" {...rest}>
                 {children}
             </a>
         );
@@ -68,18 +70,15 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
 
     const { data: frontmatter, content } = matter(markdownWithMeta);
 
-    // Extract products for ItemList Schema
+    // Schema Markup (Same logic)
     const productsRegex = /name:\s*"([^"]+)"[\s\S]*?image/g;
     const productsMatch = [...content.matchAll(productsRegex)];
     const itemListElement = productsMatch.map((match, index) => ({
         '@type': 'ListItem',
         position: index + 1,
         name: match[1],
-        // url: defined in RankingCard but hard to extract here without parsing props. 
-        // Ideally we keep it simple for now.
     }));
 
-    // JSON-LD for BlogPosting + ItemList (Ranking)
     const jsonLd = {
         '@context': 'https://schema.org',
         '@graph': [
@@ -89,81 +88,100 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                 description: frontmatter.description,
                 image: frontmatter.image ? [`https://tech-trend-blog-27mo.vercel.app${frontmatter.image}`] : [],
                 datePublished: frontmatter.date,
-                author: {
-                    '@type': 'Organization',
-                    name: 'Best Buy Guide Editorial',
-                },
-                mainEntityOfPage: {
-                    '@type': 'WebPage',
-                    '@id': `https://tech-trend-blog-27mo.vercel.app/posts/${decodedSlug}`
-                }
+                author: { '@type': 'Organization', name: 'Best Buy Guide Editorial' },
+                mainEntityOfPage: { '@type': 'WebPage', '@id': `https://tech-trend-blog-27mo.vercel.app/posts/${decodedSlug}` }
             },
-            {
-                '@type': 'ItemList',
-                itemListElement: itemListElement
-            }
+            { '@type': 'ItemList', itemListElement: itemListElement }
         ]
     };
 
     return (
-        <div className="min-h-screen bg-white font-sans text-stone-900 selection:bg-stone-200">
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+        <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-            {/* Header */}
-            <header className="fixed top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-stone-100 transition-all">
-                <div className="container mx-auto flex h-16 items-center px-4 max-w-4xl">
-                    <Link href="/" className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors">
-                        <ArrowLeft className="w-5 h-5" />
-                        <span className="font-bold text-sm">ホームに戻る</span>
+            {/* Sticky Header */}
+            <header className="fixed top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-slate-100">
+                <div className="container mx-auto flex h-16 items-center px-4 max-w-7xl justify-between">
+                    <Link href="/" className="font-bold text-lg tracking-tight text-slate-900 hover:opacity-70 transition-opacity">
+                        Best Buy Guide
                     </Link>
+                    {/* Could add Share buttons here */}
                 </div>
             </header>
 
             <main className="pt-24 pb-20">
-                <article className="container mx-auto px-4 max-w-4xl">
-                    {/* Article Header */}
-                    <div className="mb-12 text-center">
-                        <div className="flex items-center justify-center gap-2 text-stone-400 text-sm font-medium mb-6 uppercase tracking-widest">
-                            <span>レビュー</span>
-                            <span>•</span>
-                            <span>{frontmatter.date instanceof Date ? frontmatter.date.toISOString().split('T')[0] : frontmatter.date}</span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> 5分で読めます</span>
-                        </div>
-                        <h1 className="font-serif text-3xl md:text-5xl font-bold leading-tight mb-8 text-stone-900">
-                            {frontmatter.title}
-                        </h1>
-                        <p className="text-xl text-stone-500 leading-relaxed max-w-2xl mx-auto">
-                            {frontmatter.description}
-                        </p>
+                <article className="container mx-auto px-4 max-w-7xl">
+
+                    {/* Breadcrumbs */}
+                    <div className="max-w-4xl mx-auto">
+                        <Breadcrumbs title={frontmatter.title} />
                     </div>
 
-                    {/* Hero Image */}
-                    {frontmatter.image && (
-                        <div className="mb-16 rounded-sm overflow-hidden aspect-video shadow-sm">
-                            <img
-                                src={frontmatter.image}
-                                alt={frontmatter.title}
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                    )}
+                    <div className="flex flex-col lg:flex-row gap-12 max-w-7xl mx-auto">
 
-                    {/* MDX Content */}
-                    <div className="prose prose-stone prose-lg max-w-none prose-headings:font-serif prose-a:text-stone-900 prose-a:underline prose-a:decoration-stone-300 prose-img:rounded-sm">
-                        <MDXRemote source={content} components={components} />
+                        {/* MAIN CONTENT COLUMN */}
+                        <div className="flex-1 max-w-4xl lg:min-w-[700px]">
+                            {/* Article Header */}
+                            <div className="mb-10 text-left">
+                                <div className="flex items-center gap-3 text-slate-500 text-sm font-semibold mb-6">
+                                    <span className="bg-slate-100 px-2 py-1 rounded text-slate-700">レビュー</span>
+                                    <span>{frontmatter.date instanceof Date ? frontmatter.date.toISOString().split('T')[0] : frontmatter.date}</span>
+                                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> 5分</span>
+                                </div>
+                                <h1 className="text-3xl md:text-5xl font-extrabold leading-[1.2] mb-8 text-slate-900 tracking-tight">
+                                    {frontmatter.title}
+                                </h1>
+                                <p className="text-xl text-slate-500 leading-relaxed">
+                                    {frontmatter.description}
+                                </p>
+                            </div>
+
+                            {/* Main Hero Image */}
+                            {frontmatter.image && (
+                                <div className="mb-12 rounded-2xl overflow-hidden aspect-video shadow-lg bg-slate-100">
+                                    <img
+                                        src={frontmatter.image}
+                                        alt={frontmatter.title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Mobile ToC could go here (optional, skipping for now to keep clean) */}
+
+                            {/* MDX Content */}
+                            <div className="prose prose-slate prose-lg max-w-none 
+                                prose-headings:font-bold prose-headings:text-slate-900 
+                                prose-p:text-slate-600 prose-p:leading-8 
+                                prose-li:text-slate-600
+                                prose-img:rounded-xl prose-img:shadow-md
+                            ">
+                                <MDXRemote source={content} components={components} />
+                            </div>
+                        </div>
+
+                        {/* SIDEBAR COLUMN (PC Only) */}
+                        <aside className="hidden lg:block w-80 min-w-[320px] flex-col gap-8 order-2">
+                            <AuthorProfile />
+                            <TableOfContents />
+                            {/* Keep the floating CTA for mobile, but maybe add sidebar sticky ad here later */}
+                        </aside>
+
                     </div>
+
+                    {/* Mobile Author Profile (Bottom) */}
+                    <div className="lg:hidden mt-16 max-w-4xl mx-auto">
+                        <AuthorProfile />
+                    </div>
+
                 </article>
             </main>
 
             {/* Footer */}
-            <footer className="bg-stone-50 border-t border-stone-100 py-12 mt-12">
+            <footer className="bg-slate-950 text-slate-400 py-12 mt-12 border-t border-slate-900">
                 <div className="container mx-auto px-6 max-w-4xl text-center">
-                    <p className="text-xs text-stone-400">
-                        &copy; {new Date().getFullYear()} Best Buy Guide. All rights reserved.
+                    <p className="text-xs">
+                        &copy; {new Date().getFullYear()} Best Buy Guide. Quality First.
                     </p>
                 </div>
             </footer>
