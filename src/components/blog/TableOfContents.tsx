@@ -7,9 +7,9 @@ export function TableOfContents() {
     const [activeId, setActiveId] = useState<string>('');
 
     useEffect(() => {
-        // Select styling H2 and H3 elements
+        // Select styling H2 and H3 elements within the article
         // Note: In MDX mapping, we need to ensure these have IDs.
-        const elements = document.querySelectorAll('h2, h3');
+        const elements = document.querySelectorAll('article h2, article h3');
         const idMap: { id: string; text: string; level: number }[] = [];
 
         elements.forEach((elem) => {
@@ -58,8 +58,8 @@ export function TableOfContents() {
                         <a
                             href={`#${heading.id}`}
                             className={`block hover:text-blue-600 leading-snug ${activeId === heading.id
-                                    ? 'text-blue-600 font-bold'
-                                    : 'text-slate-500'
+                                ? 'text-blue-600 font-bold'
+                                : 'text-slate-500'
                                 }`}
                         >
                             {heading.text}
