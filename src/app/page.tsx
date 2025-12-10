@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/posts';
 import { Search, ArrowRight, ChevronRight } from 'lucide-react';
 
+import HeroSearch from '@/components/HeroSearch';
 import SearchInput from '@/components/SearchInput';
 
 export default function Home() {
@@ -27,7 +28,10 @@ export default function Home() {
               <Link href="#latest" className="hover:text-[#333333] transition-colors">最新記事</Link>
               <Link href="#about" className="hover:text-[#333333] transition-colors">編集部について</Link>
             </nav>
-            <SearchInput />
+            {/* Header Search - kept minimal */}
+            <div className="hidden md:block w-64">
+              <SearchInput />
+            </div>
           </div>
         </div>
       </header>
@@ -72,6 +76,12 @@ export default function Home() {
                 </p>
               </div>
             </div>
+
+            {/* Main Search Bar Area */}
+            <div className="mt-16 pt-8 border-t border-dashed border-stone-200">
+              <HeroSearch />
+            </div>
+
           </div>
         </section>
 

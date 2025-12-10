@@ -2,20 +2,25 @@ import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/posts';
 import { ArrowRight, Search as SearchIcon } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SearchPage({
     searchParams,
 }: {
-    searchParams: { q: string };
+    searchParams: Promise<{ q: string }>;
 }) {
-    const query = searchParams.q || '';
+    const { q: query } = await searchParams;
+    const decodedQuery = query ? decodeURIComponent(query) : '';
     const allPosts = getSortedPostsData();
 
     // Simple case-insensitive search on title and description
     const results = allPosts.filter((post) => {
-        const q = query.toLowerCase();
+        if (!decodedQuery) return false;
+        const q = decodedQuery.toLowerCase();
         return (
             post.title.toLowerCase().includes(q) ||
-            post.description.toLowerCase().includes(q)
+            post.description.toLowerCase().includes(q) ||
+            (post.category && post.category.toLowerCase().includes(q))
         );
     });
 
@@ -28,13 +33,23 @@ export default async function SearchPage({
                             ベストバイガイド
                         </span>
                     </Link>
+                    <Link href="/" className="text-sm font-bold text-slate-600 hover:text-black transition-colors">
+                        トップに戻る
+                    </Link>
                 </div>
             </header>
 
             <main className="flex-1 container mx-auto px-6 max-w-4xl py-12 md:py-20">
-                <div className="mb-12">
-                    <h1 className="text-3xl font-bold mb-4">「{query}」の検索結果</h1>
-                    <p className="text-stone-500">{results.length} 件の記事が見つかりました</p>
+                <div className="mb-12 border-b border-stone-200 pb-8">
+                    <Link href="/" className="inline-flex items-center text-sm text-stone-500 hover:text-stone-900 mb-6 font-medium">
+                        ← トップページへ戻る
+                    </Link>
+                    <h1 className="text-3xl font-bold mb-4">
+                        {decodedQuery ? `「${decodedQuery}」の検索結果` : '検索キーワードを入力してください'}
+                    </h1>
+                    <p className="text-stone-500 font-medium">
+                        {decodedQuery ? `${results.length} 件の記事が見つかりました` : ''}
+                    </p>
                 </div>
 
                 {results.length > 0 ? (
