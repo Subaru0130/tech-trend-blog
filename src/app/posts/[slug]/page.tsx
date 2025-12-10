@@ -14,6 +14,47 @@ import { Breadcrumbs } from '@/components/blog/Breadcrumbs';
 import { TableOfContents } from '@/components/blog/TableOfContents';
 import { AuthorProfile } from '@/components/blog/AuthorProfile';
 
+// Components map for MDX
+const components = {
+    RankingCard,
+    ComparisonTable,
+    QuickSummary,
+    FloatingCTA,
+    // Add IDs to headings for ToC
+    h2: (props: any) => {
+        const id = props.children?.toString() || '';
+        return <h2 id={id} className="text-2xl md:text-3xl font-bold mt-16 mb-6 text-slate-900 border-b border-slate-200 pb-4 scroll-mt-24" {...props} />
+    },
+    h3: (props: any) => {
+        const id = props.children?.toString() || '';
+        return <h3 id={id} className="text-xl md:text-2xl font-bold mt-12 mb-4 text-slate-800 scroll-mt-24" {...props} />
+    },
+    p: (props: any) => <p className="text-slate-600 leading-8 mb-6 text-lg" {...props} />,
+    ul: (props: any) => <ul className="list-disc list-inside space-y-2 mb-8 text-slate-600 ml-4" {...props} />,
+    li: (props: any) => <li className="pl-2" {...props} />,
+    strong: (props: any) => <strong className="font-bold text-slate-900 bg-yellow-50 px-1" {...props} />,
+    // Affiliate Link Injection
+    a: (props: any) => {
+        const { href, children, ...rest } = props;
+        let finalHref = href;
+        if (href && href.includes('amazon.co.jp')) {
+            const tag = process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG || 'demo-22';
+            const separator = href.includes('?') ? '&' : '?';
+            if (!href.includes('tag=')) finalHref = `${href}${separator}tag=${tag}`;
+        }
+        if (href && href.includes('rakuten.co.jp')) {
+            const id = process.env.NEXT_PUBLIC_RAKUTEN_AFFILIATE_ID || 'demo-rakuten';
+            const separator = href.includes('?') ? '&' : '?';
+            if (!href.includes('a_id=')) finalHref = `${href}${separator}a_id=${id}`;
+        }
+        return (
+            <a href={finalHref} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline decoration-blue-200 hover:decoration-blue-600 transition-colors" {...rest}>
+                {children}
+            </a>
+        );
+    },
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
     const decodedSlug = decodeURIComponent(slug);
