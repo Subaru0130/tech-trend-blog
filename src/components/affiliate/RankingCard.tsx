@@ -167,6 +167,5 @@ export function RankingCard({
                 )}
             </div>
         </div>
-        </div >
     );
 }
