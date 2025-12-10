@@ -27,10 +27,10 @@ export function ComparisonTable({ products, specLabels }: ComparisonTableProps) 
 
     return (
         <div className="my-16 overflow-x-auto pb-6 -mx-4 px-4 md:mx-0 md:px-0">
-            <h3 className="text-xl font-bold text-center mb-6 text-slate-800 flex items-center justify-center gap-2">
+            <div className="text-xl font-bold text-center mb-6 text-slate-800 flex items-center justify-center gap-2">
                 <span className="bg-amber-100 text-amber-600 p-1 rounded-full"><Check className="w-5 h-5" /></span>
                 スペック比較表
-            </h3>
+            </div>
             <table className="w-full min-w-[900px] border-collapse text-sm text-slate-700 shadow-sm rounded-2xl overflow-hidden border border-slate-200">
                 <thead>
                     <tr className="bg-slate-50/80">
