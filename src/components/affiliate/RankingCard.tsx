@@ -187,35 +187,35 @@ export function RankingCard({
                 </div>
 
                 {/* Pros & Cons Grid */}
-                <div className="grid md:grid-cols-2 gap-6 mb-10">
-                    <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
-                        <h4 className="font-bold text-blue-700 text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-                                <Check className="w-4 h-4 text-blue-600" />
+                <div className="grid md:grid-cols-2 gap-4 mb-8">
+                    <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 h-full">
+                        <h4 className="font-bold text-blue-800 text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                                <Check className="w-3.5 h-3.5 text-blue-600" />
                             </div>
-                            良いところ
+                            メリット
                         </h4>
-                        <ul className="space-y-3">
+                        <ul className="space-y-2">
                             {pros.map((pro, i) => (
-                                <li key={i} className="text-sm md:text-base text-slate-700 flex items-start leading-snug">
-                                    <span className="text-blue-400 mr-2 font-bold">・</span>
-                                    {pro}
+                                <li key={i} className="text-sm text-slate-700 flex items-start leading-relaxed">
+                                    <span className="text-blue-400 mr-2 font-bold shrink-0">・</span>
+                                    <span>{pro}</span>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    <div className="bg-red-50/50 p-6 rounded-2xl border border-red-100">
-                        <h4 className="font-bold text-red-700 text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center">
-                                <X className="w-4 h-4 text-red-600" />
+                    <div className="bg-red-50/50 p-5 rounded-2xl border border-red-100 h-full">
+                        <h4 className="font-bold text-red-800 text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                                <X className="w-3.5 h-3.5 text-red-600" />
                             </div>
-                            気になるところ
+                            デメリット
                         </h4>
-                        <ul className="space-y-3">
+                        <ul className="space-y-2">
                             {cons.map((con, i) => (
-                                <li key={i} className="text-sm md:text-base text-slate-700 flex items-start leading-snug">
-                                    <span className="text-red-400 mr-2 font-bold">・</span>
-                                    {con}
+                                <li key={i} className="text-sm text-slate-700 flex items-start leading-relaxed">
+                                    <span className="text-red-400 mr-2 font-bold shrink-0">・</span>
+                                    <span>{con}</span>
                                 </li>
                             ))}
                         </ul>
