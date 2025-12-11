@@ -83,5 +83,6 @@ export function TableOfContents() {
                     ))}
                 </ul>
             </nav>
-            );
+        </>
+    );
 }
