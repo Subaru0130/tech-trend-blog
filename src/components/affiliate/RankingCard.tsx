@@ -128,9 +128,9 @@ export function RankingCard({
                                     <div key={key} className="flex items-center gap-3">
                                         <span className="w-20 text-sm font-bold text-slate-600 text-right shrink-0">{label}</span>
                                         <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
-                                            <div className="h-full rounded-full transition-all duration-1000 ease-out"
+                                            <div
+                                                className={`h-full rounded-full transition-all duration-1000 ease-out ${barColor}`}
                                                 style={{ width: `${percentage}%`, backgroundColor: 'var(--primary-color)' }}
-                                                className={barColor}
                                             />
                                         </div>
                                         <span className="w-8 text-right font-bold text-slate-800 tabular-nums">{score}</span>
