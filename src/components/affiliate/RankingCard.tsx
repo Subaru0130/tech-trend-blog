@@ -173,7 +173,7 @@ export function RankingCard({
                     <div className="flex flex-wrap items-center gap-5 text-base mb-7">
                         <div className="flex items-center gap-2 bg-yellow-50 text-yellow-800 px-4 py-2 rounded-lg border border-yellow-200 font-bold shadow-sm">
                             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                            <span className="text-xl leading-none pt-0.5">{rating}</span>
+                            <span className="text-2xl leading-none pt-0.5">{rating}</span>
                         </div>
                         {reviewCount && (
                             <span className="text-slate-500 text-sm font-medium">口コミ {reviewCount}件</span>
@@ -182,7 +182,7 @@ export function RankingCard({
                         <span className="font-bold text-slate-700 text-xl">{price}</span>
                     </div>
 
-                    <p className="text-slate-800 leading-relaxed text-base md:text-lg border-l-4 border-slate-200 pl-6 py-2 mb-2 font-medium">
+                    <p className="text-slate-800 leading-relaxed text-base md:text-lg border-l-4 border-slate-200 pl-6 py-3 mb-4 font-medium">
                         {displayDescription}
                     </p>
                 </div>

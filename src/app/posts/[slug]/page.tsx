@@ -55,6 +55,8 @@ const components = {
     },
 };
 
+import { ArticleStickyNav } from '@/components/blog/ArticleStickyNav';
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
     const decodedSlug = decodeURIComponent(slug);
