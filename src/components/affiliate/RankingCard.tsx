@@ -85,15 +85,24 @@ export function RankingCard({
                 <div className="absolute -top-5 -left-3 z-20 transform -rotate-6">
                     <div className="bg-gradient-to-br from-yellow-400 to-amber-600 text-white font-serif font-black px-6 py-2 rounded-lg shadow-xl flex items-center gap-2 text-xl border-2 border-white">
                         <Crown className="w-6 h-6 fill-current" />
-                        No.1 BEST BUY
+                        No.1 ベストバイ
                     </div>
+                </div>
+            )}
+
+            {/* Rank Badge (Non-1st) */}
+            {!isFirst && (
+                <div className="absolute -top-5 -left-5 w-16 h-16 bg-slate-800 text-white rounded-full flex flex-col items-center justify-center shadow-xl z-10 border-4 border-white font-serif tracking-tighter">
+                    <span className="text-xs font-bold leading-none mt-1">第</span>
+                    <span className="text-2xl font-bold leading-none">{rank}</span>
+                    <span className="text-xs font-bold leading-none mb-1">位</span>
                 </div>
             )}
 
             {/* Left Column: Image & Basic Info */}
             <div className="w-full md:w-1/3 flex flex-col gap-6">
                 <div className="aspect-square bg-white rounded-2xl overflow-hidden p-6 flex items-center justify-center relative border border-slate-100">
-                    <div className="absolute top-3 left-3 bg-slate-900/90 text-white text-xs font-bold px-3 py-1 rounded-full z-10">
+                    <div className="absolute top-3 left-3 bg-slate-900/90 text-white text-sm font-bold px-3 py-1 rounded-full z-10">
                         {isFirst ? '総合1位' : `第${rank}位`}
                     </div>
                     <img
@@ -106,8 +115,8 @@ export function RankingCard({
                 {/* Score Chart (Horizontal Bars for Readability) */}
                 {ratings && (
                     <div className="bg-slate-50 rounded-xl p-5 border border-slate-100">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">検証評価</h4>
-                        <div className="space-y-3">
+                        <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">検証評価</h4>
+                        <div className="space-y-4">
                             {Object.entries(ratings).map(([key, score]) => {
                                 const translationMap: { [key: string]: string } = {
                                     scent: "香り", cost: "コスパ", usage: "使いやすさ",
@@ -126,14 +135,14 @@ export function RankingCard({
 
                                 return (
                                     <div key={key} className="flex items-center gap-3">
-                                        <span className="w-20 text-sm font-bold text-slate-600 text-right shrink-0">{label}</span>
-                                        <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
+                                        <span className="w-24 text-base font-bold text-slate-700 text-right shrink-0">{label}</span>
+                                        <div className="flex-1 h-4 bg-slate-200 rounded-full overflow-hidden">
                                             <div
                                                 className={`h-full rounded-full transition-all duration-1000 ease-out ${barColor}`}
                                                 style={{ width: `${percentage}%`, backgroundColor: 'var(--primary-color)' }}
                                             />
                                         </div>
-                                        <span className="w-8 text-right font-bold text-slate-800 tabular-nums">{score}</span>
+                                        <span className="w-8 text-right font-bold text-slate-900 text-lg tabular-nums">{score}</span>
                                     </div>
                                 );
                             })}
@@ -149,62 +158,62 @@ export function RankingCard({
                 <div className="mb-6">
                     {/* Best For Badge (High Visibility) */}
                     {bestFor && (
-                        <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 border border-amber-200 px-4 py-1.5 rounded-lg text-sm font-bold mb-4 shadow-sm">
-                            <Award className="w-4 h-4" />
+                        <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 border border-amber-200 px-4 py-2 rounded-lg text-base font-bold mb-4 shadow-sm">
+                            <Award className="w-5 h-5" />
                             {bestFor}
                         </div>
                     )}
 
-                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 leading-snug mb-4">
-                        <span className="text-slate-400 mr-3 opacity-60 font-serif italic text-lg">#{rank}</span>
+                    <h3 className="text-2xl md:text-3xl font-bold text-slate-900 leading-snug mb-4">
+                        <span className="text-slate-400 mr-3 opacity-60 font-serif italic text-xl">#{rank}</span>
                         {displayTitle}
                     </h3>
 
-                    <div className="flex flex-wrap items-center gap-4 text-sm mb-6">
-                        <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-3 py-1 rounded-md border border-yellow-100">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-bold text-base">{rating}</span>
+                    <div className="flex flex-wrap items-center gap-4 text-base mb-6">
+                        <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-md border border-yellow-100">
+                            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                            <span className="font-bold text-lg">{rating}</span>
                         </div>
                         {reviewCount && (
-                            <span className="text-slate-500 text-xs">口コミ {reviewCount}件</span>
+                            <span className="text-slate-500 text-sm">口コミ {reviewCount}件</span>
                         )}
                         <span className="text-slate-300">|</span>
-                        <span className="font-bold text-slate-700">{price}</span>
+                        <span className="font-bold text-slate-700 text-lg">{price}</span>
                     </div>
 
-                    <p className="text-slate-700 leading-relaxed text-[15px] md:text-base border-l-4 border-slate-200 pl-4 py-1">
+                    <p className="text-slate-700 leading-relaxed text-base md:text-lg border-l-4 border-slate-200 pl-5 py-2">
                         {displayDescription}
                     </p>
                 </div>
 
                 {/* Pros & Cons (Improved Contrast) */}
-                <div className="grid sm:grid-cols-2 gap-4 mb-8">
-                    <div className="bg-[#F0F7FF] border border-[#BFDBFE] p-4 rounded-xl">
-                        <h4 className="font-bold text-[#1E40AF] text-sm mb-3 flex items-center gap-2">
-                            <div className="bg-blue-100 p-1 rounded">
-                                <Check className="w-4 h-4 text-blue-600" />
+                <div className="grid sm:grid-cols-2 gap-5 mb-8">
+                    <div className="bg-[#F0F7FF] border border-[#BFDBFE] p-5 rounded-xl">
+                        <h4 className="font-bold text-[#1E40AF] text-base mb-3 flex items-center gap-2">
+                            <div className="bg-blue-100 p-1.5 rounded">
+                                <Check className="w-5 h-5 text-blue-600" />
                             </div>
                             メリット
                         </h4>
-                        <ul className="space-y-2">
+                        <ul className="space-y-3">
                             {pros.map((pro, i) => (
-                                <li key={i} className="text-sm text-slate-800 flex items-start leading-snug">
+                                <li key={i} className="text-base text-slate-800 flex items-start leading-snug">
                                     <span className="text-blue-500 mr-2 font-black">・</span>
                                     {pro}
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    <div className="bg-[#FEF2F2] border border-[#FECACA] p-4 rounded-xl">
-                        <h4 className="font-bold text-[#991B1B] text-sm mb-3 flex items-center gap-2">
-                            <div className="bg-red-100 p-1 rounded">
-                                <X className="w-4 h-4 text-red-600" />
+                    <div className="bg-[#FEF2F2] border border-[#FECACA] p-5 rounded-xl">
+                        <h4 className="font-bold text-[#991B1B] text-base mb-3 flex items-center gap-2">
+                            <div className="bg-red-100 p-1.5 rounded">
+                                <X className="w-5 h-5 text-red-600" />
                             </div>
                             デメリット
                         </h4>
-                        <ul className="space-y-2">
+                        <ul className="space-y-3">
                             {cons.map((con, i) => (
-                                <li key={i} className="text-sm text-slate-800 flex items-start leading-snug">
+                                <li key={i} className="text-base text-slate-800 flex items-start leading-snug">
                                     <span className="text-red-500 mr-2 font-black">・</span>
                                     {con}
                                 </li>
