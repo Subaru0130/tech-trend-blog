@@ -3,10 +3,31 @@
 import { useEffect, useState } from 'react';
 
 export function TableOfContents() {
+    const [headings, setHeadings] = useState<{ id: string; text: string; level: number }[]>([]);
+    const [activeId, setActiveId] = useState<string>('');
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        // ... (existing observer logic) ...
+        // Select styling H2 and H3 elements within the article body ONLY
+        const elements = document.querySelectorAll('#article-body h2, #article-body h3');
+        const idMap: { id: string; text: string; level: number }[] = [];
+
+        elements.forEach((elem) => {
+            if (!elem.id) {
+                // Generate ID if missing (fallback)
+                elem.id = elem.textContent?.trim().replace(/\s+/g, '-').toLowerCase() || '';
+            }
+            if (elem.id) {
+                idMap.push({
+                    id: elem.id,
+                    text: elem.textContent || '',
+                    level: parseInt(elem.tagName.substring(1))
+                });
+            }
+        });
+
+        setHeadings(idMap);
+
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
