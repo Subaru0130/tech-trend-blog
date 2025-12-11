@@ -54,8 +54,21 @@ async function downloadImage(url, filename) {
 
 // --- Main Logic ---
 
+import { getRisingKeywords } from './trend_hunter.mjs';
+
 async function generateArticle(topic) {
   console.log(`\n🚀 Starting Generation Pipeline for: ${topic}`);
+
+  // PHASE 0: Trend Analysis
+  console.log("Phase 0: Hunting Trends...");
+  const trends = await getRisingKeywords(topic);
+  const trendContext = trends.length > 0 ? `
+    **TRENDING KEYWORDS (MUST INTEGRATE):**
+    ${trends.join(', ')}
+    
+    Instruction: Ensure these keywords appear naturally in headings or "Pro Tips".
+  ` : "";
+  console.log(`Trends injected: ${trends.join(', ')}`);
 
   // PHASE 1: Candidate Selection
   console.log("Phase 1: Selecting Candidates (AI)...");
@@ -137,7 +150,10 @@ async function generateArticle(topic) {
     **Task:** Write a high-converting ranking article for "${topic}".
     
     **CRITICAL: USE THESE VERIFIED PRODUCTS (MATCHES REAL MARKET DATA 2025):**
+    **CRITICAL: USE THESE VERIFIED PRODUCTS (MATCHES REAL MARKET DATA 2025):**
     ${productsContext}
+
+    ${trendContext}
     
     **Output Guidelines:**
 
@@ -225,6 +241,14 @@ async function generateArticle(topic) {
     }
   });
 
+  if (!result.candidates || result.candidates.length === 0 || !result.candidates[0].content) {
+    console.error("❌ Gemini Generation Failed: No candidates returned.");
+    if (result.promptFeedback) {
+      console.error("Prompt Feedback:", JSON.stringify(result.promptFeedback, null, 2));
+    }
+    throw new Error("Gemini API refused to generate content. Safety block?");
+  }
+
   let mdxContent = result.candidates[0].content.parts[0].text;
 
   // Clean MDX: Extract content from markdown code blocks if present
@@ -301,8 +325,18 @@ async function generateArticle(topic) {
     // Best: We overwrite the `image:` frontmatter field with OUR filename.
 
     const safeHeroName = `hero-${Date.now()}.png`; // Unique to avoid collision
-    await downloadImage(heroUrl, safeHeroName);
-    mdxContent = mdxContent.replace(/image:.*\n/, `image: /images/products/${safeHeroName}\n`);
+    const localHeroPath = await downloadImage(heroUrl, safeHeroName);
+
+    if (localHeroPath) {
+      mdxContent = mdxContent.replace(/image:.*\n/, `image: /images/products/${safeHeroName}\n`);
+    } else {
+      console.warn("[Generator] Hero image download failed. Using default.");
+      // Optional: Set to default if needed, or leave as is (which might be broken URL if AI put one)
+      // Better to explicitly set a working placeholder if download failed.
+      // But wait, the prompt asks AI to put `/images/hero-water.png`.
+      // If we don't replace it, it stays as that default.
+      // So we are safe.
+    }
   }
 
   return mdxContent;
