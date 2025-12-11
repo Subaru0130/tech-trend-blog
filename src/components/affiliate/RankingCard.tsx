@@ -112,10 +112,10 @@ export function RankingCard({
                     />
                 </div>
 
-                {/* Score Chart (Horizontal Bars for Readability) */}
+                {/* Visual Score Chart */}
                 {ratings && (
-                    <div className="bg-slate-50 rounded-xl p-5 border border-slate-100">
-                        <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">検証評価</h4>
+                    <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                        <h4 className="text-base font-bold text-slate-700 uppercase tracking-wider mb-5 border-b-2 border-slate-200 pb-2 text-center">検証評価スコア</h4>
                         <div className="space-y-4">
                             {Object.entries(ratings).map(([key, score]) => {
                                 const translationMap: { [key: string]: string } = {
@@ -134,15 +134,15 @@ export function RankingCard({
                                 const barColor = score >= 4.5 ? 'bg-emerald-500' : score >= 3.5 ? 'bg-blue-500' : 'bg-slate-400';
 
                                 return (
-                                    <div key={key} className="flex items-center gap-3">
-                                        <span className="w-24 text-base font-bold text-slate-700 text-right shrink-0">{label}</span>
-                                        <div className="flex-1 h-4 bg-slate-200 rounded-full overflow-hidden">
+                                    <div key={key} className="flex items-center gap-4">
+                                        <span className="w-24 text-base font-bold text-slate-800 text-right shrink-0">{label}</span>
+                                        <div className="flex-1 h-5 bg-white rounded-full overflow-hidden border border-slate-200 shadow-inner">
                                             <div
                                                 className={`h-full rounded-full transition-all duration-1000 ease-out ${barColor}`}
-                                                style={{ width: `${percentage}%`, backgroundColor: 'var(--primary-color)' }}
+                                                style={{ width: `${percentage}%` }}
                                             />
                                         </div>
-                                        <span className="w-8 text-right font-bold text-slate-900 text-lg tabular-nums">{score}</span>
+                                        <span className="w-10 text-right font-black text-slate-900 text-xl tabular-nums">{score}</span>
                                     </div>
                                 );
                             })}
@@ -158,66 +158,62 @@ export function RankingCard({
                 <div className="mb-6">
                     {/* Best For Badge (High Visibility) */}
                     {bestFor && (
-                        <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 border border-amber-200 px-4 py-2 rounded-lg text-base font-bold mb-4 shadow-sm">
-                            <Award className="w-5 h-5" />
+                        <div className="inline-flex items-center gap-2 bg-amber-50 text-amber-900 border-2 border-amber-200 px-4 py-2 rounded-lg text-base font-bold mb-5 shadow-sm">
+                            <Award className="w-5 h-5 text-amber-600" />
                             {bestFor}
                         </div>
                     )}
 
                     {/* Product Title (div to avoid TOC duplication) */}
-                    <div className="text-2xl md:text-3xl font-bold text-slate-900 leading-snug mb-4">
+                    <div className="text-2xl md:text-3xl font-bold text-slate-900 leading-snug mb-5">
                         <span className="text-slate-400 mr-3 opacity-60 font-serif italic text-xl">#{rank}</span>
                         {displayTitle}
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-4 text-base mb-6">
-                        <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-md border border-yellow-100">
+                    <div className="flex flex-wrap items-center gap-5 text-base mb-7">
+                        <div className="flex items-center gap-2 bg-yellow-50 text-yellow-800 px-4 py-2 rounded-lg border border-yellow-200 font-bold shadow-sm">
                             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                            <span className="font-bold text-lg">{rating}</span>
+                            <span className="text-xl leading-none pt-0.5">{rating}</span>
                         </div>
                         {reviewCount && (
-                            <span className="text-slate-500 text-sm">口コミ {reviewCount}件</span>
+                            <span className="text-slate-500 text-sm font-medium">口コミ {reviewCount}件</span>
                         )}
                         <span className="text-slate-300">|</span>
-                        <span className="font-bold text-slate-700 text-lg">{price}</span>
+                        <span className="font-bold text-slate-700 text-xl">{price}</span>
                     </div>
 
-                    <p className="text-slate-700 leading-relaxed text-base md:text-lg border-l-4 border-slate-200 pl-5 py-2">
+                    <p className="text-slate-800 leading-relaxed text-base md:text-lg border-l-4 border-slate-200 pl-6 py-2 mb-2 font-medium">
                         {displayDescription}
                     </p>
                 </div>
 
-                {/* Pros & Cons (Minimalist Tech Blog Style) */}
-                <div className="grid sm:grid-cols-2 gap-5 mb-8">
+                {/* Pros & Cons (Winning Design - Gray Blocks) */}
+                <div className="grid sm:grid-cols-2 gap-5 mb-10">
                     {/* Pros */}
-                    <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-5 border-l-4 border-l-blue-500">
-                        <h4 className="font-bold text-sm text-gray-700 mb-3 flex items-center gap-2">
-                            <span className="text-blue-500">
-                                <Check className="w-4 h-4" />
-                            </span>
+                    <div className="bg-slate-50 border-l-4 border-blue-500 rounded-r-xl p-6 shadow-sm">
+                        <h4 className="font-bold text-base text-slate-700 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2">
+                            <Check className="w-5 h-5 text-blue-500" />
                             メリット
                         </h4>
                         <ul className="space-y-3">
                             {pros.map((pro, i) => (
-                                <li key={i} className="text-base text-gray-800 flex items-start leading-snug">
-                                    <span className="text-blue-500 mr-2 font-bold">✓</span>
+                                <li key={i} className="text-[15px] text-slate-700 flex items-start leading-relaxed font-medium">
+                                    <Check className="w-4 h-4 text-blue-500 mr-2 mt-1 shrink-0" />
                                     {pro}
                                 </li>
                             ))}
                         </ul>
                     </div>
                     {/* Cons */}
-                    <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-5 border-l-4 border-l-red-500">
-                        <h4 className="font-bold text-sm text-gray-700 mb-3 flex items-center gap-2">
-                            <span className="text-red-500">
-                                <X className="w-4 h-4" />
-                            </span>
+                    <div className="bg-slate-50 border-l-4 border-red-500 rounded-r-xl p-6 shadow-sm">
+                        <h4 className="font-bold text-base text-slate-700 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2">
+                            <X className="w-5 h-5 text-red-500" />
                             デメリット
                         </h4>
                         <ul className="space-y-3">
                             {cons.map((con, i) => (
-                                <li key={i} className="text-base text-gray-800 flex items-start leading-snug">
-                                    <span className="text-red-500 mr-2 font-bold">・</span>
+                                <li key={i} className="text-[15px] text-slate-700 flex items-start leading-relaxed font-medium">
+                                    <span className="text-red-500 mr-2 font-bold shrink-0 mt-[1px]">・</span>
                                     {con}
                                 </li>
                             ))}
