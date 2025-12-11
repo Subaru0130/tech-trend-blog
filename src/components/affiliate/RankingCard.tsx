@@ -90,19 +90,10 @@ export function RankingCard({
                 </div>
             )}
 
-            {/* Rank Badge (Non-1st) */}
-            {!isFirst && (
-                <div className="absolute -top-5 -left-5 w-16 h-16 bg-slate-800 text-white rounded-full flex flex-col items-center justify-center shadow-xl z-10 border-4 border-white font-serif tracking-tighter">
-                    <span className="text-xs font-bold leading-none mt-1">第</span>
-                    <span className="text-2xl font-bold leading-none">{rank}</span>
-                    <span className="text-xs font-bold leading-none mb-1">位</span>
-                </div>
-            )}
-
             {/* Left Column: Image & Basic Info */}
             <div className="w-full md:w-1/3 flex flex-col gap-6">
                 <div className="aspect-square bg-white rounded-2xl overflow-hidden p-6 flex items-center justify-center relative border border-slate-100">
-                    <div className="absolute top-3 left-3 bg-slate-900/90 text-white text-sm font-bold px-3 py-1 rounded-full z-10">
+                    <div className={`absolute top-0 left-0 text-white text-base font-bold px-4 py-2 rounded-br-2xl z-10 shadow-md ${isFirst ? 'bg-gradient-to-r from-yellow-500 to-amber-600' : 'bg-slate-700'}`}>
                         {isFirst ? '総合1位' : `第${rank}位`}
                     </div>
                     <img
@@ -164,9 +155,8 @@ export function RankingCard({
                         </div>
                     )}
 
-                    {/* Product Title (div to avoid TOC duplication) */}
+                    {/* Product Title (Cleaned up rank, only Title) */}
                     <div className="text-2xl md:text-3xl font-bold text-slate-900 leading-snug mb-5">
-                        <span className="text-slate-400 mr-3 opacity-60 font-serif italic text-xl">#{rank}</span>
                         {displayTitle}
                     </div>
 
@@ -231,17 +221,17 @@ export function RankingCard({
                     </div>
                 </div>
 
-                {/* CTAs (Simplified & High Contrast) */}
-                <div className="mt-auto grid grid-cols-2 gap-3">
+                {/* CTA Buttons (Whitespace NoWrap Fix) */}
+                <div className="mt-auto grid grid-cols-2 gap-4">
                     {links.amazon && (
                         <a
                             href={links.amazon}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-[#232F3E] hover:bg-[#1a232f] text-white font-bold py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                            className="flex items-center justify-center gap-2 bg-[#FF9900] hover:bg-[#ffad33] text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-transform hover:-translate-y-1 active:translate-y-0 whitespace-nowrap"
                         >
                             <ShoppingCart className="w-5 h-5" />
-                            <span>Amazonで見る</span>
+                            Amazonで見る
                         </a>
                     )}
                     {links.rakuten && (
@@ -249,10 +239,10 @@ export function RankingCard({
                             href={links.rakuten}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-[#BF0000] hover:bg-[#a00000] text-white font-bold py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                            className="flex items-center justify-center gap-2 bg-[#BF0000] hover:bg-[#d40000] text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-transform hover:-translate-y-1 active:translate-y-0 whitespace-nowrap"
                         >
-                            <ExternalLink className="w-5 h-5" />
-                            <span>楽天で見る</span>
+                            <ShoppingCart className="w-5 h-5" />
+                            楽天で見る
                         </a>
                     )}
                 </div>

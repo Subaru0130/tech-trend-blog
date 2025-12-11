@@ -42,9 +42,7 @@ export function ComparisonTable({ products, specLabels }: ComparisonTableProps) 
                                 {specLabels[key]}
                             </th>
                         ))}
-                        <th className="p-4 text-center font-bold text-amber-600 border-b border-slate-200 min-w-[140px] text-base">
-                            詳細
-                        </th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -58,7 +56,19 @@ export function ComparisonTable({ products, specLabels }: ComparisonTableProps) 
                                             1位
                                         </span>
                                     )}
-                                    <span className="leading-snug text-base">{product.name}</span>
+                                    {product.asin ? (
+                                        <a
+                                            href={getAmazonUrl(product.asin)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="leading-snug text-base text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                                        >
+                                            {product.name}
+                                            <ExternalLink className="w-4 h-4 text-blue-400 shrink-0" />
+                                        </a>
+                                    ) : (
+                                        <span className="leading-snug text-base">{product.name}</span>
+                                    )}
                                 </div>
                             </td>
                             {specKeys.map((key) => {
@@ -73,21 +83,6 @@ export function ComparisonTable({ products, specLabels }: ComparisonTableProps) 
                                     </td>
                                 );
                             })}
-                            <td className="p-4 text-center border-b border-slate-100">
-                                {product.asin ? (
-                                    <a
-                                        href={getAmazonUrl(product.asin)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{ backgroundColor: '#0f172a', color: '#ffffff' }}
-                                        className="inline-flex items-center justify-center w-full px-4 py-3 text-base font-bold transition-all rounded-lg hover:bg-black shadow-md hover:shadow-lg hover:-translate-y-0.5"
-                                    >
-                                        Amazonで見る <ExternalLink className="w-4 h-4 ml-1" />
-                                    </a>
-                                ) : (
-                                    <span className="text-slate-300">-</span>
-                                )}
-                            </td>
                         </tr>
                     ))}
                 </tbody>
