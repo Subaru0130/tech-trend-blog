@@ -164,10 +164,11 @@ export function RankingCard({
                         </div>
                     )}
 
-                    <h3 className="text-2xl md:text-3xl font-bold text-slate-900 leading-snug mb-4">
+                    {/* Product Title (div to avoid TOC duplication) */}
+                    <div className="text-2xl md:text-3xl font-bold text-slate-900 leading-snug mb-4">
                         <span className="text-slate-400 mr-3 opacity-60 font-serif italic text-xl">#{rank}</span>
                         {displayTitle}
-                    </h3>
+                    </div>
 
                     <div className="flex flex-wrap items-center gap-4 text-base mb-6">
                         <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-md border border-yellow-100">
@@ -186,35 +187,37 @@ export function RankingCard({
                     </p>
                 </div>
 
-                {/* Pros & Cons (Improved Contrast) */}
+                {/* Pros & Cons (Minimalist Tech Blog Style) */}
                 <div className="grid sm:grid-cols-2 gap-5 mb-8">
-                    <div className="bg-[#F0F7FF] border border-[#BFDBFE] p-5 rounded-xl">
-                        <h4 className="font-bold text-[#1E40AF] text-base mb-3 flex items-center gap-2">
-                            <div className="bg-blue-100 p-1.5 rounded">
-                                <Check className="w-5 h-5 text-blue-600" />
-                            </div>
+                    {/* Pros */}
+                    <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-5 border-l-4 border-l-blue-500">
+                        <h4 className="font-bold text-sm text-gray-700 mb-3 flex items-center gap-2">
+                            <span className="text-blue-500">
+                                <Check className="w-4 h-4" />
+                            </span>
                             メリット
                         </h4>
                         <ul className="space-y-3">
                             {pros.map((pro, i) => (
-                                <li key={i} className="text-base text-slate-800 flex items-start leading-snug">
-                                    <span className="text-blue-500 mr-2 font-black">・</span>
+                                <li key={i} className="text-base text-gray-800 flex items-start leading-snug">
+                                    <span className="text-blue-500 mr-2 font-bold">✓</span>
                                     {pro}
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    <div className="bg-[#FEF2F2] border border-[#FECACA] p-5 rounded-xl">
-                        <h4 className="font-bold text-[#991B1B] text-base mb-3 flex items-center gap-2">
-                            <div className="bg-red-100 p-1.5 rounded">
-                                <X className="w-5 h-5 text-red-600" />
-                            </div>
+                    {/* Cons */}
+                    <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-5 border-l-4 border-l-red-500">
+                        <h4 className="font-bold text-sm text-gray-700 mb-3 flex items-center gap-2">
+                            <span className="text-red-500">
+                                <X className="w-4 h-4" />
+                            </span>
                             デメリット
                         </h4>
                         <ul className="space-y-3">
                             {cons.map((con, i) => (
-                                <li key={i} className="text-base text-slate-800 flex items-start leading-snug">
-                                    <span className="text-red-500 mr-2 font-black">・</span>
+                                <li key={i} className="text-base text-gray-800 flex items-start leading-snug">
+                                    <span className="text-red-500 mr-2 font-bold">・</span>
                                     {con}
                                 </li>
                             ))}

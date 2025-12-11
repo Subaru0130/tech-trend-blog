@@ -210,7 +210,7 @@ async function generateArticle(topic) {
           - image="The Amazon Image URL provided"
           - rating={4.x}
           - ratings={{ filtration: N, taste: N, flow: N, cost: N, ease: N, design: N }} (1-5 scale)
-          - description="Sales Copy: Focus on the experience. Do NOT use markdown (no bold/italic). Write in natural, professional Japanese. (200-300 chars)"
+           - description="Sales Copy: Focus on the experience. Do NOT use markdown (no bold/italic). Write in natural, professional Japanese. (200-300 chars)"
           - bestFor="Target Persona (e.g. '子育て世帯', '料理好き')"
           - pros={["Benefit 1 in Japanese", "Benefit 2 in Japanese", "Benefit 3 in Japanese"]}
           - cons={["Drawback 1 in Japanese", "Drawback 2 in Japanese"]}
@@ -238,8 +238,9 @@ async function generateArticle(topic) {
 
     10. **Conclusion**: 
         - Final recommendation ONLY.
+        - **CRITICAL**: Do NOT use bolding (**) anywhere. Plain text only.
         - **CRITICAL**: Every time you mention a product name here, you **MUST** format it as a link to Amazon.
-          - **Good**: "静音性なら **[ダイニチ HD-RX500A](SEARCH:Dainichi HD-RX500A)** がおすすめです。"
+          - **Good**: "静音性なら [ダイニチ HD-RX500A](SEARCH:Dainichi HD-RX500A) がおすすめです。"
         - Include at least links to the Rank 1, 2, and 3 products in the text.
     `;
 
