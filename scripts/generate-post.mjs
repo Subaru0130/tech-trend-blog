@@ -134,25 +134,33 @@ async function generateArticle(topic) {
     `).join('\n');
 
   const prompt = `
-    You are an expert affiliate marketer and copywriter using Gemini 3 Pro.
+    **ROLE: Expert Specialist & Veteran Editor in "${topic}".**
     
-    **YOUR MISSION: Create the Ultimate "Safe & Tasty Water" Ranking.**
-    Select items based on **"Use Case"**:
-    - High filtration performance (Cleansui/Toray)
-    - Easy to use/Pot type (Brita)
-    - Long cartridge life (Panasonic)
+    **Dynamic Persona Instruction:**
+    - If the topic is Home Appliances -> Act as a "Veteran Appliance Tester".
+    - If the topic is Finance -> Act as a "Certified Financial Planner".
+    - If the topic is Beauty -> Act as a "Professional Makeup Artist/Dermatologist".
+    - **Identify the most authoritative expert role for "${topic}" and BECOME THAT PERSON.**
     
-    **Thinking Process (Implicit):**
-    1.  Compare specs: Filtration capacity (L), Cartridge life (months), Flow rate.
-    2.  Analyze "Real" reviews: Look for "Taste," "Ease of installation," "Flow speed."
-    3.  Create a "Meta-Ranking" that balances Cost vs Safety.
+    **GOAL: Create content that satisfies Google's E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness).**
+    Target Reader: Someone suffering from "Analysis Paralysis" who wants a definitive, trustworthy answer.
+    
+    **KEYWORD STRATEGY:**
+    - Main Keyword: "${topic}"
+    - Rising Trends (User Needs): ${trends.join(', ') || "General high-intent queries"}
+    
+    **CRITICAL THINKING PROCESS (Drafting Phase):**
+    1.  **Competitor Gap Analysis**: What are generic sites (mybest, kakaku) missing? (e.g. "Real noise frequency," "Cleaning pain points"). -> *Include these!*
+    2.  **Experience Injection**: Do not just list specs. Describe the *experience* from your expert perspective.
+        - Bad: "It is quiet."
+        - Good (Appliance Expert): "Even while watching a movie at volume 10, the sound is unnoticeable."
+    3.  **Structuring**: Follow the provided MDX structure strictly, but fill it with "Original Insight".
 
     **Task:** Write a high-converting ranking article for "${topic}".
     
     **CRITICAL: USE THESE VERIFIED PRODUCTS (MATCHES REAL MARKET DATA 2025):**
-    **CRITICAL: USE THESE VERIFIED PRODUCTS (MATCHES REAL MARKET DATA 2025):**
     ${productsContext}
-
+    
     ${trendContext}
     
     **Output Guidelines:**
@@ -186,15 +194,15 @@ async function generateArticle(topic) {
         - **Fields**: rank, name, image, rating, price, id, asin.
 
     4.  **Intro**: 
-        - Hook: "Heavy bottles, plastic waste... isn't it time to graduate from bottled water?"
-        - Benefit: "Delicious water for cooking and coffee, straight from the tap."
+        - Hook: Relatable problem statement related to "${topic}".
+        - Benefit: The "Ideal Life" gained by choosing the right product.
 
     5.  **Buying Guide**: 
-        - **Type**: Faucet vs Pot.
-        - **Removal Capacity**: 13+ substances is the standard (JIS S 3201).
-        - **Running Cost**: Cost per liter is key (vs bottles).
+        - Explain "3 Critical Failure Points" when choosing a "${topic}".
+        - **Must be specific to the category** (e.g. for Coffee Maker: "Mill Type", "Cleaning", "Size").
 
      7.  **The Ranking (1 to 5)**:
+        - **IMPORTANT**: Section Header MUST be "### 第N位: Product Name" (Do NOT use "Rank N").
         - Use \`<RankingCard ... />\` for each product.
         - **Props**:
           - rank={N}
@@ -213,12 +221,14 @@ async function generateArticle(topic) {
 
     8.  **Comparison Table**:
         - \`<ComparisonTable specLabels={{...}} products={[...]} />\`
-        - specLabels: { type: "タイプ", capacity: "ろ過水量", life: "カートリッジ寿命", cost: "コスパ" }
-        - **IMPORTANT**: values must be in Japanese.
+        - **specLabels**: Select 4 most important specs for "${topic}" (e.g. Size, Weight, Power, Cost). 
+        - **Keys**: Use English keys (key1, key2, key3, key4) or descriptive keys.
+        - **Values**: Must be in Japanese.
         - **Example**:
           \`\`\`js
+          specLabels: { size: "サイズ", weight: "重量", power: "消費電力", cost: "コスパ" }
           products={[
-            { rank: 1, name: "製品名", image: "...", asin: "B00xxxx", specs: { type: "蛇口直結", capacity: "900L", life: "3ヶ月", cost: "2.5円/L" } },
+            { rank: 1, name: "製品名", image: "...", asin: "B00xxxx", specs: { size: "Compact", weight: "500g", power: "1200W", cost: "◎" } },
           ]}
           \`\`\`
 
