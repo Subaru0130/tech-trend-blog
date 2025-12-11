@@ -320,6 +320,13 @@ async function generateArticle(topic) {
     }
   }
 
+  // --- POST-PROCESSING: Replace SEARCH: links in body with Amazon URLs ---
+  mdxContent = mdxContent.replace(/\]\(SEARCH:(.*?)\)/g, (match, query) => {
+    const encoded = encodeURIComponent(query);
+    const tag = "demo-22"; // Should use env var but for now hardcoded fallback is fine or process.env
+    return `](https://www.amazon.co.jp/s?k=${encoded}&tag=${tag})`;
+  });
+
   // Hero Image (Safe Selection)
   const heroUrl = await getHeroImage(topic);
   if (heroUrl) {
