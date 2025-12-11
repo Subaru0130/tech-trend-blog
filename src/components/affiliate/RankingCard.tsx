@@ -48,20 +48,17 @@ export function RankingCard({
     const displayDescription = description || children;
 
     // Amazon Image URL Logic (Direct Image URL - HTTPS)
-    // Prioritize 'image' prop if available (e.g. from Rakuten or verified source)
     const displayImage = image || (asin
         ? `https://images-na.ssl-images-amazon.com/images/P/${asin}.09.LZZZZZZZ.jpg`
         : "/images/placeholder.png");
 
-    const getAffiliateUrl = (url: string | undefined, asin: string | undefined, type: 'amazon' | 'rakuten' | 'yahoo') => {
+    const getAffiliateUrl = (url: string | undefined, asin: string | undefined, type: 'amazon' | 'rakuten') => {
         const tag = process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG || 'demo-22';
 
-        // PRIORITY 1: Direct ASIN Link (Highest Conversion)
         if (type === 'amazon' && asin) {
             return `https://www.amazon.co.jp/dp/${asin}?tag=${tag}&linkCode=ogi&th=1&psc=1`;
         }
 
-        // PRIORITY 2: Search Link (Fallback)
         if (url?.startsWith('SEARCH:') || (!url && !asin)) {
             const term = url?.replace('SEARCH:', '') || displayTitle;
             const encodedTerm = encodeURIComponent(term);
@@ -81,76 +78,62 @@ export function RankingCard({
     };
 
     return (
-        <div id={`rank-${rank}`} className={`relative flex flex-col md:flex-row gap-8 p-8 md:p-10 rounded-3xl mb-16 scroll-mt-32 transition-all duration-500 ${isFirst ? 'bg-white shadow-2xl ring-4 ring-primary/20' : 'bg-white shadow-lg hover:shadow-xl'}`}>
+        <div id={`rank-${rank}`} className={`relative flex flex-col md:flex-row gap-8 p-6 md:p-8 rounded-3xl mb-12 scroll-mt-32 border ${isFirst ? 'bg-white shadow-2xl border-yellow-400/50 ring-4 ring-yellow-50' : 'bg-white shadow-lg border-slate-100'}`}>
 
-            {/* No.1 Ribbon */}
+            {/* No.1 Crown for First Place */}
             {isFirst && (
-                <div className="absolute -top-4 -left-4 z-20">
-                    <div className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white font-serif font-bold px-8 py-3 rounded-br-3xl rounded-tl-2xl shadow-xl flex items-center gap-2 text-lg">
-                        <Crown className="w-6 h-6" />
-                        総合ランキング 1位
+                <div className="absolute -top-5 -left-3 z-20 transform -rotate-6">
+                    <div className="bg-gradient-to-br from-yellow-400 to-amber-600 text-white font-serif font-black px-6 py-2 rounded-lg shadow-xl flex items-center gap-2 text-xl border-2 border-white">
+                        <Crown className="w-6 h-6 fill-current" />
+                        No.1 BEST BUY
                     </div>
                 </div>
             )}
 
-            {/* Rank Badge (Non-1st) */}
-            {!isFirst && (
-                <div className="absolute -top-5 -left-5 w-16 h-16 bg-slate-800 text-white rounded-full flex flex-col items-center justify-center shadow-xl z-10 border-4 border-white font-serif tracking-tighter">
-                    <span className="text-[10px] font-bold leading-none mt-1">第</span>
-                    <span className="text-2xl font-bold leading-none">{rank}</span>
-                    <span className="text-[10px] font-bold leading-none mb-1">位</span>
-                </div>
-            )}
-
             {/* Left Column: Image & Basic Info */}
-            <div className="w-full md:w-1/3 flex flex-col gap-8">
-                <div className="aspect-square bg-white rounded-3xl overflow-hidden p-8 flex items-center justify-center relative group shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] border border-slate-100">
+            <div className="w-full md:w-1/3 flex flex-col gap-6">
+                <div className="aspect-square bg-white rounded-2xl overflow-hidden p-6 flex items-center justify-center relative border border-slate-100">
+                    <div className="absolute top-3 left-3 bg-slate-900/90 text-white text-xs font-bold px-3 py-1 rounded-full z-10">
+                        {isFirst ? '総合1位' : `第${rank}位`}
+                    </div>
                     <img
                         src={displayImage}
                         alt={displayTitle}
-                        className="w-full h-full object-contain mx-auto hover:scale-110 transition-transform duration-500"
+                        className="w-full h-full object-contain mx-auto transition-transform duration-500 hover:scale-105"
                     />
                 </div>
 
-                {/* Visual Score Chart */}
+                {/* Score Chart (Horizontal Bars for Readability) */}
                 {ratings && (
-                    <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 text-center">検証スコア</h4>
-                        <div className="grid grid-cols-3 gap-y-6 gap-x-2">
+                    <div className="bg-slate-50 rounded-xl p-5 border border-slate-100">
+                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">検証評価</h4>
+                        <div className="space-y-3">
                             {Object.entries(ratings).map(([key, score]) => {
                                 const translationMap: { [key: string]: string } = {
-                                    scent: "香り",
-                                    cost: "コスパ",
-                                    usage: "使用感",
-                                    lather: "泡立ち",
-                                    smoothness: "指通り",
-                                    scalpCare: "頭皮ケア",
-                                    moisture: "保湿力",
-                                    cleansing: "洗浄力",
-                                    finish: "仕上がり",
-                                    airflow: "風量",
-                                    weight: "軽さ",
-                                    heatControl: "温度調節",
-                                    care: "ケア効果",
-                                    design: "デザイン",
-                                    quietness: "静音性",
-                                    filtration: "除去力",
-                                    taste: "おいしさ",
-                                    flow: "水量",
-                                    ease: "使いやすさ"
+                                    scent: "香り", cost: "コスパ", usage: "使いやすさ",
+                                    lather: "泡立ち", smoothness: "指通り", scalpCare: "頭皮ケア",
+                                    moisture: "保湿力", cleansing: "洗浄力", finish: "仕上がり",
+                                    airflow: "風量", weight: "軽さ", heatControl: "温度調節",
+                                    care: "ヘアケア", design: "デザイン", quietness: "静音性",
+                                    filtration: "ろ過能力", taste: "おいしさ", flow: "水量調整",
+                                    ease: "手入れ", maintenance: "手入れ"
                                 };
                                 const label = translationMap[key] || key;
+                                const percentage = Math.min(score * 20, 100);
+
+                                // Color logic
+                                const barColor = score >= 4.5 ? 'bg-emerald-500' : score >= 3.5 ? 'bg-blue-500' : 'bg-slate-400';
+
                                 return (
-                                    <div key={key} className="flex flex-col items-center">
-                                        <div className="relative w-14 h-14 flex items-center justify-center rounded-full bg-white shadow-sm"
-                                            style={{
-                                                background: `conic-gradient(var(--primary) ${score * 20}%, #e2e8f0 0)`
-                                            }}>
-                                            <div className="absolute inset-1 bg-white rounded-full flex items-center justify-center">
-                                                <span className="text-sm font-bold text-slate-800">{score}</span>
-                                            </div>
+                                    <div key={key} className="flex items-center gap-3">
+                                        <span className="w-20 text-sm font-bold text-slate-600 text-right shrink-0">{label}</span>
+                                        <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
+                                            <div className="h-full rounded-full transition-all duration-1000 ease-out"
+                                                style={{ width: `${percentage}%`, backgroundColor: 'var(--primary-color)' }}
+                                                className={barColor}
+                                            />
                                         </div>
-                                        <span className="text-[10px] text-slate-600 mt-2 font-medium whitespace-nowrap">{label}</span>
+                                        <span className="w-8 text-right font-bold text-slate-800 tabular-nums">{score}</span>
                                     </div>
                                 );
                             })}
@@ -160,80 +143,87 @@ export function RankingCard({
             </div>
 
             {/* Right Column: Content */}
-            <div className="flex-1 flex flex-col py-2">
-                <div className="mb-8">
+            <div className="flex-1 flex flex-col">
+
+                {/* Header Area */}
+                <div className="mb-6">
+                    {/* Best For Badge (High Visibility) */}
                     {bestFor && (
-                        <span className="inline-block bg-primary/10 text-primary text-sm font-bold px-4 py-1.5 rounded-full mb-4">
+                        <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 border border-amber-200 px-4 py-1.5 rounded-lg text-sm font-bold mb-4 shadow-sm">
+                            <Award className="w-4 h-4" />
                             {bestFor}
-                        </span>
+                        </div>
                     )}
-                    <h3 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 leading-tight mb-6">
+
+                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 leading-snug mb-4">
+                        <span className="text-slate-400 mr-3 opacity-60 font-serif italic text-lg">#{rank}</span>
                         {displayTitle}
                     </h3>
-                    <div className="flex items-center gap-6 mb-6 p-4 bg-slate-50 rounded-xl w-fit">
-                        <div className="flex items-center gap-2">
-                            <Star className="w-6 h-6 text-yellow-400 fill-current" />
-                            <span className="text-2xl font-bold text-slate-900">{rating}</span>
+
+                    <div className="flex flex-wrap items-center gap-4 text-sm mb-6">
+                        <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-3 py-1 rounded-md border border-yellow-100">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="font-bold text-base">{rating}</span>
                         </div>
                         {reviewCount && (
-                            <span className="text-sm text-slate-500 font-medium">
-                                ({reviewCount}件の口コミ)
-                            </span>
+                            <span className="text-slate-500 text-xs">口コミ {reviewCount}件</span>
                         )}
-                        <span className="text-slate-300 text-xl">|</span>
-                        <span className="text-slate-600 font-bold text-lg">{price}</span>
+                        <span className="text-slate-300">|</span>
+                        <span className="font-bold text-slate-700">{price}</span>
                     </div>
-                    <p className="text-slate-600 leading-relaxed text-base md:text-lg">
+
+                    <p className="text-slate-700 leading-relaxed text-[15px] md:text-base border-l-4 border-slate-200 pl-4 py-1">
                         {displayDescription}
                     </p>
                 </div>
 
-                {/* Pros & Cons Grid (Simple Japanese Design) */}
-                <div className="grid md:grid-cols-2 gap-4 mb-10">
-                    <div className="bg-blue-50 border border-blue-200 p-5 rounded-xl">
-                        <h4 className="font-bold text-blue-900 text-sm mb-3 flex items-center gap-2">
-                            <Check className="w-5 h-5 text-blue-600" />
+                {/* Pros & Cons (Improved Contrast) */}
+                <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                    <div className="bg-[#F0F7FF] border border-[#BFDBFE] p-4 rounded-xl">
+                        <h4 className="font-bold text-[#1E40AF] text-sm mb-3 flex items-center gap-2">
+                            <div className="bg-blue-100 p-1 rounded">
+                                <Check className="w-4 h-4 text-blue-600" />
+                            </div>
                             メリット
                         </h4>
                         <ul className="space-y-2">
                             {pros.map((pro, i) => (
-                                <li key={i} className="text-sm text-slate-800 flex items-start leading-relaxed">
-                                    <span className="text-blue-500 mr-2 font-bold">・</span>
-                                    <span>{pro}</span>
+                                <li key={i} className="text-sm text-slate-800 flex items-start leading-snug">
+                                    <span className="text-blue-500 mr-2 font-black">・</span>
+                                    {pro}
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    <div className="bg-red-50 border border-red-200 p-5 rounded-xl">
-                        <h4 className="font-bold text-red-900 text-sm mb-3 flex items-center gap-2">
-                            <X className="w-5 h-5 text-red-600" />
+                    <div className="bg-[#FEF2F2] border border-[#FECACA] p-4 rounded-xl">
+                        <h4 className="font-bold text-[#991B1B] text-sm mb-3 flex items-center gap-2">
+                            <div className="bg-red-100 p-1 rounded">
+                                <X className="w-4 h-4 text-red-600" />
+                            </div>
                             デメリット
                         </h4>
                         <ul className="space-y-2">
                             {cons.map((con, i) => (
-                                <li key={i} className="text-sm text-slate-800 flex items-start leading-relaxed">
-                                    <span className="text-red-500 mr-2 font-bold">・</span>
-                                    <span>{con}</span>
+                                <li key={i} className="text-sm text-slate-800 flex items-start leading-snug">
+                                    <span className="text-red-500 mr-2 font-black">・</span>
+                                    {con}
                                 </li>
                             ))}
                         </ul>
                     </div>
                 </div>
 
-                {/* CTAs */}
-                <div className="mt-auto flex flex-col sm:flex-row gap-4">
+                {/* CTAs (Simplified & High Contrast) */}
+                <div className="mt-auto grid grid-cols-2 gap-3">
                     {links.amazon && (
                         <a
                             href={links.amazon}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 bg-slate-900 hover:bg-black !text-white font-bold py-3 px-8 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] shadow-xl hover:shadow-2xl text-lg"
+                            className="bg-[#232F3E] hover:bg-[#1a232f] text-white font-bold py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
                         >
-                            <ShoppingCart className="w-6 h-6" />
-                            <div className="flex flex-col items-start leading-none">
-                                <span className="text-base">Amazonで在庫を確認</span>
-                                <span className="text-[10px] font-normal opacity-80 mt-1">本日のタイムセールをチェック</span>
-                            </div>
+                            <ShoppingCart className="w-5 h-5" />
+                            <span>Amazonで見る</span>
                         </a>
                     )}
                     {links.rakuten && (
@@ -241,10 +231,10 @@ export function RankingCard({
                             href={links.rakuten}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-bold py-4 px-8 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] text-lg"
+                            className="bg-[#BF0000] hover:bg-[#a00000] text-white font-bold py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
                         >
-                            <ExternalLink className="w-6 h-6" />
-                            楽天で見る
+                            <ExternalLink className="w-5 h-5" />
+                            <span>楽天で見る</span>
                         </a>
                     )}
                 </div>
