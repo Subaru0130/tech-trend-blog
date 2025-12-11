@@ -187,37 +187,47 @@ export function RankingCard({
                     </p>
                 </div>
 
-                {/* Pros & Cons (Winning Design - Gray Blocks) */}
-                <div className="grid sm:grid-cols-2 gap-5 mb-10">
-                    {/* Pros */}
-                    <div className="bg-slate-50 border-l-4 border-blue-500 rounded-r-xl p-6 shadow-sm">
-                        <h4 className="font-bold text-base text-slate-700 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2">
-                            <Check className="w-5 h-5 text-blue-500" />
-                            メリット
-                        </h4>
-                        <ul className="space-y-3">
-                            {pros.map((pro, i) => (
-                                <li key={i} className="text-[15px] text-slate-700 flex items-start leading-relaxed font-medium">
-                                    <Check className="w-4 h-4 text-blue-500 mr-2 mt-1 shrink-0" />
-                                    {pro}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    {/* Cons */}
-                    <div className="bg-slate-50 border-l-4 border-red-500 rounded-r-xl p-6 shadow-sm">
-                        <h4 className="font-bold text-base text-slate-700 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2">
-                            <X className="w-5 h-5 text-red-500" />
-                            デメリット
-                        </h4>
-                        <ul className="space-y-3">
-                            {cons.map((con, i) => (
-                                <li key={i} className="text-[15px] text-slate-700 flex items-start leading-relaxed font-medium">
-                                    <span className="text-red-500 mr-2 font-bold shrink-0 mt-[1px]">・</span>
-                                    {con}
-                                </li>
-                            ))}
-                        </ul>
+                {/* Pros & Cons (Final Winning Design) */}
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8 mb-10">
+                    <div className="grid md:grid-cols-2 gap-8 relative">
+                        {/* Vertical Divider (Desktop only) */}
+                        <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-slate-200 -translate-x-1/2"></div>
+
+                        {/* Pros */}
+                        <div className="md:pr-4">
+                            <h4 className="flex items-center gap-2 text-sm font-bold text-slate-900 uppercase tracking-wider mb-5">
+                                <ThumbsUp className="w-5 h-5 text-blue-600 fill-current" />
+                                <span className="text-blue-900">良い点 (Pros)</span>
+                            </h4>
+                            <ul className="space-y-4">
+                                {pros.map((pro, i) => (
+                                    <li key={i} className="text-[15px] text-slate-700 leading-relaxed flex items-start group">
+                                        <div className="mt-1 mr-3 shrink-0">
+                                            <Check className="w-5 h-5 text-blue-500 stroke-[3]" />
+                                        </div>
+                                        <span>{pro}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Cons */}
+                        <div className="md:pl-4">
+                            <h4 className="flex items-center gap-2 text-sm font-bold text-slate-900 uppercase tracking-wider mb-5">
+                                <ThumbsDown className="w-5 h-5 text-red-500 fill-current" />
+                                <span className="text-red-900">気になる点 (Cons)</span>
+                            </h4>
+                            <ul className="space-y-4">
+                                {cons.map((con, i) => (
+                                    <li key={i} className="text-[15px] text-slate-700 leading-relaxed flex items-start group">
+                                        <div className="mt-1 mr-3 shrink-0">
+                                            <X className="w-5 h-5 text-red-500 stroke-[3]" />
+                                        </div>
+                                        <span>{con}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
