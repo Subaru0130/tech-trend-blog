@@ -300,6 +300,10 @@ async function generateArticle(topic) {
   });
   console.log("Fixed ComparisonTable ASINs using RankingCard data.");
 
+  // CRITICAL: Strip all bold markers (**) to prevent "AI-like" formatting
+  mdxContent = mdxContent.replace(/\*\*/g, '');
+  console.log("Stripped all markdown bold markers (**).");
+
   // PHASE 4: Image Download & Replacement
   console.log("Phase 4: Downloading Images & Finalizing...");
 

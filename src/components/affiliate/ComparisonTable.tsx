@@ -31,18 +31,18 @@ export function ComparisonTable({ products, specLabels }: ComparisonTableProps) 
                 <span className="bg-amber-100 text-amber-600 p-1 rounded-full"><Check className="w-5 h-5" /></span>
                 スペック比較表
             </div>
-            <table className="w-full min-w-[900px] border-collapse text-sm text-slate-700 shadow-sm rounded-2xl overflow-hidden border border-slate-200">
+            <table className="w-full min-w-[900px] border-collapse text-base text-slate-700 shadow-sm rounded-2xl overflow-hidden border border-slate-200">
                 <thead>
                     <tr className="bg-slate-50/80">
-                        <th className="p-5 text-left font-bold text-slate-700 border-b border-slate-200 min-w-[200px] sticky left-0 z-20 bg-[#f8fafc] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)]">
+                        <th className="p-5 text-left font-bold text-slate-700 border-b border-slate-200 min-w-[200px] sticky left-0 z-20 bg-[#f8fafc] shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] text-base">
                             商品名
                         </th>
                         {specKeys.map((key) => (
-                            <th key={key} className="p-4 text-center font-bold text-slate-600 border-b border-slate-200 min-w-[140px]">
+                            <th key={key} className="p-4 text-center font-bold text-slate-600 border-b border-slate-200 min-w-[140px] text-base">
                                 {specLabels[key]}
                             </th>
                         ))}
-                        <th className="p-4 text-center font-bold text-amber-600 border-b border-slate-200 min-w-[140px]">
+                        <th className="p-4 text-center font-bold text-amber-600 border-b border-slate-200 min-w-[140px] text-base">
                             詳細
                         </th>
                     </tr>
@@ -54,11 +54,11 @@ export function ComparisonTable({ products, specLabels }: ComparisonTableProps) 
                                 <div className={`absolute inset-0 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'} -z-10`} />
                                 <div className="relative flex items-center gap-3">
                                     {product.bestBuy && (
-                                        <span className="bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold whitespace-nowrap shadow-sm">
+                                        <span className="bg-amber-500 text-white text-xs px-2.5 py-1 rounded-full font-bold whitespace-nowrap shadow-sm">
                                             1位
                                         </span>
                                     )}
-                                    <span className="leading-snug text-sm">{product.name}</span>
+                                    <span className="leading-snug text-base">{product.name}</span>
                                 </div>
                             </td>
                             {specKeys.map((key) => {
@@ -68,7 +68,7 @@ export function ComparisonTable({ products, specLabels }: ComparisonTableProps) 
                                 const isBest = strValue === '5.0' || strValue.includes('◎') || (key === 'price' && product.bestBuy);
 
                                 return (
-                                    <td key={key} className={`p-4 text-center border-b border-slate-100 ${isBest ? 'bg-amber-50/50 font-bold text-slate-900' : ''}`}>
+                                    <td key={key} className={`p-4 text-center border-b border-slate-100 text-base ${isBest ? 'bg-amber-50/50 font-bold text-slate-900' : ''}`}>
                                         {value || <Minus className="w-4 h-4 mx-auto text-slate-300" />}
                                     </td>
                                 );
@@ -80,7 +80,7 @@ export function ComparisonTable({ products, specLabels }: ComparisonTableProps) 
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         style={{ backgroundColor: '#0f172a', color: '#ffffff' }}
-                                        className="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-bold transition-all rounded-lg hover:bg-black shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                                        className="inline-flex items-center justify-center w-full px-4 py-3 text-base font-bold transition-all rounded-lg hover:bg-black shadow-md hover:shadow-lg hover:-translate-y-0.5"
                                     >
                                         Amazonで見る <ExternalLink className="w-4 h-4 ml-1" />
                                     </a>

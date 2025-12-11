@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Check, X, Crown, ShoppingCart, ExternalLink, Award } from 'lucide-react';
+import { Star, Check, X, Crown, ShoppingCart, ExternalLink, Award, ThumbsUp, ThumbsDown } from 'lucide-react';
 
 interface RankingCardProps {
     rank: number;
