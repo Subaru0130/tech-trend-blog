@@ -190,7 +190,10 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                                 </div>
                             )}
 
-                            {/* Mobile ToC could go here (optional, skipping for now to keep clean) */}
+                            {/* Mobile ToC */}
+                            <div className="lg:hidden my-8">
+                                <TableOfContents />
+                            </div>
 
                             {/* MDX Content */}
                             <div id="article-body" className="prose prose-slate prose-lg max-w-none 
