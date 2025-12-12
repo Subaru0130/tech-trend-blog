@@ -44,7 +44,7 @@ export function ArticleStickyNav() {
         <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-transform duration-300 transform translate-y-0">
             <div className="max-w-md mx-auto grid grid-cols-3 text-xs font-bold text-slate-600">
                 <button
-                    onClick={() => scrollToKeyword('選び方')}
+                    onClick={() => scrollToKeyword('選び')}
                     className="flex flex-col items-center justify-center py-3 border-b-2 border-transparent hover:text-blue-600 hover:border-blue-600 active:text-blue-700"
                 >
                     <BookOpen className="w-5 h-5 mb-1" />
