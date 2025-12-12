@@ -41,7 +41,7 @@ export function ArticleStickyNav() {
     if (!isVisible) return null;
 
     return (
-        <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-transform duration-300 transform translate-y-0">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-transform duration-300 transform translate-y-0">
             <div className="max-w-md mx-auto grid grid-cols-3 text-xs font-bold text-slate-600">
                 <button
                     onClick={() => scrollToKeyword('選び')}

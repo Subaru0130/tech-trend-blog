@@ -141,7 +141,6 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
     return (
         <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <ArticleStickyNav />
 
             {/* ... (Header) ... */}
             <header className="fixed top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-slate-100">
@@ -256,6 +255,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                     </p>
                 </div>
             </footer>
+            <ArticleStickyNav />
         </div>
     );
 }
