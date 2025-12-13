@@ -2,66 +2,112 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  /* BestChoice Blue Theme */
-  --background: #f8fafc; /* Very light cool gray */
-  --foreground: #333333; /* text-main */
+  /* ChoiceGuide Theme */
+  --primary: #0056b3;
+  --primary-hover: #004494;
+  --primary-foreground: #FFFFFF;
+
+  --accent: #ff8c00;
+  --accent-hover: #e07b00;
+  --accent-foreground: #FFFFFF;
+
+  --rank-gold: #c5a365;
+  --rank-silver: #9ca3af;
+  --rank-bronze: #b46d49;
+
+  --background: #f8f9fa;
+  /* background-light */
+  --background-light: #f8f9fa;
+  --background-dark: #101622;
+
+  --text-main: #333333;
+  --text-sub: #666666;
+  --foreground: #333333;
 
   --card: #FFFFFF;
   --card-foreground: #333333;
-
   --popover: #FFFFFF;
   --popover-foreground: #333333;
-
-  --primary: #0f4c81; /* Classic Blue */
-  --primary-foreground: #FFFFFF;
-
-  --secondary: #e0f2fe; /* primary-light */
-  --secondary-foreground: #0f4c81;
-
-  --muted: #F1F5F9;
-  --muted-foreground: #64748b; /* text-sub */
-
-  --accent: #ef4444;
-  --accent-foreground: #FFFFFF;
-
+  --secondary: #fce7cf;
+  /* accent light estimate */
+  --secondary-foreground: #1c1917;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #0f4c81;
-
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #0056b3;
   --radius: 0.5rem;
 
-  /* Custom aliases from prototype */
-  --primary-light: #e0f2fe;
-  --background-light: #f8fafc;
-  --background-dark: #1a202c;
-  --text-main: #333333;
-  --text-sub: #64748b;
-
-  /* Font Variables */
-  --font-sans: var(--font-noto-sans-jp);
-  --font-serif: var(--font-noto-serif-jp);
+  --font-sans: 'Manrope', 'Noto Sans JP', sans-serif;
+  --font-display: 'Manrope', 'Noto Sans JP', sans-serif;
 }
 
 @theme {
   --color-primary: var(--primary);
-  --color-primary-light: var(--primary-light);
+  --color-primary-hover: var(--primary-hover);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+
+  --color-rank-gold: var(--rank-gold);
+  --color-rank-silver: var(--rank-silver);
+  --color-rank-bronze: var(--rank-bronze);
+
   --color-background-light: var(--background-light);
   --color-background-dark: var(--background-dark);
+
   --color-text-main: var(--text-main);
   --color-text-sub: var(--text-sub);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-sans);
+
+  --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.03);
+  --shadow-glow: 0 0 20px rgba(0, 86, 179, 0.15);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-sans), "Hiragino Kaku Gothic ProN", sans-serif;
-  /* Gothic for readability */
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom ChoiceGuide Styles */
+.hero-pattern {
+  background-color: #ffffff;
+  background-image: radial-gradient(#eff1f5 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+.dark .hero-pattern {
+  background-color: #1a202c;
+  background-image: radial-gradient(#2d3748 1.5px, transparent 1.5px);
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* Custom Utilities */
