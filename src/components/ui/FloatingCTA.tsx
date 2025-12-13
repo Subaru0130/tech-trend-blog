@@ -37,7 +37,7 @@ export function FloatingCTA({ productName, affiliateLink, asin }: FloatingCTAPro
                 className="block w-full bg-slate-900/95 backdrop-blur-sm text-white font-bold py-4 px-6 rounded-2xl shadow-2xl flex items-center justify-between group hover:scale-[1.02] transition-transform"
             >
                 <div className="flex flex-col">
-                    <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">No.1 Best Buy</span>
+                    <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">No.1 ベストバイ</span>
                     <span className="text-sm truncate max-w-[200px]">{productName}</span>
                 </div>
                 <div className="flex items-center gap-2 bg-primary text-white px-3 py-1.5 rounded-full text-xs font-bold">

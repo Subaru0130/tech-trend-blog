@@ -184,69 +184,68 @@ export function RankingCard({
                         <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-slate-200 -translate-x-1/2"></div>
 
                         {/* Pros */}
-                        <div className="md:pr-4">
-                            <h4 className="flex items-center gap-2 text-sm font-bold text-slate-900 uppercase tracking-wider mb-5">
-                                <ThumbsUp className="w-5 h-5 text-blue-600 fill-current" />
-                                <span className="text-blue-900">良い点 (Pros)</span>
-                            </h4>
-                            <ul className="space-y-4">
-                                {pros.map((pro, i) => (
-                                    <li key={i} className="text-[15px] text-slate-700 leading-relaxed flex items-start group">
-                                        <div className="mt-1 mr-3 shrink-0">
-                                            <Check className="w-5 h-5 text-blue-500 stroke-[3]" />
-                                        </div>
-                                        <span>{pro}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        <h4 className="flex items-center gap-2 text-sm font-bold text-slate-900 uppercase tracking-wider mb-5">
+                            <ThumbsUp className="w-5 h-5 text-blue-600 fill-current" />
+                            <span className="text-blue-900">良い点</span>
+                        </h4>
+                        <ul className="space-y-4">
+                            {pros.map((pro, i) => (
+                                <li key={i} className="text-[15px] text-slate-700 leading-relaxed flex items-start group">
+                                    <div className="mt-1 mr-3 shrink-0">
+                                        <Check className="w-5 h-5 text-blue-500 stroke-[3]" />
+                                    </div>
+                                    <span>{pro}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
-                        {/* Cons */}
-                        <div className="md:pl-4">
-                            <h4 className="flex items-center gap-2 text-sm font-bold text-slate-900 uppercase tracking-wider mb-5">
-                                <ThumbsDown className="w-5 h-5 text-red-500 fill-current" />
-                                <span className="text-red-900">気になる点 (Cons)</span>
-                            </h4>
-                            <ul className="space-y-4">
-                                {cons.map((con, i) => (
-                                    <li key={i} className="text-[15px] text-slate-700 leading-relaxed flex items-start group">
-                                        <div className="mt-1 mr-3 shrink-0">
-                                            <X className="w-5 h-5 text-red-500 stroke-[3]" />
-                                        </div>
-                                        <span>{con}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                    {/* Cons */}
+                    <div className="md:pl-4">
+                        <h4 className="flex items-center gap-2 text-sm font-bold text-slate-900 uppercase tracking-wider mb-5">
+                            <ThumbsDown className="w-5 h-5 text-red-500 fill-current" />
+                            <span className="text-red-900">気になる点</span>
+                        </h4>
+                        <ul className="space-y-4">
+                            {cons.map((con, i) => (
+                                <li key={i} className="text-[15px] text-slate-700 leading-relaxed flex items-start group">
+                                    <div className="mt-1 mr-3 shrink-0">
+                                        <X className="w-5 h-5 text-red-500 stroke-[3]" />
+                                    </div>
+                                    <span>{con}</span>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
+            </div>
 
-                {/* CTA Buttons (Whitespace NoWrap Fix) */}
-                <div className="mt-auto grid grid-cols-2 gap-4">
-                    {links.amazon && (
-                        <a
-                            href={links.amazon}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 bg-[#FF9900] hover:bg-[#ffad33] text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-transform hover:-translate-y-1 active:translate-y-0 whitespace-nowrap"
-                        >
-                            <ShoppingCart className="w-5 h-5" />
-                            Amazonで見る
-                        </a>
-                    )}
-                    {links.rakuten && (
-                        <a
-                            href={links.rakuten}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 bg-[#BF0000] hover:bg-[#d40000] text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-transform hover:-translate-y-1 active:translate-y-0 whitespace-nowrap"
-                        >
-                            <ShoppingCart className="w-5 h-5" />
-                            楽天で見る
-                        </a>
-                    )}
-                </div>
+            {/* CTA Buttons (Whitespace NoWrap Fix) */}
+            <div className="mt-auto grid grid-cols-2 gap-4">
+                {links.amazon && (
+                    <a
+                        href={links.amazon}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 bg-[#FF9900] hover:bg-[#ffad33] text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-transform hover:-translate-y-1 active:translate-y-0 whitespace-nowrap"
+                    >
+                        <ShoppingCart className="w-5 h-5" />
+                        Amazonで見る
+                    </a>
+                )}
+                {links.rakuten && (
+                    <a
+                        href={links.rakuten}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 bg-[#BF0000] hover:bg-[#d40000] text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-transform hover:-translate-y-1 active:translate-y-0 whitespace-nowrap"
+                    >
+                        <ShoppingCart className="w-5 h-5" />
+                        楽天で見る
+                    </a>
+                )}
             </div>
         </div>
+        </div >
     );
 }
