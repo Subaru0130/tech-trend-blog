@@ -10,7 +10,7 @@ import { Metadata } from 'next';
 
 // Generate static params for all known subcategories
 export async function generateStaticParams() {
-    const params = [];
+    const params: { slug: string }[] = [];
     Object.values(CATEGORY_MAP).forEach(major => {
         major.subCategories.forEach(sub => {
             params.push({ slug: sub.slug });
