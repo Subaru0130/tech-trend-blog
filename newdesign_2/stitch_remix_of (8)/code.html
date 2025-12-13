@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html class="light scroll-smooth" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BestChoice - 生活家電 記事一覧</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#5C715E", // Moss Green
+                        "primary-dark": "#3A4A3C",
+                        "primary-light": "#E6F0E8",
+                        "accent": "#D4A373", // Earthy beige/orange
+                        "text-body": "#475569", // Softer slate
+                        "text-heading": "#334155",
+                        "surface": "#ffffff",
+                        "surface-sub": "#FAFAF9", 
+                        "surface-hover": "#F5F5F4",
+                        "border-sub": "#E7E5E4",
+                    },
+                    fontFamily: {
+                        "sans": ["Noto Sans JP", "sans-serif"],
+                    },
+                    boxShadow: {
+                        "soft": "0 2px 15px -3px rgba(0,0,0,0.03), 0 1px 4px -2px rgba(0,0,0,0.01)",
+                        "card": "0 0 0 1px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.02)",
+                        "card-hover": "0 0 0 1px rgba(92, 113, 94, 0.15), 0 10px 40px -10px rgba(0,0,0,0.05)"
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body { font-family: 'Noto Sans JP', sans-serif; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .fill-1 { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+</head>
+<body class="bg-[#FAFAF9] text-text-body antialiased">
+<div class="relative flex min-h-screen w-full flex-col">
+<header class="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-border-sub transition-all duration-300">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<a class="flex items-center gap-2.5 group" href="#">
+<div class="bg-primary text-white p-1.5 rounded-lg shadow-sm group-hover:bg-primary-dark transition-colors">
+<span class="material-symbols-outlined text-xl">spa</span>
+</div>
+<span class="text-xl font-bold tracking-tight text-text-heading group-hover:text-primary transition-colors">BestChoice</span>
+</a>
+<nav class="hidden md:flex items-center gap-1">
+<a class="px-4 py-2 text-sm font-medium text-text-body rounded-full hover:bg-primary-light hover:text-primary transition-all" href="#">ホーム</a>
+<a class="px-4 py-2 text-sm font-medium text-text-body rounded-full hover:bg-primary-light hover:text-primary transition-all" href="#">ランキング</a>
+<a class="px-4 py-2 text-sm font-medium text-text-body rounded-full hover:bg-primary-light hover:text-primary transition-all" href="#">レビュー</a>
+<a class="px-4 py-2 text-sm font-bold text-primary bg-primary-light/50 rounded-full transition-all" href="#">カテゴリ一覧</a>
+</nav>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden lg:flex relative w-64 group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-stone-400 text-[20px] group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-stone-100 border border-transparent rounded-full text-sm focus:ring-1 focus:ring-primary focus:border-primary focus:bg-white transition-all outline-none placeholder:text-stone-400" placeholder="キーワードで検索" type="text"/>
+</div>
+<button class="hidden sm:flex items-center justify-center px-5 py-2 bg-text-heading text-white text-sm font-bold rounded-full hover:bg-primary hover:shadow-md transition-all">
+                    ログイン
+                </button>
+<button class="sm:hidden p-2 text-stone-600 rounded-lg hover:bg-stone-100 transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</header>
+<div class="bg-white border-b border-stone-100">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 text-xs font-medium text-stone-500 flex items-center">
+<a class="hover:text-primary hover:underline transition-colors" href="#">ホーム</a>
+<span class="material-symbols-outlined text-[10px] mx-2 text-stone-300">chevron_right</span>
+<a class="hover:text-primary hover:underline transition-colors" href="#">カテゴリ一覧</a>
+<span class="material-symbols-outlined text-[10px] mx-2 text-stone-300">chevron_right</span>
+<span class="text-text-heading font-bold">生活家電</span>
+</div>
+</div>
+<div class="bg-white border-b border-stone-200 relative overflow-hidden">
+<div class="absolute inset-0 bg-[radial-gradient(#e7e5e4_1px,transparent_1px)] [background-size:24px_24px] opacity-30"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 relative z-10">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="max-w-2xl">
+<div class="flex items-center gap-3 mb-4">
+<span class="inline-flex items-center justify-center size-12 rounded-xl bg-primary-light text-primary shadow-sm">
+<span class="material-symbols-outlined text-2xl">chair</span>
+</span>
+<h1 class="text-2xl md:text-3xl font-extrabold text-text-heading tracking-tight">生活家電</h1>
+</div>
+<p class="text-stone-500 text-sm md:text-base leading-relaxed">
+                        冷蔵庫、洗濯機、掃除機など、日々の暮らしを快適にする生活家電の比較・レビュー記事一覧です。<br class="hidden sm:inline"/>
+                        機能や価格、ライフスタイルに合わせた選び方のポイントや、最新の人気ランキングを随時更新しています。
+                    </p>
+</div>
+<div class="w-full md:w-80 shrink-0">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-stone-400 group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all outline-none placeholder:text-stone-400 shadow-sm" placeholder="生活家電の記事を検索..." type="text"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div class="grid lg:grid-cols-12 gap-8 lg:gap-10">
+<main class="lg:col-span-8 space-y-8">
+<div class="flex items-center justify-between pb-4 border-b border-stone-200">
+<div class="text-sm font-bold text-text-heading flex items-baseline gap-1">
+<span class="text-xl text-primary font-black">24</span>
+<span class="text-stone-400 text-xs">件の記事</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden sm:flex items-center gap-1 bg-stone-100 p-1 rounded-lg">
+<button class="p-1.5 rounded-md bg-white shadow text-primary"><span class="material-symbols-outlined text-sm">view_list</span></button>
+<button class="p-1.5 rounded-md text-stone-400 hover:text-stone-600"><span class="material-symbols-outlined text-sm">grid_view</span></button>
+</div>
+<select class="form-select text-xs font-bold bg-transparent border-none py-1 pr-8 pl-2 text-text-heading focus:ring-0 cursor-pointer hover:bg-stone-50 rounded-lg transition-colors">
+<option>新着順</option>
+<option>人気順</option>
+<option>更新日が新しい順</option>
+</select>
+</div>
+</div>
+<div class="space-y-6">
+<article class="group flex flex-col md:flex-row bg-white rounded-2xl border border-stone-100 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-primary/20 transition-all duration-300">
+<a class="block md:w-2/5 aspect-video md:aspect-auto overflow-hidden relative" href="#">
+<img alt="冷蔵庫ランキング" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp8FW373-siCDGxOl5JuoyOd6oVBy9Qtbh3__cNio1FJUtK6vBxJpss-nAcvxcy3sFm16ALSzjki_6Q-cJNCtWEJMLWNavb057BCmATJz31GqGWC8AYcRpajV6H8rpyT6fAc5Ucidie-oKXyovGJgdB0uCwlDhr9Trt38KA7AJ9HsXkpYx_fgyq-EzEY9BVQQUN4tYb2-yAwOQy-FJUqjs2XXu6EStEgYEc3tgCoNkdGtLOtiJ-eELLAYRVS3ZjQPxHlJxLYtVt-E"/>
+<span class="absolute top-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur text-primary text-[10px] font-bold rounded-full shadow-sm border border-primary/10">
+                                    冷蔵庫
+                                </span>
+</a>
+<div class="p-6 md:w-3/5 flex flex-col justify-center">
+<div class="flex items-center gap-3 mb-2 text-xs text-stone-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 2024.03.15</span>
+<span class="flex items-center gap-1 text-accent font-bold"><span class="material-symbols-outlined text-[14px] fill-1">stars</span> 注目</span>
+</div>
+<h2 class="text-lg md:text-xl font-bold text-text-heading mb-3 leading-snug group-hover:text-primary transition-colors">
+<a href="#">【2024年最新】大型冷蔵庫のおすすめランキングTOP10！メーカー別の特徴も徹底比較</a>
+</h2>
+<p class="text-sm text-stone-500 line-clamp-2 leading-relaxed mb-4">
+                                    ファミリー向けの大型冷蔵庫を中心に、省エネ性能や鮮度保持機能を徹底比較。あなたにぴったりの一台が見つかります。パナソニック、日立、三菱など主要メーカーを網羅。
+                                </p>
+<div class="mt-auto flex items-center gap-2 flex-wrap">
+<a class="px-2 py-1 bg-stone-50 text-stone-500 text-[10px] font-medium rounded border border-stone-100 hover:border-primary/30 hover:text-primary transition-colors" href="#">#省エネ</a>
+<a class="px-2 py-1 bg-stone-50 text-stone-500 text-[10px] font-medium rounded border border-stone-100 hover:border-primary/30 hover:text-primary transition-colors" href="#">#ファミリー</a>
+</div>
+</div>
+</article>
+<article class="group flex flex-col md:flex-row bg-white rounded-2xl border border-stone-100 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-primary/20 transition-all duration-300">
+<a class="block md:w-2/5 aspect-video md:aspect-auto overflow-hidden relative" href="#">
+<img alt="洗濯機レビュー" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0_3Mqd0qOkjMDhB7Xzz2gmcobuSOJa5HzAPNUFgHaeFOwJ0l83phQ-XHYEsBckpIHsnOG3tnxppdk1X0eC-VHTMafWwq22ZUY-wmu7Dvp8HjWPCZoKJIVLKI2z0L3_WO0U7TKBXZB9NhvbtV8chOo2A5LVer4iDK0ybZHr4xGsa4iv57ugQFYCyfjXxFo5i8jVfdPaxb-hSBoXOfynuJXcfkcz8cQZ9gTdvvmFCxnlA6EUE3CG_XZcd8rYYXvKtWSfBD_6pJwPWw"/>
+<span class="absolute top-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur text-primary text-[10px] font-bold rounded-full shadow-sm border border-primary/10">
+                                    洗濯機
+                                </span>
+</a>
+<div class="p-6 md:w-3/5 flex flex-col justify-center">
+<div class="flex items-center gap-3 mb-2 text-xs text-stone-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 2024.03.12</span>
+</div>
+<h2 class="text-lg md:text-xl font-bold text-text-heading mb-3 leading-snug group-hover:text-primary transition-colors">
+<a href="#">ドラム式洗濯機を買う前に知っておきたいメリット・デメリット。縦型との違いは？</a>
+</h2>
+<p class="text-sm text-stone-500 line-clamp-2 leading-relaxed mb-4">
+                                    乾燥機能が優秀なドラム式洗濯機ですが、設置スペースや洗浄力で縦型を選ぶ人も多いです。ライフスタイルに合わせた選び方を解説します。
+                                </p>
+<div class="mt-auto flex items-center gap-2 flex-wrap">
+<a class="px-2 py-1 bg-stone-50 text-stone-500 text-[10px] font-medium rounded border border-stone-100 hover:border-primary/30 hover:text-primary transition-colors" href="#">#ドラム式</a>
+<a class="px-2 py-1 bg-stone-50 text-stone-500 text-[10px] font-medium rounded border border-stone-100 hover:border-primary/30 hover:text-primary transition-colors" href="#">#一人暮らし</a>
+</div>
+</div>
+</article>
+<article class="group flex flex-col md:flex-row bg-white rounded-2xl border border-stone-100 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-primary/20 transition-all duration-300">
+<a class="block md:w-2/5 aspect-video md:aspect-auto overflow-hidden relative" href="#">
+<img alt="ロボット掃除機" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwG3d85SCIuD5gkeD2LWIXFNmOvy0stp9azzR_CtyauPEVZiW1oxSKierLvYSrvOENUEm4OwirHXOzJo3guWDvkoCquS6mPKKm5t9Xx7bbD26DABIbtRVcZBKd5lzhP2X5Fj8pbe0vu4kS-ikGPLqH92A3j3OztWSjZ4GwGXiPu7_O4qjlzTFZB9GW1HNfYKvKqZk7tACV5G-oySuvZsTD1PFRBDFmJGZ_88zp8yNNI5QZdSeUAbi6Wu-Qjq_yAWER1-j5HIWMtgo"/>
+<span class="absolute top-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur text-primary text-[10px] font-bold rounded-full shadow-sm border border-primary/10">
+                                    掃除機
+                                </span>
+</a>
+<div class="p-6 md:w-3/5 flex flex-col justify-center">
+<div class="flex items-center gap-3 mb-2 text-xs text-stone-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 2024.03.08</span>
+</div>
+<h2 class="text-lg md:text-xl font-bold text-text-heading mb-3 leading-snug group-hover:text-primary transition-colors">
+<a href="#">ロボット掃除機コスパ最強決定戦！5万円以下で買えるおすすめモデル5選</a>
+</h2>
+<p class="text-sm text-stone-500 line-clamp-2 leading-relaxed mb-4">
+                                    高機能化が進むロボット掃除機。実は5万円以下でも十分な機能を備えたモデルがたくさんあります。安くても後悔しない選び方をご紹介。
+                                </p>
+<div class="mt-auto flex items-center gap-2 flex-wrap">
+<a class="px-2 py-1 bg-stone-50 text-stone-500 text-[10px] font-medium rounded border border-stone-100 hover:border-primary/30 hover:text-primary transition-colors" href="#">#ロボット掃除機</a>
+<a class="px-2 py-1 bg-stone-50 text-stone-500 text-[10px] font-medium rounded border border-stone-100 hover:border-primary/30 hover:text-primary transition-colors" href="#">#コスパ</a>
+</div>
+</div>
+</article>
+<article class="group flex flex-col md:flex-row bg-white rounded-2xl border border-stone-100 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-primary/20 transition-all duration-300">
+<a class="block md:w-2/5 aspect-video md:aspect-auto overflow-hidden relative" href="#">
+<img alt="空気清浄機" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAH_shT4W6msrobWOuPuTGusQSoSM6vOOzQ-PB_Ac3ImBp47RlbctRDc4DN93aQom1h5Nulk-HAVAUPQAHzFdX07POhbfh2dFfDn1YY7vuNfjlLTblsixxJ3KRqvicDBjEZFiJQzcB5u7sNinJG7T_VbVNHc9Zj7uBO9ixHw-ToLpSXGpAzQFJBvwTY7HBADkm4VEpMA_32GUsrT1PpXlO-T0gEUVV26K2yO4SQkaTzG6yEShGLkTKHhYFnT6eptqUA_PM8y9GoIAY"/>
+<span class="absolute top-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur text-primary text-[10px] font-bold rounded-full shadow-sm border border-primary/10">
+                                    空調家電
+                                </span>
+</a>
+<div class="p-6 md:w-3/5 flex flex-col justify-center">
+<div class="flex items-center gap-3 mb-2 text-xs text-stone-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 2024.03.01</span>
+</div>
+<h2 class="text-lg md:text-xl font-bold text-text-heading mb-3 leading-snug group-hover:text-primary transition-colors">
+<a href="#">花粉・ウイルス対策に！空気清浄機の効果的な置き場所とメンテナンス方法</a>
+</h2>
+<p class="text-sm text-stone-500 line-clamp-2 leading-relaxed mb-4">
+                                    せっかくの空気清浄機も、置き場所や手入れを間違えると効果が半減してしまいます。プロが教える正しい活用術をまとめました。
+                                </p>
+<div class="mt-auto flex items-center gap-2 flex-wrap">
+<a class="px-2 py-1 bg-stone-50 text-stone-500 text-[10px] font-medium rounded border border-stone-100 hover:border-primary/30 hover:text-primary transition-colors" href="#">#空気清浄機</a>
+<a class="px-2 py-1 bg-stone-50 text-stone-500 text-[10px] font-medium rounded border border-stone-100 hover:border-primary/30 hover:text-primary transition-colors" href="#">#花粉対策</a>
+</div>
+</div>
+</article>
+<article class="group flex flex-col md:flex-row bg-white rounded-2xl border border-stone-100 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-primary/20 transition-all duration-300">
+<a class="block md:w-2/5 aspect-video md:aspect-auto overflow-hidden relative" href="#">
+<img alt="電子レンジ" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp8FW373-siCDGxOl5JuoyOd6oVBy9Qtbh3__cNio1FJUtK6vBxJpss-nAcvxcy3sFm16ALSzjki_6Q-cJNCtWEJMLWNavb057BCmATJz31GqGWC8AYcRpajV6H8rpyT6fAc5Ucidie-oKXyovGJgdB0uCwlDhr9Trt38KA7AJ9HsXkpYx_fgyq-EzEY9BVQQUN4tYb2-yAwOQy-FJUqjs2XXu6EStEgYEc3tgCoNkdGtLOtiJ-eELLAYRVS3ZjQPxHlJxLYtVt-E"/>
+<span class="absolute top-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur text-primary text-[10px] font-bold rounded-full shadow-sm border border-primary/10">
+                                    キッチン
+                                </span>
+</a>
+<div class="p-6 md:w-3/5 flex flex-col justify-center">
+<div class="flex items-center gap-3 mb-2 text-xs text-stone-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 2024.02.25</span>
+</div>
+<h2 class="text-lg md:text-xl font-bold text-text-heading mb-3 leading-snug group-hover:text-primary transition-colors">
+<a href="#">スチームオーブンレンジのおすすめモデル徹底比較！料理の幅が広がる一台は？</a>
+</h2>
+<p class="text-sm text-stone-500 line-clamp-2 leading-relaxed mb-4">
+                                    「温め」だけじゃない。時短調理や本格的なオーブン料理も楽しめるスチームオーブンレンジ。各メーカーの独自機能を比較しました。
+                                </p>
+<div class="mt-auto flex items-center gap-2 flex-wrap">
+<a class="px-2 py-1 bg-stone-50 text-stone-500 text-[10px] font-medium rounded border border-stone-100 hover:border-primary/30 hover:text-primary transition-colors" href="#">#時短調理</a>
+<a class="px-2 py-1 bg-stone-50 text-stone-500 text-[10px] font-medium rounded border border-stone-100 hover:border-primary/30 hover:text-primary transition-colors" href="#">#オーブンレンジ</a>
+</div>
+</div>
+</article>
+</div>
+<div class="pt-10 flex justify-center">
+<nav class="flex items-center gap-1">
+<a class="size-10 flex items-center justify-center rounded-lg border border-stone-200 text-stone-400 hover:bg-stone-50 hover:text-stone-600 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</a>
+<a class="size-10 flex items-center justify-center rounded-lg bg-primary text-white font-bold shadow-md shadow-primary/20" href="#">1</a>
+<a class="size-10 flex items-center justify-center rounded-lg border border-transparent text-stone-600 font-medium hover:bg-stone-100 transition-colors" href="#">2</a>
+<a class="size-10 flex items-center justify-center rounded-lg border border-transparent text-stone-600 font-medium hover:bg-stone-100 transition-colors" href="#">3</a>
+<span class="size-10 flex items-center justify-center text-stone-400">...</span>
+<a class="size-10 flex items-center justify-center rounded-lg border border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</a>
+</nav>
+</div>
+</main>
+<aside class="lg:col-span-4 space-y-8">
+<div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-soft">
+<h3 class="font-bold text-text-heading mb-4 flex items-center gap-2 text-sm">
+<span class="material-symbols-outlined text-primary">category</span>
+                        詳細カテゴリ
+                    </h3>
+<div class="flex flex-col gap-1">
+<a class="flex items-center justify-between p-2.5 rounded-lg hover:bg-primary-light/50 group transition-colors" href="#">
+<span class="text-sm text-stone-600 group-hover:text-primary font-medium">冷蔵庫</span>
+<span class="text-xs text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full group-hover:bg-white">12</span>
+</a>
+<a class="flex items-center justify-between p-2.5 rounded-lg hover:bg-primary-light/50 group transition-colors" href="#">
+<span class="text-sm text-stone-600 group-hover:text-primary font-medium">洗濯機</span>
+<span class="text-xs text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full group-hover:bg-white">8</span>
+</a>
+<a class="flex items-center justify-between p-2.5 rounded-lg hover:bg-primary-light/50 group transition-colors" href="#">
+<span class="text-sm text-stone-600 group-hover:text-primary font-medium">掃除機</span>
+<span class="text-xs text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full group-hover:bg-white">15</span>
+</a>
+<a class="flex items-center justify-between p-2.5 rounded-lg hover:bg-primary-light/50 group transition-colors" href="#">
+<span class="text-sm text-stone-600 group-hover:text-primary font-medium">空調家電</span>
+<span class="text-xs text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full group-hover:bg-white">6</span>
+</a>
+<a class="flex items-center justify-between p-2.5 rounded-lg hover:bg-primary-light/50 group transition-colors" href="#">
+<span class="text-sm text-stone-600 group-hover:text-primary font-medium">キッチン家電</span>
+<span class="text-xs text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full group-hover:bg-white">20</span>
+</a>
+<a class="flex items-center justify-between p-2.5 rounded-lg hover:bg-primary-light/50 group transition-colors" href="#">
+<span class="text-sm text-stone-600 group-hover:text-primary font-medium">生活雑貨・その他</span>
+<span class="text-xs text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full group-hover:bg-white">4</span>
+</a>
+</div>
+</div>
+<div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-soft">
+<h3 class="font-bold text-text-heading mb-4 flex items-center gap-2 text-sm">
+<span class="material-symbols-outlined text-accent fill-1">trophy</span>
+                        人気の記事ランキング
+                    </h3>
+<div class="space-y-4">
+<a class="group flex gap-3 items-start" href="#">
+<div class="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden">
+<img alt="thumb" class="w-full h-full object-cover group-hover:scale-110 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp8FW373-siCDGxOl5JuoyOd6oVBy9Qtbh3__cNio1FJUtK6vBxJpss-nAcvxcy3sFm16ALSzjki_6Q-cJNCtWEJMLWNavb057BCmATJz31GqGWC8AYcRpajV6H8rpyT6fAc5Ucidie-oKXyovGJgdB0uCwlDhr9Trt38KA7AJ9HsXkpYx_fgyq-EzEY9BVQQUN4tYb2-yAwOQy-FJUqjs2XXu6EStEgYEc3tgCoNkdGtLOtiJ-eELLAYRVS3ZjQPxHlJxLYtVt-E"/>
+<span class="absolute top-0 left-0 size-5 flex items-center justify-center bg-accent text-white text-[10px] font-bold rounded-br-md">1</span>
+</div>
+<div class="flex-1">
+<h4 class="text-xs font-bold text-text-heading leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                                    大型冷蔵庫のおすすめランキングTOP10！
+                                </h4>
+<p class="text-[10px] text-stone-400 mt-1">10.3k views</p>
+</div>
+</a>
+<a class="group flex gap-3 items-start" href="#">
+<div class="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden">
+<img alt="thumb" class="w-full h-full object-cover group-hover:scale-110 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwG3d85SCIuD5gkeD2LWIXFNmOvy0stp9azzR_CtyauPEVZiW1oxSKierLvYSrvOENUEm4OwirHXOzJo3guWDvkoCquS6mPKKm5t9Xx7bbD26DABIbtRVcZBKd5lzhP2X5Fj8pbe0vu4kS-ikGPLqH92A3j3OztWSjZ4GwGXiPu7_O4qjlzTFZB9GW1HNfYKvKqZk7tACV5G-oySuvZsTD1PFRBDFmJGZ_88zp8yNNI5QZdSeUAbi6Wu-Qjq_yAWER1-j5HIWMtgo"/>
+<span class="absolute top-0 left-0 size-5 flex items-center justify-center bg-stone-400 text-white text-[10px] font-bold rounded-br-md">2</span>
+</div>
+<div class="flex-1">
+<h4 class="text-xs font-bold text-text-heading leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                                    ロボット掃除機コスパ最強決定戦！5万円以下モデル
+                                </h4>
+<p class="text-[10px] text-stone-400 mt-1">8.5k views</p>
+</div>
+</a>
+<a class="group flex gap-3 items-start" href="#">
+<div class="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden">
+<img alt="thumb" class="w-full h-full object-cover group-hover:scale-110 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0_3Mqd0qOkjMDhB7Xzz2gmcobuSOJa5HzAPNUFgHaeFOwJ0l83phQ-XHYEsBckpIHsnOG3tnxppdk1X0eC-VHTMafWwq22ZUY-wmu7Dvp8HjWPCZoKJIVLKI2z0L3_WO0U7TKBXZB9NhvbtV8chOo2A5LVer4iDK0ybZHr4xGsa4iv57ugQFYCyfjXxFo5i8jVfdPaxb-hSBoXOfynuJXcfkcz8cQZ9gTdvvmFCxnlA6EUE3CG_XZcd8rYYXvKtWSfBD_6pJwPWw"/>
+<span class="absolute top-0 left-0 size-5 flex items-center justify-center bg-stone-400 text-white text-[10px] font-bold rounded-br-md">3</span>
+</div>
+<div class="flex-1">
+<h4 class="text-xs font-bold text-text-heading leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                                    ドラム式洗濯機のメリット・デメリット解説
+                                </h4>
+<p class="text-[10px] text-stone-400 mt-1">6.2k views</p>
+</div>
+</a>
+</div>
+</div>
+<div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-soft">
+<h3 class="font-bold text-text-heading mb-4 flex items-center gap-2 text-sm">
+<span class="material-symbols-outlined text-stone-400">label</span>
+                        人気のキーワード
+                    </h3>
+<div class="flex flex-wrap gap-2">
+<a class="px-2.5 py-1 text-xs font-medium bg-stone-50 text-stone-600 rounded-md border border-stone-100 hover:border-primary hover:text-primary transition-colors" href="#">#省エネ</a>
+<a class="px-2.5 py-1 text-xs font-medium bg-stone-50 text-stone-600 rounded-md border border-stone-100 hover:border-primary hover:text-primary transition-colors" href="#">#ファミリー</a>
+<a class="px-2.5 py-1 text-xs font-medium bg-stone-50 text-stone-600 rounded-md border border-stone-100 hover:border-primary hover:text-primary transition-colors" href="#">#一人暮らし</a>
+<a class="px-2.5 py-1 text-xs font-medium bg-stone-50 text-stone-600 rounded-md border border-stone-100 hover:border-primary hover:text-primary transition-colors" href="#">#時短</a>
+<a class="px-2.5 py-1 text-xs font-medium bg-stone-50 text-stone-600 rounded-md border border-stone-100 hover:border-primary hover:text-primary transition-colors" href="#">#デザイン家電</a>
+<a class="px-2.5 py-1 text-xs font-medium bg-stone-50 text-stone-600 rounded-md border border-stone-100 hover:border-primary hover:text-primary transition-colors" href="#">#コスパ</a>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<footer class="bg-white border-t border-stone-200 pt-16 pb-8 px-6 mt-auto">
+<div class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between gap-12">
+<div class="flex flex-col gap-6 max-w-sm">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-2xl">spa</span>
+<span class="text-xl font-bold text-text-heading">BestChoice</span>
+</div>
+<p class="text-sm text-stone-500 leading-relaxed">
+                    公平な比較とレビューを通じて、あなたの最適な商品選びをサポートします。賢い買い物のための情報ポータルサイトです。
+                </p>
+<div class="flex gap-3">
+<a class="size-10 rounded-full bg-stone-50 border border-stone-100 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary cursor-pointer transition-all duration-300 text-stone-400" href="#">
+<span class="font-bold text-[10px]">Tw</span>
+</a>
+<a class="size-10 rounded-full bg-stone-50 border border-stone-100 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary cursor-pointer transition-all duration-300 text-stone-400" href="#">
+<span class="font-bold text-[10px]">Fb</span>
+</a>
+<a class="size-10 rounded-full bg-stone-50 border border-stone-100 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary cursor-pointer transition-all duration-300 text-stone-400" href="#">
+<span class="font-bold text-[10px]">Ig</span>
+</a>
+</div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-10 lg:gap-16">
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-text-heading text-sm">運営会社</h4>
+<div class="flex flex-col gap-3">
+<a class="text-sm text-stone-500 hover:text-primary transition-colors" href="#">会社概要</a>
+<a class="text-sm text-stone-500 hover:text-primary transition-colors" href="#">採用情報</a>
+<a class="text-sm text-stone-500 hover:text-primary transition-colors" href="#">お問い合わせ</a>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-text-heading text-sm">コンテンツ</h4>
+<div class="flex flex-col gap-3">
+<a class="text-sm text-stone-500 hover:text-primary transition-colors" href="#">新着記事</a>
+<a class="text-sm text-stone-500 hover:text-primary transition-colors" href="#">人気ランキング</a>
+<a class="text-sm text-stone-500 hover:text-primary transition-colors" href="#">レビュー一覧</a>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-text-heading text-sm">法的情報</h4>
+<div class="flex flex-col gap-3">
+<a class="text-sm text-stone-500 hover:text-primary transition-colors" href="#">プライバシーポリシー</a>
+<a class="text-sm text-stone-500 hover:text-primary transition-colors" href="#">利用規約</a>
+<a class="text-sm text-stone-500 hover:text-primary transition-colors" href="#">免責事項</a>
+</div>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-stone-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-stone-400">
+<p>© 2024 BestChoice Inc. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-stone-600 transition-colors" href="#">サイトマップ</a>
+</div>
+</div>
+</footer>
+</div>
+
+</body></html>
