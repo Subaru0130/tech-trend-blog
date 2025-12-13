@@ -9,6 +9,7 @@ interface ProductSummary {
     price: string;
     id?: string;
     asin?: string;
+    bestFor?: string;
 }
 
 interface QuickSummaryProps {
@@ -18,11 +19,11 @@ interface QuickSummaryProps {
 export function QuickSummary({ products }: QuickSummaryProps) {
     const top3 = products.slice(0, 3);
 
-    const getBadge = (rank: number) => {
+    const getBadgeStyle = (rank: number) => {
         switch (rank) {
-            case 1: return { text: "総合優勝", icon: Crown, color: "bg-yellow-400" };
-            case 2: return { text: "コスパ最強", icon: TrendingUp, color: "bg-slate-300" };
-            case 3: return { text: "ツヤ特化", icon: Sparkles, color: "bg-amber-600" };
+            case 1: return { icon: Crown, color: "bg-yellow-400" };
+            case 2: return { icon: TrendingUp, color: "bg-slate-300" };
+            case 3: return { icon: Sparkles, color: "bg-amber-600" };
             default: return null;
         }
     };
@@ -34,16 +35,17 @@ export function QuickSummary({ products }: QuickSummaryProps) {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {top3.map((product) => {
-                    const badge = getBadge(product.rank);
+                    const badgeStyle = getBadgeStyle(product.rank);
+                    const badgeText = product.bestFor || (product.rank === 1 ? "総合優勝" : null);
                     const displayImage = product.image || (product.asin ? `https://images-na.ssl-images-amazon.com/images/P/${product.asin}.09.LZZZZZZZ.jpg` : "/images/placeholder.png");
 
                     return (
                         <div key={product.rank} className="relative bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-slate-100 flex flex-col items-center text-center group">
                             {/* Badge */}
-                            {badge && (
-                                <div className={`absolute -top-3 left-1/2 transform -translate-x-1/2 ${badge.color} text-white px-4 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1 whitespace-nowrap`}>
-                                    <badge.icon className="w-3 h-3" />
-                                    {badge.text}
+                            {badgeStyle && badgeText && (
+                                <div className={`absolute -top-3 left-1/2 transform -translate-x-1/2 ${badgeStyle.color} text-white px-4 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1 whitespace-nowrap`}>
+                                    <badgeStyle.icon className="w-3 h-3" />
+                                    {badgeText}
                                 </div>
                             )}
 
