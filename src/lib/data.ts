@@ -51,6 +51,42 @@ export const CATEGORY_MAP: Record<string, { label: string; icon: string; subCate
             { label: '高級ドライヤー', slug: 'hair-dryers', icon: 'air' },
             { label: '美顔器', slug: 'facial-devices', icon: 'face_retouching_natural' }
         ]
+    },
+    'kitchen-appliances': {
+        label: 'キッチン家電',
+        icon: 'kitchen',
+        subCategories: [
+            { label: '冷蔵庫', slug: 'fridges', icon: 'kitchen' },
+            { label: '電子レンジ', slug: 'microwaves', icon: 'microwave' },
+            { label: '炊飯器', slug: 'rice-cookers', icon: 'rice_bowl' }
+        ]
+    },
+    'home-appliances': {
+        label: '生活家電',
+        icon: 'local_laundry_service',
+        subCategories: [
+            { label: '洗濯機', slug: 'washing-machines', icon: 'local_laundry_service' },
+            { label: 'ロボット掃除機', slug: 'robot-vacuums', icon: 'smart_toy' },
+            { label: '空気清浄機', slug: 'air-purifiers', icon: 'air' }
+        ]
+    },
+    'pc-smartphones': {
+        label: 'PC・スマホ',
+        icon: 'devices',
+        subCategories: [
+            { label: 'ノートPC', slug: 'laptops', icon: 'laptop_chromebook' },
+            { label: 'タブレット', slug: 'tablets', icon: 'tablet_mac' },
+            { label: 'スマートウォッチ', slug: 'smart-watches', icon: 'watch' }
+        ]
+    },
+    'interior': {
+        label: 'インテリア',
+        icon: 'chair',
+        subCategories: [
+            { label: 'オフィスチェア', slug: 'office-chairs', icon: 'chair' },
+            { label: 'デスク', slug: 'desks', icon: 'table_restaurant' },
+            { label: '照明', slug: 'lighting', icon: 'light' }
+        ]
     }
 };
 

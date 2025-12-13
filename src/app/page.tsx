@@ -137,10 +137,10 @@ export default function Home() {
               {[
                 { icon: 'headphones', label: 'オーディオ', sub: 'イヤホン・スピーカー', link: '/categories/audio' },
                 { icon: 'health_and_beauty', label: '美容・健康', sub: 'ドライヤー・ケア', link: '/categories/beauty-health' },
-                { icon: 'kitchen', label: 'キッチン家電', sub: '冷蔵庫・レンジ', link: '#' },
-                { icon: 'local_laundry_service', label: '生活家電', sub: '洗濯機・掃除機', link: '#' },
-                { icon: 'devices', label: 'PC・スマホ', sub: 'パソコン・周辺機器', link: '#' },
-                { icon: 'chair', label: 'インテリア', sub: '家具・収納', link: '#' }
+                { icon: 'kitchen', label: 'キッチン家電', sub: '冷蔵庫・レンジ', link: '/categories/kitchen-appliances' },
+                { icon: 'local_laundry_service', label: '生活家電', sub: '洗濯機・掃除機', link: '/categories/home-appliances' },
+                { icon: 'devices', label: 'PC・スマホ', sub: 'パソコン・周辺機器', link: '/categories/pc-smartphones' },
+                { icon: 'chair', label: 'インテリア', sub: '家具・収納', link: '/categories/interior' }
               ].map((cat, idx) => (
                 <Link key={idx} className="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href={cat.link}>
                   <div className="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
