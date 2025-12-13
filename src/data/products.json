@@ -1,0 +1,276 @@
+[
+    {
+        "id": "sony-wf-1000xm5",
+        "name": "Sony WF-1000XM5",
+        "image": "/images/products/prod-B0CBKQZXT7.jpg",
+        "rank": 1,
+        "rating": 4.8,
+        "specs": [
+            {
+                "label": "ノイズキャンセリング",
+                "value": "世界最高クラス"
+            },
+            {
+                "label": "バッテリー",
+                "value": "単体8時間 / ケース込24時間"
+            },
+            {
+                "label": "防水",
+                "value": "IPX4"
+            },
+            {
+                "label": "コーデック",
+                "value": "LDAC, AAC, SBC"
+            },
+            {
+                "label": "マルチポイント",
+                "value": "対応"
+            }
+        ],
+        "pros": [
+            "圧倒的なノイズキャンセリング性能",
+            "小型化されて装着感が劇的に向上",
+            "LDAC対応でハイレゾ音質",
+            "マルチポイント接続の切り替えが爆速"
+        ],
+        "cons": [
+            "イヤーピース（フォームタイプ）の耐久性が低い",
+            "外音取り込みが少し人工的",
+            "表面がツルツルしていてケースから取り出しにくい"
+        ],
+        "price": "¥38,000",
+        "affiliateLinks": {
+            "rakuten": "https://search.rakuten.co.jp/search/mall/WF-1000XM5/"
+        },
+        "description": "静寂を持ち歩く。ソニーが誇る業界最高クラスのノイズキャンセリング搭載モデル。",
+        "tags": {
+            "bestBuy": true,
+            "highCospa": false
+        },
+        "reviewCount": 12500,
+        "asin": "B0CBKQZXT7"
+    },
+    {
+        "id": "apple-airpods-pro-2",
+        "name": "Apple AirPods Pro (第2世代)",
+        "image": "/images/products/prod-B0CHXVBQHR.jpg",
+        "rank": 2,
+        "rating": 4.7,
+        "specs": [
+            {
+                "label": "ノイズキャンセリング",
+                "value": "非常に強力"
+            },
+            {
+                "label": "バッテリー",
+                "value": "単体6時間 / ケース込30時間"
+            },
+            {
+                "label": "防水",
+                "value": "IPX4"
+            },
+            {
+                "label": "コーデック",
+                "value": "AAC, SBC"
+            },
+            {
+                "label": "マルチポイント",
+                "value": "Apple製品間のみ"
+            }
+        ],
+        "pros": [
+            "iPhoneとの連携が神レベル",
+            "外音取り込みが自然すぎて着けているのを忘れる",
+            "強力なノイズキャンセリング",
+            "適応型オーディオが便利"
+        ],
+        "cons": [
+            "Androidユーザーには機能制限が多い",
+            "LDAC等のハイレゾコーデック非対応",
+            "うどん型デザインは好みが分かれる"
+        ],
+        "price": "¥39,800",
+        "affiliateLinks": {
+            "rakuten": "https://search.rakuten.co.jp/search/mall/AirPods+Pro+2/"
+        },
+        "description": "iPhoneユーザーならこれ一択。魔法のような使い心地。",
+        "tags": {
+            "bestBuy": false,
+            "highCospa": false
+        },
+        "reviewCount": 35000,
+        "asin": "B0CHXVBQHR"
+    },
+    {
+        "id": "soundcore-liberty-4",
+        "name": "Anker Soundcore Liberty 4",
+        "image": "/images/products/prod-B0BB1PFCS3.jpg",
+        "rank": 3,
+        "rating": 4.5,
+        "specs": [
+            {
+                "label": "ノイズキャンセリング",
+                "value": "十分強力"
+            },
+            {
+                "label": "バッテリー",
+                "value": "単体9時間 / ケース込28時間"
+            },
+            {
+                "label": "防水",
+                "value": "IPX4"
+            },
+            {
+                "label": "コーデック",
+                "value": "LDAC, AAC, SBC"
+            },
+            {
+                "label": "マルチポイント",
+                "value": "対応"
+            }
+        ],
+        "pros": [
+            "1万円台とは思えない多機能ぶり",
+            "ヘルスモニタリング機能搭載",
+            "LDAC対応で高音質",
+            "アプリのカスタマイズ性が高い"
+        ],
+        "cons": [
+            "ノイズキャンセリングはトップ機には劣る",
+            "タッチ操作の感度が良すぎる時がある"
+        ],
+        "price": "¥14,990",
+        "affiliateLinks": {
+            "rakuten": "https://search.rakuten.co.jp/search/mall/Soundcore+Liberty+4/"
+        },
+        "description": "コスパ最強の全部入りイヤホン。迷ったらコレ。",
+        "tags": {
+            "bestBuy": false,
+            "highCospa": true
+        },
+        "reviewCount": 8900,
+        "asin": "B0BB1PFCS3"
+    },
+    {
+        "id": "panasonic-nanocare-eh-na0j",
+        "name": "Panasonic ヘアードライヤー ナノケア EH-NA0J",
+        "image": "/images/products/prod-B0B72L6K9P.jpg",
+        "rank": 4,
+        "rating": 4.9,
+        "reviewCount": 8500,
+        "price": "¥38,610",
+        "specs": [
+            {
+                "label": "重量",
+                "value": "約550g"
+            },
+            {
+                "label": "風量",
+                "value": "1.6㎥/分"
+            },
+            {
+                "label": "モード",
+                "value": "温冷リズム/毛先集中/スカルプ/スキン"
+            }
+        ],
+        "pros": [
+            "髪の潤いが段違いに増す",
+            "コンパクトで軽い",
+            "全自動モードが優秀"
+        ],
+        "cons": [
+            "価格が高い",
+            "折りたためない"
+        ],
+        "description": "高浸透ナノイーで髪の内側まで潤う、美容ドライヤーの到達点。",
+        "tags": {
+            "bestBuy": true
+        },
+        "affiliateLinks": {
+            "rakuten": "https://search.rakuten.co.jp/search/mall/EH-NA0J/"
+        },
+        "asin": "B0B72L6K9P"
+    },
+    {
+        "id": "dyson-supersonic-shine",
+        "name": "Dyson Supersonic Shine",
+        "image": "/images/products/prod-B0CLLG5874.jpg",
+        "rank": 5,
+        "rating": 4.6,
+        "reviewCount": 4200,
+        "price": "¥48,800",
+        "specs": [
+            {
+                "label": "重量",
+                "value": "697g"
+            },
+            {
+                "label": "風量",
+                "value": "2.4㎥/分"
+            },
+            {
+                "label": "アタッチメント",
+                "value": "3種付属"
+            }
+        ],
+        "pros": [
+            "圧倒的な大風量で速乾",
+            "ツヤ出しアタッチメントが神",
+            "デザインがかっこいい"
+        ],
+        "cons": [
+            "音が甲高い",
+            "重い",
+            "コードが太くて邪魔"
+        ],
+        "description": "風の力でツヤを出す。熱ダメージを防ぐダイソンの革新的モデル。",
+        "tags": {
+            "flagship": true
+        },
+        "affiliateLinks": {
+            "rakuten": "https://search.rakuten.co.jp/search/mall/Dyson+Supersonic+Shine/"
+        },
+        "asin": "B0CLLG5874"
+    },
+    {
+        "id": "refa-beautech-dryer-pro",
+        "name": "ReFa BEAUTECH DRYER PRO",
+        "image": "/images/products/prod-B0BN13QLBL.jpg",
+        "rank": 6,
+        "rating": 4.7,
+        "reviewCount": 6300,
+        "price": "¥43,000",
+        "specs": [
+            {
+                "label": "重量",
+                "value": "約740g"
+            },
+            {
+                "label": "風量",
+                "value": "1.4㎥/分"
+            },
+            {
+                "label": "機能",
+                "value": "プロセンシング(自動温度調整)"
+            }
+        ],
+        "pros": [
+            "美容室帰りのような仕上がり",
+            "熱ダメージを自動で防ぐ",
+            "高級感がある"
+        ],
+        "cons": [
+            "かなり重い",
+            "大きくて場所を取る",
+            "折りたためない"
+        ],
+        "description": "美容師の技を再現。自動で温度をコントロールする賢いドライヤー。",
+        "tags": {
+            "editorPick": true
+        },
+        "affiliateLinks": {
+            "rakuten": "https://search.rakuten.co.jp/search/mall/ReFa+BEAUTECH+DRYER+PRO/"
+        },
+        "asin": "B0BN13QLBL"
+    }
+]

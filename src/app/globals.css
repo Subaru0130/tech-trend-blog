@@ -2,98 +2,98 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  /* ChoiceGuide Theme */
-  --primary: #0056b3;
-  --primary-hover: #004494;
-  --primary-foreground: #FFFFFF;
+  /* NewDesign_2 Palette (Nature & Charcoal) */
+  --primary: #3E3B38;
+  --primary-hover: #292524;
+  --accent: #5E8C6A;
+  --accent-dark: #43694D;
+  --accent-light: #F0F5F1;
+  --rank-gold: #C5A059;
+  --rank-silver: #9CA3AF;
+  --rank-bronze: #A87964;
 
-  --accent: #ff8c00;
-  --accent-hover: #e07b00;
-  --accent-foreground: #FFFFFF;
+  --background-light: #F9F9F8;
+  --background-white: #FFFFFF;
+  --surface-light: #FFFFFF;
+  --surface-subtle: #F5F5F4;
 
-  --rank-gold: #c5a365;
-  --rank-silver: #9ca3af;
-  --rank-bronze: #b46d49;
+  --text-main: #44403C;
+  --text-sub: #78716C;
+  --border-color: #E7E5E4;
+  --brand-brown: #8D7B68;
 
-  --background: #f8f9fa;
-  /* background-light */
-  --background-light: #f8f9fa;
-  --background-dark: #101622;
-
-  --text-main: #333333;
-  --text-sub: #666666;
-  --foreground: #333333;
-
-  --card: #FFFFFF;
-  --card-foreground: #333333;
-  --popover: #FFFFFF;
-  --popover-foreground: #333333;
-  --secondary: #fce7cf;
-  /* accent light estimate */
-  --secondary-foreground: #1c1917;
-  --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #e5e7eb;
-  --input: #e5e7eb;
-  --ring: #0056b3;
-  --radius: 0.5rem;
-
-  --font-sans: 'Manrope', 'Noto Sans JP', sans-serif;
-  --font-display: 'Manrope', 'Noto Sans JP', sans-serif;
+  /* Compatibility & Utility Mappings */
+  --foreground: var(--text-main);
+  --background: var(--background-light);
 }
 
 @theme {
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
+  --color-accent-dark: var(--accent-dark);
+  --color-accent-light: var(--accent-light);
 
   --color-rank-gold: var(--rank-gold);
   --color-rank-silver: var(--rank-silver);
   --color-rank-bronze: var(--rank-bronze);
 
   --color-background-light: var(--background-light);
-  --color-background-dark: var(--background-dark);
+  --color-surface-subtle: var(--surface-subtle);
 
   --color-text-main: var(--text-main);
   --color-text-sub: var(--text-sub);
+  --color-border-color: var(--border-color);
+  --color-brand-brown: var(--brand-brown);
 
-  --font-display: var(--font-display);
-  --font-body: var(--font-sans);
+  /* Override default font-sans - NOTO FIRST as per HTML */
+  --font-sans: 'Noto Sans JP', 'Manrope', sans-serif;
+  --font-display: 'Noto Sans JP', 'Manrope', sans-serif;
 
-  --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.04);
-  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.03);
-  --shadow-glow: 0 0 20px rgba(0, 86, 179, 0.15);
+  --shadow-soft: 0 4px 20px -2px rgba(62, 59, 56, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 12px 24px -6px rgba(94, 140, 106, 0.15), 0 0 0 1px rgba(94, 140, 106, 0.1);
+  --shadow-float: 0 25px 35px -5px rgba(62, 59, 56, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+
+  --animate-fade-in-up: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-sans);
+  /* Matching HTML: Noto Sans JP first */
+  font-family: 'Noto Sans JP', 'Manrope', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom ChoiceGuide Styles */
 .hero-pattern {
-  background-color: #ffffff;
-  background-image: radial-gradient(#eff1f5 1.5px, transparent 1.5px);
-  background-size: 24px 24px;
+  background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+  /* Matching HTML: 32px size */
+  background-size: 32px 32px;
 }
 
-.dark .hero-pattern {
-  background-color: #1a202c;
-  background-image: radial-gradient(#2d3748 1.5px, transparent 1.5px);
-}
+/* Remove dark mode override for now to enforce new design strictness */
 
 /* Font Family for Material Symbols */
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-style: normal;
-  font-size: 24px;
+  /* font-size: 24px; Removed to let utility classes controls size */
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
@@ -183,4 +183,10 @@ body {
   padding-bottom: 0.5rem;
   margin-bottom: 1.5rem;
   display: inline-block;
+}
+
+.hero-pattern {
+  background-color: var(--background-light);
+  background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+  background-size: 32px 32px;
 }

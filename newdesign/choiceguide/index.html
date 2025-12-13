@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html class="light" lang="ja">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ChoiceGuide - 家電比較・ランキング</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0056b3","primary-hover": "#004494",
+                        "accent": "#ff8c00","accent-hover": "#e07b00",
+                        "rank-gold": "#c5a365",
+                        "rank-silver": "#9ca3af",
+                        "rank-bronze": "#b46d49",
+                        "background-light": "#f8f9fa",
+                        "background-dark": "#101622",
+                        "text-main": "#333333",
+                        "text-sub": "#666666",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans JP", "Manrope", "sans-serif"],
+                        "body": ["Noto Sans JP", "Manrope", "sans-serif"],
+                    },
+                    boxShadow: {
+                        "soft": "0 8px 30px rgba(0, 0, 0, 0.04)",
+                        "card": "0 2px 12px rgba(0, 0, 0, 0.03)",
+                        "glow": "0 0 20px rgba(0, 86, 179, 0.15)",
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Noto Sans JP', 'Manrope', sans-serif; }
+        .hero-pattern {
+            background-color: #ffffff;
+            background-image: radial-gradient(#eff1f5 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+        }
+        .dark .hero-pattern {
+             background-color: #1a202c;
+             background-image: radial-gradient(#2d3748 1.5px, transparent 1.5px);
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white antialiased">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
