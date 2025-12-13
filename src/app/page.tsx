@@ -38,7 +38,7 @@ export default function Home() {
                   長く愛用できる「本物」だけを厳選してご紹介します。
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <Link className="group bg-primary hover:bg-accent text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-3 min-w-[220px]" href="/rankings/prototype">
+                  <Link className="group bg-primary hover:bg-accent text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-3 min-w-[220px]" href="/rankings/wireless-earphones">
                     <span>今月のベストバイ</span>
                     <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
                   </Link>
@@ -135,20 +135,20 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {[
-                { icon: 'kitchen', label: 'キッチン家電', sub: '冷蔵庫・レンジ' },
-                { icon: 'local_laundry_service', label: '生活家電', sub: '洗濯機・掃除機' },
-                { icon: 'devices', label: 'PC・スマホ', sub: 'パソコン・周辺機器' },
-                { icon: 'headphones', label: 'オーディオ', sub: 'イヤホン・スピーカー' },
-                { icon: 'chair', label: 'インテリア', sub: '家具・収納' },
-                { icon: 'health_and_beauty', label: '美容・健康', sub: 'ドライヤー・ケア' }
+                { icon: 'headphones', label: 'オーディオ', sub: 'イヤホン・スピーカー', link: '/categories/audio' },
+                { icon: 'health_and_beauty', label: '美容・健康', sub: 'ドライヤー・ケア', link: '/categories/beauty-health' },
+                { icon: 'kitchen', label: 'キッチン家電', sub: '冷蔵庫・レンジ', link: '#' },
+                { icon: 'local_laundry_service', label: '生活家電', sub: '洗濯機・掃除機', link: '#' },
+                { icon: 'devices', label: 'PC・スマホ', sub: 'パソコン・周辺機器', link: '#' },
+                { icon: 'chair', label: 'インテリア', sub: '家具・収納', link: '#' }
               ].map((cat, idx) => (
-                <a key={idx} className="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="#">
+                <Link key={idx} className="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href={cat.link}>
                   <div className="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
                     <span className="material-symbols-outlined text-[28px]">{cat.icon}</span>
                   </div>
                   <h3 className="font-bold text-sm text-primary mb-1">{cat.label}</h3>
                   <span className="text-[10px] text-text-sub">{cat.sub}</span>
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -170,6 +170,7 @@ export default function Home() {
               </p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start relative max-w-6xl mx-auto">
+              {/* Example Static Cards - These will link to specific reviews */}
               <article className="bg-white rounded-3xl p-6 shadow-soft border border-white hover:border-border-color transition-all duration-300 lg:mt-12 order-2 lg:order-1 h-full flex flex-col relative z-0 group">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -179,20 +180,20 @@ export default function Home() {
                   <span className="text-[10px] font-bold text-text-sub bg-surface-subtle px-2.5 py-1 rounded-full border border-border-color">バランス型</span>
                 </div>
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden mb-5 bg-surface-subtle border border-border-color relative">
-                  <img alt="AirSound Pods 3" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=800" />
+                  <img alt="Apple AirPods Pro 2" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="/images/products/prod-B0CHXVBQHR.jpg" />
                 </div>
-                <h3 className="text-lg font-bold text-primary mb-2 line-clamp-1">AirSound Pods 3</h3>
+                <h3 className="text-lg font-bold text-primary mb-2 line-clamp-1">Apple AirPods Pro (第2世代)</h3>
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex text-rank-gold text-sm gap-0.5">
                     {[1, 2, 3, 4].map(i => <span key={i} className="material-symbols-outlined text-[18px] filled" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>)}
                     <span className="material-symbols-outlined text-[18px] filled" style={{ fontVariationSettings: "'FILL' 1" }}>star_half</span>
                   </div>
-                  <span className="text-sm font-bold text-primary">4.5</span>
+                  <span className="text-sm font-bold text-primary">4.7</span>
                 </div>
                 <div className="space-y-2 mb-6 text-xs text-text-sub flex-grow">
-                  <p className="leading-relaxed font-medium">iPhoneユーザーなら連携機能で最有力候補。空間オーディオの臨場感は圧巻。</p>
+                  <p className="leading-relaxed font-medium">iPhoneとの連携は最強。ノイズキャンセリングもトップクラス。</p>
                 </div>
-                <a className="block w-full py-3 rounded-xl border border-border-color bg-white text-center font-bold text-sm text-text-main hover:bg-surface-subtle transition-colors" href="#">詳細レビュー</a>
+                <Link className="block w-full py-3 rounded-xl border border-border-color bg-white text-center font-bold text-sm text-text-main hover:bg-surface-subtle transition-colors" href="/reviews/apple-airpods-pro-2">詳細レビュー</Link>
               </article>
 
               <article className="relative bg-white rounded-3xl p-8 shadow-card-hover border border-accent/20 flex flex-col h-full order-1 lg:order-2 z-10 ring-4 ring-accent/5 group">
@@ -205,29 +206,29 @@ export default function Home() {
                   <span className="text-xs text-stone-400 font-medium">更新: 2024.03.15</span>
                 </div>
                 <div className="aspect-video rounded-2xl overflow-hidden mb-6 bg-surface-subtle border border-border-color relative">
-                  <img alt="SonicFlow Pro X" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&q=80&w=800" />
+                  <img alt="Sony WF-1000XM5" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="/images/products/prod-B0CBKQZXT7.jpg" />
                 </div>
-                <h3 className="text-2xl font-black text-primary mb-2">SonicFlow Pro X</h3>
+                <h3 className="text-2xl font-black text-primary mb-2">Sony WF-1000XM5</h3>
                 <p className="text-sm text-text-sub mb-6 leading-relaxed font-medium">
-                  「静寂」を手に入れるならこれ一択。業界最高クラスのノイズキャンセリングと、原音に忠実な高解像度サウンドを両立したフラッグシップモデル。
+                  「静寂」を手に入れるならこれ一択。業界最高クラスのノイズキャンセリング。
                 </p>
                 <div className="bg-surface-subtle rounded-2xl p-5 mb-6 border border-border-color/60">
                   <div className="flex items-end justify-between mb-2">
                     <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Score</span>
-                    <span className="text-3xl font-black text-primary leading-none">5.0</span>
+                    <span className="text-3xl font-black text-primary leading-none">4.8</span>
                   </div>
                   <div className="flex text-rank-gold gap-0.5 mb-4">
                     {[1, 2, 3, 4, 5].map(i => <span key={i} className="material-symbols-outlined filled text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>)}
                   </div>
                   <ul className="text-xs space-y-2 text-text-main font-bold">
                     <li className="flex items-center gap-2"><span className="size-1.5 bg-accent rounded-full"></span> 圧倒的なノイズ除去性能</li>
-                    <li className="flex items-center gap-2"><span className="size-1.5 bg-accent rounded-full"></span> 長時間つけても疲れない装着感</li>
+                    <li className="flex items-center gap-2"><span className="size-1.5 bg-accent rounded-full"></span> 小型化による装着感向上</li>
                   </ul>
                 </div>
                 <div className="mt-auto grid gap-3">
-                  <a className="w-full py-4 rounded-xl bg-primary hover:bg-accent text-white text-center font-bold shadow-lg shadow-primary/20 hover:shadow-accent/30 transition-all flex items-center justify-center gap-2" href="#">
-                    最安値をチェック <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                  </a>
+                  <Link className="w-full py-4 rounded-xl bg-primary hover:bg-accent text-white text-center font-bold shadow-lg shadow-primary/20 hover:shadow-accent/30 transition-all flex items-center justify-center gap-2" href="/reviews/sony-wf-1000xm5">
+                    レビューを見る <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                  </Link>
                 </div>
               </article>
 
@@ -240,20 +241,20 @@ export default function Home() {
                   <span className="text-[10px] font-bold text-text-sub bg-surface-subtle px-2.5 py-1 rounded-full border border-border-color">コスパ最強</span>
                 </div>
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden mb-5 bg-surface-subtle border border-border-color relative">
-                  <img alt="BudgetBass Z" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&q=80&w=800" />
+                  <img alt="Anker Soundcore Liberty 4" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="/images/products/prod-B0BB1PFCS3.jpg" />
                 </div>
-                <h3 className="text-lg font-bold text-primary mb-2 line-clamp-1">BudgetBass Z</h3>
+                <h3 className="text-lg font-bold text-primary mb-2 line-clamp-1">Anker Soundcore Liberty 4</h3>
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex text-rank-gold text-sm gap-0.5">
                     {[1, 2, 3, 4].map(i => <span key={i} className="material-symbols-outlined text-[18px] filled" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>)}
-                    <span className="material-symbols-outlined text-stone-300 text-[18px]">star</span>
+                    <span className="material-symbols-outlined text-[18px] filled" style={{ fontVariationSettings: "'FILL' 1" }}>star_half</span>
                   </div>
-                  <span className="text-sm font-bold text-primary">4.0</span>
+                  <span className="text-sm font-bold text-primary">4.5</span>
                 </div>
                 <div className="space-y-2 mb-6 text-xs text-text-sub flex-grow">
-                  <p className="leading-relaxed font-medium">5,000円以下とは思えない重低音。初めての完全ワイヤレスに最適な一台。</p>
+                  <p className="leading-relaxed font-medium">1万円台で全部入り。機能性と価格のバランスが最高。</p>
                 </div>
-                <a className="block w-full py-3 rounded-xl border border-border-color bg-white text-center font-bold text-sm text-text-main hover:bg-surface-subtle transition-colors" href="#">詳細レビュー</a>
+                <Link className="block w-full py-3 rounded-xl border border-border-color bg-white text-center font-bold text-sm text-text-main hover:bg-surface-subtle transition-colors" href="/reviews/soundcore-liberty-4">詳細レビュー</Link>
               </article>
             </div>
           </div>
@@ -265,4 +266,3 @@ export default function Home() {
     </div >
   );
 }
-

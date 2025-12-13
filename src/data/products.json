@@ -2,6 +2,8 @@
     {
         "id": "sony-wf-1000xm5",
         "name": "Sony WF-1000XM5",
+        "category": "audio",
+        "subCategory": "wireless-earphones",
         "image": "/images/products/prod-B0CBKQZXT7.jpg",
         "rank": 1,
         "rating": 4.8,
@@ -53,6 +55,8 @@
     {
         "id": "apple-airpods-pro-2",
         "name": "Apple AirPods Pro (第2世代)",
+        "category": "audio",
+        "subCategory": "wireless-earphones",
         "image": "/images/products/prod-B0CHXVBQHR.jpg",
         "rank": 2,
         "rating": 4.7,
@@ -104,6 +108,8 @@
     {
         "id": "soundcore-liberty-4",
         "name": "Anker Soundcore Liberty 4",
+        "category": "audio",
+        "subCategory": "wireless-earphones",
         "image": "/images/products/prod-B0BB1PFCS3.jpg",
         "rank": 3,
         "rating": 4.5,
@@ -154,6 +160,8 @@
     {
         "id": "panasonic-nanocare-eh-na0j",
         "name": "Panasonic ヘアードライヤー ナノケア EH-NA0J",
+        "category": "beauty-health",
+        "subCategory": "hair-dryers",
         "image": "/images/products/prod-B0B72L6K9P.jpg",
         "rank": 4,
         "rating": 4.9,
@@ -194,6 +202,8 @@
     {
         "id": "dyson-supersonic-shine",
         "name": "Dyson Supersonic Shine",
+        "category": "beauty-health",
+        "subCategory": "hair-dryers",
         "image": "/images/products/prod-B0CLLG5874.jpg",
         "rank": 5,
         "rating": 4.6,
@@ -235,6 +245,8 @@
     {
         "id": "refa-beautech-dryer-pro",
         "name": "ReFa BEAUTECH DRYER PRO",
+        "category": "beauty-health",
+        "subCategory": "hair-dryers",
         "image": "/images/products/prod-B0BN13QLBL.jpg",
         "rank": 6,
         "rating": 4.7,

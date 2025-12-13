@@ -24,6 +24,8 @@ export interface Product {
     image: string;
     rating: number;
     reviewCount: number;
+    category: string; // Major category: 'audio', 'beauty-health'
+    subCategory: string; // Sub category: 'wireless-earphones', 'hair-dryers'
     asin?: string;
     price: string;
     description?: string; // Short description for the ranking card

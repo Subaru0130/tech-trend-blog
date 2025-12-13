@@ -15,16 +15,16 @@ export default function Header() {
                         </div>
                     </Link>
                     <nav className="hidden lg:flex items-center gap-8">
-                        <Link href="/rankings/prototype" className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group">
+                        <Link href="/rankings/wireless-earphones" className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group">
                             おすすめランキング
                             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
                         </Link>
-                        <Link href="/categories/prototype" className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group">
-                            カテゴリ一覧
+                        <Link href="/categories/audio" className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group">
+                            オーディオ
                             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
                         </Link>
-                        <Link href="/reviews/prototype" className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group">
-                            新着レビュー
+                        <Link href="/categories/beauty-health" className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group">
+                            美容・健康
                             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
                         </Link>
                     </nav>
