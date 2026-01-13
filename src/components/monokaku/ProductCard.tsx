@@ -54,7 +54,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                                 <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{product.manufacturer}</span>
                                 <div className="flex items-center gap-1">
                                     <StarRating rating={product.starRating} />
-                                    <span className="text-gray-900 font-bold ml-1 text-lg">{product.starRating.toFixed(1)}</span>
+                                    <span className="text-gray-900 font-bold ml-1 text-lg">{product.starRating.toFixed(2)}</span>
                                 </div>
                             </div>
                             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{product.modelName}</h3>

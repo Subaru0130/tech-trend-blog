@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import React from "react";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://tech-trend-blog-27mo.vercel.app'),
   title: {
-    default: 'ベストバイガイド | 失敗しない「正解」を選ぶ',
-    template: '%s | ベストバイガイド',
+    template: "%s | ChoiceGuide",
+    default: "ChoiceGuide - 暮らしを豊かにする家電選び",
   },
-  description: '専門家と編集部が徹底検証。後悔しない買い物ができる比較検証メディア。',
-  alternates: {
-    canonical: '/',
+  description: "専門家が厳選した家電・日用品のおすすめランキング。冷蔵庫、洗濯機から最新ガジェットまで、失敗しない買い物ガイド。",
+  metadataBase: new URL('https://choiceguide.jp'),
+  robots: {
+    index: true,
+    follow: true,
   },
-  verification: {
-    google: '767HspWPI5qpvxs1yKvz5otcilg3CdSv_fyZ_9SX0IQ', // Google Search Console Verification
+  openGraph: {
+    siteName: 'ChoiceGuide',
+    type: 'website',
   },
 };
 
@@ -22,34 +25,36 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
+    <html lang="ja" suppressHydrationWarning>
       <head>
-        <meta name="google-site-verification" content="767HspWPI5qpvxs1yKvz5otcilg3CdSv_fyZ_9SX0IQ" />
-        {/* Exact CDN links from original HTML */}
+        {/* Fonts */}
         <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body
         className="antialiased font-sans bg-background-light text-text-main"
+        suppressHydrationWarning
       >
+        {children}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'WebSite',
-              name: 'Best Buy Guide',
-              url: 'https://tech-trend-blog-27mo.vercel.app',
-              potentialAction: {
-                '@type': 'SearchAction',
-                target: 'https://tech-trend-blog-27mo.vercel.app/search?q={search_term_string}',
-                'query-input': 'required name=search_term_string',
-              },
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "ChoiceGuide",
+              "url": "https://choiceguide.jp",
+              "logo": "https://choiceguide.jp/logo.png",
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+81-00-0000-0000",
+                "contactType": "customer service"
+              }
             }),
           }}
         />
-        {children}
       </body>
     </html>
   );

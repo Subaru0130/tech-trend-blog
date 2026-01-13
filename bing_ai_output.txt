@@ -1,0 +1,31 @@
+﻿[dotenv@17.2.3] injecting env (1) from .env.local -- tip: 笞呻ｸ・ override existing env vars with { override: true }
+Testing Bing Search with UTF-8...
+Screenshot saved: bing_test.png
+
+Snippets found: 5
+
+1. Title: 縲・025譛譁ｰ縲・荳・・蜑榊ｾ後〒縺翫☆縺吶ａ繝ｯ繧､繝､繝ｬ繧ｹ繧､繝､繝帙Φ16驕ｸ ...
+   Snippet: 2025蟷ｴ11譛・8譌･ﾂﾂｷ 縺薙％縺ｧ縺ｯ縲・1荳・・蜑榊ｾ後〒謇九↓蜈･繧矩ｫ伜刀雉ｪ縺ｪ繝ｯ繧､繝､繝ｬ繧ｹ繧､繝､繝帙Φ縺ｮ縺翫☆縺吶ａ16驕ｸ繧堤ｴｹ莉九＠縺ｾ縺吶・..
+
+2. Title: 繝ｯ繧､繝､繝ｬ繧ｹ繧､繝､繝帙Φ1荳・・蜑榊ｾ後♀縺吶☆繧√・2025蟇ｾ蠢懊・驕ｸ縺ｳ譁ｹ縺ｨ逕ｨ 窶ｦ
+   Snippet: 2025蟷ｴ10譛・7譌･ﾂﾂｷ 譛ｬ險倅ｺ九・縲∽ｺ育ｮ怜・縺ｧ縲御ｽ輔ｒ謐ｨ縺ｦ縲∽ｽ輔ｒ蜿悶ｋ縺九阪ｒ蜈医↓譏守｢ｺ蛹悶・繝√ぉ繝・け繝ｪ繧ｹ繝医〒1荳・・莉･荳九→1荳・・蜿ｰ縺ｮ蟾ｮ繧堤洒譎る俣縺ｧ隕区･ｵ繧√∫畑騾泌挨縺ｫ蜴ｳ驕ｸ繝｢繝・Ν繧呈署遉ｺ縺励∪縺吶・縺ｾ縺・窶ｦ...
+
+3. Title: 
+   Snippet: ...
+
+4. Title: 
+   Snippet: ...
+
+5. Title: 
+   Snippet: ...
+
+
+Testing AI extraction...
+
+AI Response: 讀懃ｴ｢邨先棡縺九ｉ縺ｯ蜈ｷ菴鍋噪縺ｪ陬ｽ蜩∝錐繧堤音螳壹〒縺阪ｋ諠・ｱ縺悟性縺ｾ繧後※縺・↑縺・◆繧√∫ｩｺ縺ｮ驟榊・繧定ｿ斐＠縺ｾ縺吶・
+```json
+[]
+```
+
+
+Extracted products: 0

@@ -17,6 +17,12 @@ if (!GEMINI_API_KEY) {
 }
 const client = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
+// Import Spec Normalizer
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { normalizeObjectSpecs } = require('./lib/spec_normalizer.js');
+
+
 // --- Helper Functions ---
 
 async function downloadImage(url, filename) {
@@ -300,6 +306,44 @@ async function generateArticle(topic) {
   });
   console.log("Fixed ComparisonTable ASINs using RankingCard data.");
 
+
+  // --- POST-PROCESSING: Normalize Specs using Generic Logic ---
+  try {
+    mdxContent = mdxContent.replace(/<ComparisonTable([\s\S]*?)\/>/g, (match, props) => {
+      // 1. Extract specLabels
+      const labelMatch = props.match(/specLabels=\{\{([\s\S]*?)\}\}/);
+      const labelsStr = labelMatch ? `{${labelMatch[1]}}` : null;
+
+      // 2. Extract products
+      const productsMatch = props.match(/products=\{([\s\S]*?)\}/); // Assumes products={[...]} or products={variable}
+      const productsStr = productsMatch ? productsMatch[1] : null;
+
+      if (labelsStr && productsStr) {
+        try {
+          // Dangerous eval is acceptable here for local AI output parsing
+          // We wrap in parentheses to ensure expression evaluation
+          const labels = eval(`(${labelsStr})`);
+          const products = eval(`(${productsStr})`);
+
+          if (Array.isArray(products)) {
+            console.log("Normalizing specs in ComparisonTable...");
+            const normalizedProducts = normalizeObjectSpecs(products, labels);
+
+            // Reconstruct the component string
+            // Note: JSON.stringify will quote keys, which is fine for JSX prop values if inside {}
+            return `<ComparisonTable specLabels={${JSON.stringify(labels)}} products={${JSON.stringify(normalizedProducts)}} />`;
+          }
+        } catch (e) {
+          console.warn("Failed to parse/normalize ComparisonTable props:", e.message);
+        }
+      }
+      return match; // Return original if failed
+    });
+  } catch (e) {
+    console.error("Spec normalization error:", e);
+  }
+
+
   // CRITICAL: Strip all bold markers (**) to prevent "AI-like" formatting
   mdxContent = mdxContent.replace(/\*\*/g, '');
   console.log("Stripped all markdown bold markers (**).");
@@ -328,7 +372,7 @@ async function generateArticle(topic) {
   // --- POST-PROCESSING: Replace SEARCH: links in body with Amazon URLs ---
   mdxContent = mdxContent.replace(/\]\(SEARCH:(.*?)\)/g, (match, query) => {
     const encoded = encodeURIComponent(query);
-    const tag = "demo-22"; // Should use env var but for now hardcoded fallback is fine or process.env
+    const tag = process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG || "demo-22";
     return `](https://www.amazon.co.jp/s?k=${encoded}&tag=${tag})`;
   });
 

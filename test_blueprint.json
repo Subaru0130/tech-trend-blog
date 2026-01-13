@@ -1,0 +1,17 @@
+[
+    {
+        "keyword": "ワイヤレスイヤホン",
+        "blueprint": {
+            "target_reader": "通勤通学で音楽を聴きたい人",
+            "sales_hook": "最新のノイズキャンセリング機能で快適な音楽体験を",
+            "comparison_axis": "ノイズキャンセリング, 音質, バッテリー持続時間",
+            "price_min": 5000,
+            "price_max": 30000,
+            "ranking_count": 10,
+            "required_features": [
+                "ノイズキャンセリング"
+            ],
+            "title": "【2024】最強ワイヤレスイヤホンおすすめランキングTOP10！ノイキャン・音質重視"
+        }
+    }
+]

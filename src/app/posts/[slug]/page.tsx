@@ -22,6 +22,8 @@ const components = {
     FloatingCTA,
     // Add IDs to headings for ToC
     h2: (props: any) => {
+        // Debug Log
+        if (!ComparisonTable) console.error("CRITICAL: ComparisonTable is UNDEFINED in page.tsx");
         const id = props.children?.toString() || '';
         return <h2 id={id} className="text-2xl md:text-3xl font-bold mt-16 mb-6 text-slate-900 border-b border-slate-200 pb-4 scroll-mt-24" {...props} />
     },

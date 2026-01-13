@@ -1,8 +1,9 @@
 import productsData from '@/data/products.json';
-import { Product } from '@/types';
+import articlesData from '@/data/articles.json';
+import { Product, Article } from '@/types';
 
 export function getAllProducts(): Product[] {
-    return productsData as Product[];
+    return productsData as unknown as Product[];
 }
 
 export function getProductById(id: string): Product | undefined {
@@ -30,8 +31,42 @@ export function getProductsByType(type: string): Product[] {
 
 export function getProductsBySubCategory(subCategory: string): Product[] {
     return getAllProducts()
-        .filter((p) => p.subCategory === subCategory)
+        .filter((p) => (p as any).subCategory === subCategory)
         .sort((a, b) => a.rank - b.rank);
+}
+
+export function getArticlesByCategory(category: string): Article[] {
+    return (articlesData as Article[])
+        .filter((a) => (a.category === category || a.categoryId === category))
+        .sort((a, b) => new Date(b.publishedAt || '').getTime() - new Date(a.publishedAt || '').getTime());
+}
+
+export function getArticleBySlug(slug: string): Article | undefined {
+    let article = (articlesData as Article[]).find((a) => a.id === slug || a.slug === slug);
+    if (!article) {
+        // Try decoding
+        try {
+            const decoded = decodeURIComponent(slug);
+            article = (articlesData as Article[]).find((a) => a.id === decoded || a.slug === decoded);
+        } catch (e) {
+            // ignore
+        }
+    }
+    return article;
+}
+
+export function getAllArticles(): Article[] {
+    return (articlesData as Article[]).sort((a, b) => new Date(b.publishedAt || '').getTime() - new Date(a.publishedAt || '').getTime());
+}
+
+export function getArticleByProductId(productId: string): Article | undefined {
+    return (articlesData as Article[]).find(article => {
+        // Check rankingItems
+        if (article.rankingItems?.some(item => item.productId === productId)) return true;
+        // Check legacy products array
+        if (article.products?.includes(productId)) return true;
+        return false;
+    });
 }
 
 export const CATEGORY_MAP: Record<string, { label: string; icon: string; subCategories: { label: string; slug: string; icon: string }[] }> = {

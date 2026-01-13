@@ -1,0 +1,41 @@
+﻿[dotenv@17.2.3] injecting env (1) from .env.local -- tip: 売 add secrets lifecycle management: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: 笞呻ｸ・ load multiple .env files with { path: ['.env.local', '.env'] }
+ｧｪ Testing Market Research System
+
+==================================================
+
+投 Stage 1: Market Discovery
+
+剥 Market Research: Discovering products for "繝ｯ繧､繝､繝ｬ繧ｹ繧､繝､繝帙Φ 1荳・・蜿ｰ 繝弱う繧ｺ繧ｭ繝｣繝ｳ繧ｻ繝ｪ繝ｳ繧ｰ"...
+   倹 Searching: "繝ｯ繧､繝､繝ｬ繧ｹ繧､繝､繝帙Φ 1荳・・蜿ｰ 繝弱う繧ｺ繧ｭ繝｣繝ｳ繧ｻ繝ｪ繝ｳ繧ｰ 縺翫☆縺吶ａ 2025"
+   倹 Searching: "繝ｯ繧､繝､繝ｬ繧ｹ繧､繝､繝帙Φ 1荳・・蜿ｰ 繝弱う繧ｺ繧ｭ繝｣繝ｳ繧ｻ繝ｪ繝ｳ繧ｰ 繝ｩ繝ｳ繧ｭ繝ｳ繧ｰ"
+   塘 Found 1 trusted article URLs to scrape
+   当 Scraping [1/1]: mybest
+   統 Scraped 1 articles, extracting products with AI...
+   ､・Calling Gemini AI for product extraction...
+   統 AI Response (first 300 chars): ```json
+["Nothing Ear(a)", "AVIOT TE-D01t", "JPRiDE model i ANC", "cmf by NOTHING Buds Pro", "Marshall Motif A.N.C", "SOUNDPEATS Air3 Deluxe", "defunc TRUE GO SLIM", "SoundPeats Mini Pro", "QCY TH05 Melobuds ANC"]
+```...
+   ､・AI extracted 9 product names
+   投 Top products by market score:
+      1. Nothing Ear(a) (Score: 14, Mentions: 2)
+      2. AVIOT TE-D01t (Score: 14, Mentions: 2)
+      3. JPRiDE model i ANC (Score: 14, Mentions: 2)
+      4. cmf by NOTHING Buds Pro (Score: 14, Mentions: 2)
+      5. Marshall Motif A.N.C (Score: 14, Mentions: 2)
+   笨・Discovered 9 products from market research
+
+Discovered 9 products:
+  1. Nothing Ear(a) (Score: 14, Sources: AI, mybest)
+  2. AVIOT TE-D01t (Score: 14, Sources: AI, mybest)
+  3. JPRiDE model i ANC (Score: 14, Sources: AI, mybest)
+  4. cmf by NOTHING Buds Pro (Score: 14, Sources: AI, mybest)
+  5. Marshall Motif A.N.C (Score: 14, Sources: AI, mybest)
+
+逃 Stage 2: Amazon Verification
+   剥 Verifying on Amazon: "Nothing Ear(a)"
+      笶・Not found on Amazon
+  笶・Not found on Amazon
+
+==================================================
+ｧｪ Test Complete

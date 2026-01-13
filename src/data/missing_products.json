@@ -1,0 +1,88 @@
+[
+    {
+        "id": "soundcore-life-p3",
+        "name": "Anker Soundcore Life P3",
+        "category": "audio",
+        "subCategory": "wireless-earphones",
+        "image": "/images/products/prod-soundcore-life-p3.jpg",
+        "rank": 2,
+        "rating": 4.5,
+        "price": "¥8,990",
+        "asin": "B097R2M736",
+        "specs": [
+            {
+                "label": "コスパ",
+                "value": "高い"
+            },
+            {
+                "label": "音質",
+                "value": "ドンシャリ"
+            },
+            {
+                "label": "ノイキャン",
+                "value": "普通"
+            },
+            {
+                "label": "バッテリー",
+                "value": "単体7h / 計35h"
+            }
+        ],
+        "pros": [
+            "全部入りのバランス型",
+            "カラーバリエーション豊富",
+            "アプリが使いやすい"
+        ],
+        "cons": [
+            "マルチポイント非対応"
+        ],
+        "description": "ロングセラーの定番モデル。安くて全部入りならこれ。",
+        "tags": {},
+        "reviewCount": 8000,
+        "affiliateLinks": {
+            "amazon": "https://www.amazon.co.jp/dp/B097R2M736"
+        }
+    },
+    {
+        "id": "sony-wf-c500",
+        "name": "Sony WF-C500",
+        "category": "audio",
+        "subCategory": "wireless-earphones",
+        "image": "/images/products/prod-sony-wf-c500.jpg",
+        "rank": 3,
+        "rating": 4.4,
+        "price": "¥9,900",
+        "asin": "B09G96S15C",
+        "specs": [
+            {
+                "label": "音質",
+                "value": "バランス良"
+            },
+            {
+                "label": "ノイキャン",
+                "value": "なし"
+            },
+            {
+                "label": "バッテリー",
+                "value": "単体10h / 計20h"
+            },
+            {
+                "label": "装着感",
+                "value": "小型軽量"
+            }
+        ],
+        "pros": [
+            "Sonyのバランス良い音質",
+            "非常にコンパクト",
+            "防滴性能あり"
+        ],
+        "cons": [
+            "ノイキャンなし"
+        ],
+        "description": "Sonyの音を手軽に楽しみたい人に。ノイキャン不要なら最適。",
+        "tags": {},
+        "reviewCount": 4000,
+        "affiliateLinks": {
+            "amazon": "https://www.amazon.co.jp/dp/B09G96S15C"
+        }
+    }
+]

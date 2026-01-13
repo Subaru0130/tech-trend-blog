@@ -1,33 +1,60 @@
-import Link from 'next/link';
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
+    const router = useRouter();
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+        }
+    };
+
     return (
         <header className="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-xl border-b border-border-color/60 transition-all duration-300">
             <div className="px-4 md:px-6 lg:px-8 h-16 md:h-20 flex items-center justify-between max-w-7xl mx-auto">
                 <div className="flex items-center gap-8 lg:gap-12">
-                    <Link href="/" aria-label="ChoiceGuide Home" className="flex items-center gap-2.5 group">
+                    <a aria-label="ChoiceGuide Home" className="flex items-center gap-2.5 group" href="/">
                         <div className="size-9 bg-primary text-white rounded-lg flex items-center justify-center shadow-sm group-hover:bg-accent transition-colors duration-300">
                             <span className="material-symbols-outlined text-[20px]">checklist</span>
                         </div>
                         <div className="flex flex-col justify-center">
                             <span className="text-lg font-extrabold tracking-tight text-primary leading-none group-hover:text-accent transition-colors font-sans">ChoiceGuide</span>
                         </div>
-                    </Link>
+                    </a>
                     <nav className="hidden lg:flex items-center gap-8">
-                        <Link href="/rankings/wireless-earphones" className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group">
+                        <a className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group" href="/rankings/best-wireless-earphones-under-10000">
                             おすすめランキング
                             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
-                        </Link>
-                        <Link href="/categories/audio" className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group">
-                            オーディオ
+                        </a>
+                        <a className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group" href="/categories">
+                            カテゴリ一覧
                             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
-                        </Link>
-                        <Link href="/categories/beauty-health" className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group">
-                            美容・健康
+                        </a>
+                        <a className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group" href="/categories">
+                            新着レビュー
                             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
-                        </Link>
+                        </a>
                     </nav>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="hidden md:flex relative group w-64 lg:w-72 transition-all focus-within:w-80 duration-300">
+                        <form onSubmit={handleSearch} className="w-full relative">
+                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-[20px]">search</span>
+                            <input
+                                aria-label="サイト内検索"
+                                className="w-full bg-surface-subtle border-transparent focus:border-accent/30 focus:bg-white focus:ring-4 focus:ring-accent/10 rounded-full py-2.5 pl-10 pr-4 text-sm transition-all placeholder-stone-400 text-text-main font-medium shadow-inner"
+                                placeholder="商品名、キーワード..."
+                                type="search"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </form>
+                    </div>
                 </div>
             </div>
         </header>

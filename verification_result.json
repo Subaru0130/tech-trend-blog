@@ -1,0 +1,57 @@
+[
+  {
+    "name": "Sony WF-1000XM5",
+    "amazon": {
+      "total": 0,
+      "positive": 0,
+      "negative": 0
+    },
+    "kakaku": {
+      "total": 15,
+      "positive": 5,
+      "negative": 3
+    },
+    "debug_info": {
+      "asin": "B0C33XH59J",
+      "review_url_used": "https://www.amazon.co.jp/product-reviews/B0C33XH59J/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1",
+      "product_url_used": "https://www.amazon.co.jp/dp/B0C33XH59J"
+    }
+  },
+  {
+    "name": "Technics EAH-AZ100",
+    "amazon": {
+      "total": 8,
+      "positive": 8,
+      "negative": 0
+    },
+    "kakaku": {
+      "total": 15,
+      "positive": 5,
+      "negative": 3
+    },
+    "debug_info": {
+      "asin": "B0DQ9N9S5V",
+      "review_url_used": "https://www.amazon.co.jp/product-reviews/B0DQ9N9S5V/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1",
+      "product_url_used": "https://www.amazon.co.jp/dp/B0DQ9N9S5V"
+    }
+  },
+  {
+    "name": "GTRACING GT002",
+    "amazon": "ASIN Not Found",
+    "kakaku": "Not Found"
+  },
+  {
+    "name": "DeLonghi Magnifica S",
+    "amazon": {
+      "total": 8,
+      "positive": 8,
+      "negative": 0
+    },
+    "kakaku": "Not Found",
+    "debug_info": {
+      "asin": "B0FMDXBYNT",
+      "review_url_used": "https://www.amazon.co.jp/product-reviews/B0FMDXBYNT/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1",
+      "product_url_used": "https://www.amazon.co.jp/dp/B0FMDXBYNT"
+    }
+  }
+]

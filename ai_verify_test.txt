@@ -1,0 +1,46 @@
+﻿[dotenv@17.2.3] injecting env (1) from .env.local -- tip: 笨・audit secrets and track compliance: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: 則 sync secrets across teammates & machines: https://dotenvx.com/ops
+ｧｪ Testing Market Research System
+
+==================================================
+
+投 Stage 1: Market Discovery
+
+剥 Market Research: Discovering products for "繝ｯ繧､繝､繝ｬ繧ｹ繧､繝､繝帙Φ 1荳・・蜿ｰ 繝弱う繧ｺ繧ｭ繝｣繝ｳ繧ｻ繝ｪ繝ｳ繧ｰ"...
+   倹 Searching: "繝ｯ繧､繝､繝ｬ繧ｹ繧､繝､繝帙Φ 1荳・・蜿ｰ 繝弱う繧ｺ繧ｭ繝｣繝ｳ繧ｻ繝ｪ繝ｳ繧ｰ 縺翫☆縺吶ａ 2025"
+   倹 Searching: "繝ｯ繧､繝､繝ｬ繧ｹ繧､繝､繝帙Φ 1荳・・蜿ｰ 繝弱う繧ｺ繧ｭ繝｣繝ｳ繧ｻ繝ｪ繝ｳ繧ｰ 繝ｩ繝ｳ繧ｭ繝ｳ繧ｰ"
+   塘 Found 1 trusted article URLs to scrape
+   当 Scraping [1/1]: mybest
+   統 Scraped 1 articles, extracting products with AI...
+   ､・Calling Gemini AI for product extraction...
+   統 AI Response (first 300 chars): 縺薙・繝ｬ繝薙Η繝ｼ險倅ｺ九°繧峨・縲・荳・・蜿ｰ縺ｮ繝弱う繧ｺ繧ｭ繝｣繝ｳ繧ｻ繝ｪ繝ｳ繧ｰ讖溯・莉倥″繝ｯ繧､繝､繝ｬ繧ｹ繧､繝､繝帙Φ縺ｮ蜈ｷ菴鍋噪縺ｪ陬ｽ蜩∝錐繧堤音螳壹〒縺阪ｋ諠・ｱ縺碁剞繧峨ｌ縺ｦ縺・∪縺吶ゅ＠縺九＠縲∽ｻ･荳九・陬ｽ蜩√↓縺､縺・※險蜿翫′縺ゅｊ縺ｾ縺吶・
+*   **Nothing Ear(a)**
+*   **AVIOT TE-D01t**
+
+縺薙ｌ繧峨・陬ｽ蜩√′1荳・・蜿ｰ縺ｧ繝弱う繧ｺ繧ｭ繝｣繝ｳ繧ｻ繝ｪ繝ｳ繧ｰ讖溯・繧呈政霈峨＠縺ｦ縺・ｋ縺九←縺・°縺ｯ縲∬ｨ倅ｺ九・蜀・ｮｹ縺縺代〒縺ｯ蛻､譁ｭ縺ｧ縺阪∪縺帙ｓ縲・
+縺励◆縺後▲縺ｦ縲∫樟譎らせ縺ｧ縺ｮ蝗樒ｭ斐・莉･荳九・繧医≧縺ｫ縺ｪ繧翫∪縺吶・
+```json
+["Nothing Ear(a)", "AVIOT TE-D01t"]
+```...
+   ､・AI extracted 2 product names
+   投 Top products by market score:
+      1. Nothing Ear(a) (Score: 14, Mentions: 2)
+      2. AVIOT TE-D01t (Score: 14, Mentions: 2)
+   笨・Discovered 2 products from market research
+
+Discovered 2 products:
+  1. Nothing Ear(a) (Score: 14, Sources: AI, mybest)
+  2. AVIOT TE-D01t (Score: 14, Sources: AI, mybest)
+
+逃 Stage 2: Amazon Verification
+   剥 Verifying on Amazon: "Nothing Ear(a)"
+      逃 Amazon result: Nothing Wireless Earphones (a) Noise Cancelling/ChatGPT Comp...
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: 則 sync secrets across teammates & machines: https://dotenvx.com/ops
+      笨・AI confirmed: Correct product
+  笨・Found on Amazon: Nothing Ear(a)
+     ASIN: B0CXPRHTNB
+     Price: ﾂ･14,800
+     Rating: null笘・(0 reviews)
+
+==================================================
+ｧｪ Test Complete

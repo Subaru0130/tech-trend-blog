@@ -1,315 +1,334 @@
+"use client";
 
 import React, { useState } from 'react';
+import { Product, Article } from '@/types';
 
-const ProductContent: React.FC = () => {
+interface ProductContentProps {
+    product: Product;
+    children?: React.ReactNode;
+    parentArticle?: Article;
+    relatedProducts?: Product[];
+    relatedArticles?: Article[];
+}
+
+const ProductContent: React.FC<ProductContentProps> = ({
+    product,
+    children,
+    parentArticle,
+    relatedProducts = [],
+    relatedArticles = []
+}) => {
     const [activeImage, setActiveImage] = useState(0);
-    const images = [
-        'https://images.unsplash.com/photo-1610438235354-a6ae5528385c?auto=format&fit=crop&q=80&w=800',
-        'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&q=80&w=800',
-        'https://images.unsplash.com/photo-1628202926206-c63a34b1618f?auto=format&fit=crop&q=80&w=800',
-        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800'
-    ];
+    // Use product image and placeholders if only one image exists or mock multiple images
+    const images = [product.image];
+    // Mock additional images for carousel effect if needed, or use real ones if available in future
+    if (images.length < 4) {
+        images.push(product.image, product.image, product.image);
+    }
+
+    const priceVal = typeof product.price === 'string'
+        ? parseInt(product.price.replace(/[^0-9]/g, ''))
+        : (product.price || 0);
 
     return (
-        <div className="lg:col-span-8 flex flex-col gap-8">
-            {/* Product Hero */}
-            <div className="bg-white dark:bg-surface-dark rounded-xl p-6 sm:p-8 shadow-soft border border-gray-100 dark:border-gray-800">
-                <div className="border-b border-gray-100 dark:border-gray-700 pb-6 mb-6">
-                    <div className="flex flex-wrap items-center gap-2 mb-3">
-                        <span className="bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[14px] fill-current">emoji_events</span>
-                            売れ筋ランキング 1位
-                        </span>
-                        <span className="bg-blue-50 text-brand-blue border border-blue-100 text-[10px] font-bold px-2 py-1 rounded-full">
-                            編集部おすすめ
-                        </span>
-                    </div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-text-main dark:text-white leading-snug mb-3">
-                        ソニー ワイヤレスノイズキャンセリングヘッドホン WH-1000XM5
-                    </h1>
-                    <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-1.5 bg-yellow-50 px-2 py-1 rounded-md">
-                            <span className="font-bold text-yellow-700 text-base">4.8</span>
-                            <div className="flex text-accent-yellow">
-                                {[1, 2, 3, 4].map(i => <span key={i} className="material-symbols-outlined text-[16px] fill-current">star</span>)}
-                                <span className="material-symbols-outlined text-[16px] fill-current">star_half</span>
+        <main className="pt-24 pb-20 md:pt-32">
+            <div className="max-w-7xl mx-auto px-4 md:px-8 mb-8">
+                {/* Breadcrumb */}
+                <nav aria-label="Breadcrumb" className="flex items-center text-xs md:text-sm text-text-sub overflow-x-auto whitespace-nowrap pb-2 md:pb-0 mb-6">
+                    <a className="hover:text-accent transition-colors" href="/">ホーム</a>
+                    <span className="mx-2 text-stone-300">/</span>
+                    <a className="hover:text-accent transition-colors" href="/categories">カテゴリ</a>
+                    <span className="mx-2 text-stone-300">/</span>
+                    {/* Contextual Link to Parent Article */}
+                    {parentArticle ? (
+                        <>
+                            <a className="hover:text-accent transition-colors max-w-[150px] md:max-w-xs truncate" href={`/rankings/${parentArticle.id}`}>
+                                {parentArticle.title}
+                            </a>
+                            <span className="mx-2 text-stone-300">/</span>
+                        </>
+                    ) : (
+                        <>
+                            <span className="text-stone-400">商品詳細</span>
+                            <span className="mx-2 text-stone-300">/</span>
+                        </>
+                    )}
+                    <span className="font-bold text-primary truncate">{product.name}</span>
+                </nav>
+
+                {/* Hero Section */}
+                <div className="bg-white rounded-[2rem] p-6 md:p-10 shadow-float border border-border-color mb-16">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                        <div className="relative">
+                            <div className="aspect-[4/3] rounded-[1.5rem] overflow-hidden bg-surface-subtle shadow-inner relative group">
+                                <img
+                                    alt={product.name}
+                                    className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+                                    src={images[activeImage]}
+                                />
                             </div>
+                            {/* Thumbnail selection could go here if implemented */}
                         </div>
-                        <a href="#reviews" className="text-text-muted hover:text-brand-blue underline decoration-gray-300 hover:decoration-brand-blue transition-all">
-                            口コミ・レビュー (12,450件)
-                        </a>
-                    </div>
-                </div>
-
-                <div className="flex flex-col md:flex-row gap-8">
-                    <div className="w-full md:w-5/12 flex flex-col gap-4">
-                        <div className="aspect-square w-full rounded-xl bg-white border border-gray-100 dark:border-gray-700 overflow-hidden relative group shadow-sm flex items-center justify-center p-6">
-                            <div
-                                className="w-full h-full bg-contain bg-no-repeat bg-center transition-transform duration-500 group-hover:scale-105"
-                                style={{ backgroundImage: `url('${images[activeImage]}')` }}
-                            ></div>
-                        </div>
-                        <div className="flex gap-3 overflow-x-auto scrollbar-hide py-1">
-                            {images.map((img, idx) => (
-                                <div
-                                    key={idx}
-                                    onClick={() => setActiveImage(idx)}
-                                    className={`size-16 flex-shrink-0 rounded-lg bg-white cursor-pointer border overflow-hidden p-1 shadow-sm transition-all ${activeImage === idx ? 'border-2 border-brand-blue ring-2 ring-brand-blue/10' : 'border-gray-200 hover:border-gray-400'
-                                        }`}
-                                >
-                                    <div className="w-full h-full bg-contain bg-no-repeat bg-center" style={{ backgroundImage: `url('${img}')` }}></div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="w-full md:w-7/12 flex flex-col">
-                        <div className="mb-6">
-                            <p className="text-text-main dark:text-gray-300 text-sm leading-7 mb-5 font-normal">
-                                業界最高クラスのノイズキャンセリング性能。AI技術を活用した高音質通話機能も搭載し、ビジネスシーンでも活躍。軽量設計で長時間の使用も快適です。
+                        <div className="flex flex-col justify-center h-full">
+                            <div className="flex items-center gap-3 mb-4 flex-wrap">
+                                {product.rank === 1 && (
+                                    <span className="bg-accent text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                                        2025年ベストバイ
+                                    </span>
+                                )}
+                                <span className="bg-surface-subtle text-text-sub text-[11px] font-bold px-3 py-1 rounded-full border border-border-color">
+                                    おすすめランキング {product.rank}位
+                                </span>
+                            </div>
+                            <h1 className="text-3xl md:text-5xl font-black text-primary leading-tight mb-6">
+                                {product.name}
+                            </h1>
+                            <p className="text-lg text-text-sub font-medium mb-8 leading-relaxed">
+                                {product.description}
                             </p>
-                            <ul className="space-y-3 mb-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700/50">
-                                {['業界最高クラスのノイキャン性能', '専用設計30mmドライバーユニット搭載', 'AI技術による高精度な通話品質'].map((item, idx) => (
-                                    <li key={idx} className="flex items-start gap-3 text-sm">
-                                        <span className="flex items-center justify-center size-5 rounded-full bg-green-100 text-green-600 mt-0.5">
-                                            <span className="material-symbols-outlined text-[14px]">check</span>
-                                        </span>
-                                        <span className="font-medium text-gray-700 dark:text-gray-200">{item}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                            <div className="space-y-8">
+                                <div className="flex items-baseline gap-3 pb-6 border-b border-border-color">
+                                    <span className="text-sm font-bold text-stone-500">参考価格</span>
+                                    <span className="text-5xl font-black text-primary tracking-tight">
+                                        {product.price}
+                                        <span className="text-lg font-bold text-text-sub ml-1">~</span>
+                                    </span>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {product.affiliateLinks.amazon && (
+                                        <a
+                                            className="relative group flex items-center justify-center gap-3 w-full py-4 px-6 bg-[#FF9900] hover:bg-[#E68A00] text-white rounded-xl shadow-lg transition-all hover:-translate-y-1"
+                                            href={product.affiliateLinks.amazon}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <span className="material-symbols-outlined text-2xl">shopping_cart</span>
+                                            <span className="font-bold text-base whitespace-nowrap">Amazonで見る</span>
+                                        </a>
+                                    )}
+                                    {product.affiliateLinks.rakuten && (
+                                        <a
+                                            className="relative group flex items-center justify-center gap-3 w-full py-4 px-6 bg-[#BF0000] hover:bg-[#A00000] text-white rounded-xl shadow-lg transition-all hover:-translate-y-1"
+                                            href={product.affiliateLinks.rakuten}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <span className="material-symbols-outlined text-2xl">local_mall</span>
+                                            <span className="font-bold text-base whitespace-nowrap">楽天市場で見る</span>
+                                        </a>
+                                    )}
+                                </div>
+                                <p className="text-[11px] text-stone-400 text-center leading-relaxed">*最新の価格・在庫状況は各ストアにてご確認ください。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Sticky Navigation */}
+            <div className="sticky top-16 md:top-20 z-40 bg-white/95 backdrop-blur shadow-sm border-b border-border-color mb-16">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center gap-10 h-14">
+                    <a className="text-sm font-bold text-accent border-b-2 border-accent h-full flex items-center px-1" href="#overview">専門家による検証</a>
+                    <a className="text-sm font-bold text-text-sub hover:text-primary transition-colors h-full flex items-center px-1" href="#specs">詳細スペック</a>
+                    <div className="ml-auto hidden sm:flex items-center gap-4">
+                        <span className="text-sm font-bold text-primary">{product.price}</span>
+                        {product.affiliateLinks.amazon && (
+                            <a
+                                className="bg-accent hover:bg-accent-dark text-white text-xs font-bold px-5 py-2 rounded-full transition-colors shadow-sm"
+                                href={product.affiliateLinks.amazon}
+                            >
+                                Amazonで購入
+                            </a>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <div className="lg:col-span-8">
+                    <article className="prose max-w-none" id="overview">
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="size-12 rounded-2xl bg-accent-light flex items-center justify-center text-accent">
+                                <span className="material-symbols-outlined text-3xl">verified</span>
+                            </div>
+                            <h2 className="!m-0 !border-0 text-3xl">専門家による徹底検証<br className="hidden md:block" />{product.name}の実力とは？</h2>
+                        </div>
+                        <p className="text-xl font-medium text-primary mb-10 leading-relaxed border-l-4 border-accent-light pl-6">
+                            {product.description}
+                        </p>
+
+                        <div className="my-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="bg-pros-bg/50 p-8 rounded-[1.5rem] border border-pros-bg">
+                                <h3 className="!mt-0 flex items-center gap-2 text-pros-text font-bold text-base">
+                                    <span className="material-symbols-outlined text-[20px]">check_circle</span> ここがおすすめ(メリット)
+                                </h3>
+                                <ul className="!mb-0 text-sm font-bold leading-relaxed text-primary mt-4 space-y-2">
+                                    {product.pros && product.pros.map((item, i) => (
+                                        <li key={i} className="flex items-start gap-2">
+                                            <span className="text-pros-text mt-0.5">•</span>
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="bg-cons-bg/50 p-8 rounded-[1.5rem] border border-cons-bg">
+                                <h3 className="!mt-0 flex items-center gap-2 text-cons-text font-bold text-base">
+                                    <span className="material-symbols-outlined text-[20px]">warning</span> ここは注意(デメリット)
+                                </h3>
+                                <ul className="!mb-0 text-sm font-bold leading-relaxed text-primary mt-4 space-y-2">
+                                    {product.cons && product.cons.map((item, i) => (
+                                        <li key={i} className="flex items-start gap-2">
+                                            <span className="text-cons-text mt-0.5">•</span>
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
 
-                        <div className="mt-auto bg-gradient-to-br from-[#fffdfd] to-[#fff5f5] dark:from-surface-dark dark:to-surface-dark p-5 rounded-xl border border-red-100 dark:border-red-900/30 shadow-sm">
-                            <div className="flex flex-wrap items-baseline gap-2 mb-4">
-                                <span className="text-xs text-gray-500 font-medium">最安値参考:</span>
-                                <span className="text-4xl font-bold text-[#c41e3a] leading-none tracking-tight">¥46,800</span>
-                                <span className="text-sm text-gray-400 line-through">¥53,900</span>
-                                <span className="text-xs text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded ml-2">13% OFF</span>
-                            </div>
-                            <div className="flex flex-col gap-3">
-                                <a href="#" className="w-full bg-[#ff9900] hover:bg-[#e68a00] text-white font-bold text-lg py-3.5 px-4 rounded-lg shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-all transform active:scale-[0.99] group">
-                                    Amazonで詳細を見る
-                                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">open_in_new</span>
+                        {/* Dynamic Review Content passed from server page */}
+                        <div className="prose-headings:font-black prose-headings:text-primary prose-p:text-text-main prose-li:text-text-main prose-strong:text-primary prose-a:text-blue-600 prose-a:font-bold prose-a:underline prose-a:decoration-blue-600/30 prose-a:underline-offset-4 hover:prose-a:decoration-blue-600 hover:prose-a:text-blue-700 transition-colors">
+                            {children}
+                        </div>
+                    </article>
+
+                    <section className="mt-20" id="specs">
+                        <div className="flex items-center gap-3 mb-8 border-b border-border-color pb-4">
+                            <span className="material-symbols-outlined text-accent text-2xl">list_alt</span>
+                            <h2 className="text-2xl font-black text-primary">詳細スペック</h2>
+                        </div>
+                        <div className="overflow-hidden rounded-2xl border border-border-color bg-white">
+                            <table className="w-full text-sm text-left">
+                                <tbody className="divide-y divide-border-color">
+                                    {product.specs.filter(spec =>
+                                        !spec.label.includes("お届け") &&
+                                        !spec.label.includes("ニュース") &&
+                                        !spec.label.includes("関連") &&
+                                        !spec.label.includes("保証") &&
+                                        !spec.label.includes("在庫") &&
+                                        !spec.label.includes("特集") &&
+                                        !spec.label.includes("満足度") &&
+                                        !spec.label.includes("ランキング") &&
+                                        !spec.label.includes("PV") &&
+                                        !spec.label.includes("記事")
+                                    ).map((spec, i) => (
+                                        <tr key={i} className={i % 2 === 0 ? "bg-surface-subtle/30" : ""}>
+                                            <th className="py-5 px-8 font-bold text-primary w-1/3">{spec.label}</th>
+                                            <td className="py-5 px-8 text-text-main">{spec.value}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    {/* Affiliate Buttons (Moved to bottom) */}
+                    <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {product.affiliateLinks.amazon && (
+                            <a
+                                className="relative group flex items-center justify-center gap-3 w-full py-5 px-8 bg-[#FF9900] hover:bg-[#E68A00] text-white rounded-2xl shadow-lg transition-all hover:-translate-y-1"
+                                href={product.affiliateLinks.amazon}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span className="material-symbols-outlined text-3xl">shopping_cart</span>
+                                <span className="font-bold text-lg whitespace-nowrap">Amazonで在庫を見る</span>
+                            </a>
+                        )}
+                        {product.affiliateLinks.rakuten && (
+                            <a
+                                className="relative group flex items-center justify-center gap-3 w-full py-5 px-8 bg-[#BF0000] hover:bg-[#A00000] text-white rounded-2xl shadow-lg transition-all hover:-translate-y-1"
+                                href={product.affiliateLinks.rakuten}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span className="material-symbols-outlined text-3xl">local_mall</span>
+                                <span className="font-bold text-lg whitespace-nowrap">楽天市場で在庫を見る</span>
+                            </a>
+                        )}
+                    </div>
+                </div>
+
+                {/* Sidebar */}
+                <div className="lg:col-span-4 space-y-10">
+                    <div className="bg-white p-8 rounded-3xl shadow-card border border-border-color">
+                        <h3 className="font-bold text-primary mb-6 flex items-center gap-2 whitespace-nowrap text-sm">
+                            <span className="material-symbols-outlined text-rank-gold">auto_awesome</span>
+                            同ジャンルの人気商品
+                        </h3>
+                        {/* Dynamic Related Products */}
+                        <div className="space-y-6">
+                            {relatedProducts.length > 0 ? (
+                                relatedProducts.map((p, index) => (
+                                    <a key={p.id || index} className="flex items-center gap-4 group" href={`/reviews/${p.id}`}>
+                                        <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-surface-subtle border border-border-color shrink-0">
+                                            <img
+                                                alt={p.name}
+                                                className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
+                                                src={p.image}
+                                            />
+                                            {p.rank > 0 && (
+                                                <div className={`absolute top-0 left-0 text-white text-[10px] font-bold px-2 py-0.5 rounded-br z-10 ${p.rank === 1 ? 'bg-rank-gold' :
+                                                    p.rank === 2 ? 'bg-rank-silver' :
+                                                        p.rank === 3 ? 'bg-rank-bronze' : 'bg-stone-500'
+                                                    }`}>
+                                                    {p.rank}位
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-bold text-primary line-clamp-2 group-hover:text-accent transition-colors">
+                                                {p.name}
+                                            </h4>
+                                            <div className="text-xs text-stone-400 mt-1 font-bold">{p.price}</div>
+                                        </div>
+                                    </a>
+                                ))
+                            ) : (
+                                <p className="text-sm text-text-sub">関連商品はありません。</p>
+                            )}
+                        </div>
+                        <div className="mt-8 pt-6 border-t border-border-color text-center">
+                            {parentArticle && (
+                                <a className="text-xs font-bold text-accent hover:underline flex items-center justify-center gap-1 whitespace-nowrap" href={`/rankings/${parentArticle.id}`}>
+                                    ランキングをもっと見る <span className="material-symbols-outlined text-xs">arrow_forward</span>
                                 </a>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <a href="#" className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 hover:border-gray-300 text-text-main dark:text-white text-sm font-bold py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 transition-all shadow-sm">
-                                        <span className="text-red-600 font-black">R</span> 楽天市場
-                                    </a>
-                                    <a href="#" className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 hover:border-gray-300 text-text-main dark:text-white text-sm font-bold py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 transition-all shadow-sm">
-                                        <span className="text-red-600 font-black">Y!</span> Yahoo!
-                                    </a>
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
-                </div>
-            </div>
 
-            {/* Affiliate Notice */}
-            <div className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-[11px] px-4 py-3 rounded-lg flex items-start gap-2 border border-gray-100 dark:border-gray-700">
-                <span className="material-symbols-outlined text-[16px] mt-0.5 shrink-0">info</span>
-                <p>当サイトはアフィリエイト広告プログラムに参加しています。記事内で紹介している商品を購入すると、売上の一部が当サイトに還元されることがあります。</p>
-            </div>
-
-            {/* Expert Review */}
-            <div id="verdict" className="bg-white dark:bg-surface-dark rounded-xl p-6 sm:p-8 shadow-soft border border-gray-100 dark:border-gray-800 scroll-mt-24">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
-                    <span className="w-1.5 h-6 bg-brand-blue rounded-full"></span>
-                    専門家の評価・レビュー
-                </h2>
-                <div className="prose dark:prose-invert max-w-none text-text-main dark:text-gray-300 text-sm leading-8 mb-8">
-                    <p className="mb-4">Sony WH-1000XM5は、人気の1000Xラインの大幅な刷新モデルです。前モデルほどコンパクトに折りたたむことはできませんが、装着感が向上し、特に中高音域でのノイズキャンセリング性能がわずかに改善されています。</p>
-                    <p>多くのユーザーにとって、今購入できる最高のワイヤレスヘッドホンの一つです。音質、アプリの機能性、ANC性能のバランスは、他社製品と比較しても頭一つ抜けています。</p>
-                </div>
-                <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-blue-50/50 dark:bg-blue-900/10 p-5 rounded-xl border border-blue-100 dark:border-blue-900/30">
-                        <h3 className="font-bold text-blue-800 dark:text-blue-400 mb-4 flex items-center gap-2 text-sm border-b border-blue-200 dark:border-blue-800/30 pb-2">
-                            <span className="material-symbols-outlined text-blue-600">thumb_up</span>
-                            良い点 (メリット)
-                        </h3>
-                        <ul className="space-y-3">
-                            {['クラス最高レベルのノイズ除去', '解像度が高く繊細な音質', '通話品質が非常にクリア', '軽量で疲れにくい装着感'].map((item, i) => (
-                                <li key={i} className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></span>
-                                    <span>{item}</span>
+                    {/* Read Also Section */}
+                    <div className="bg-[#F2F4F2] p-8 rounded-3xl border border-border-color">
+                        <h3 className="font-bold text-primary mb-6 text-sm tracking-widest uppercase">あわせて読みたい</h3>
+                        <ul className="space-y-6">
+                            {relatedArticles.length > 0 ? (
+                                relatedArticles.slice(0, 3).map((article) => (
+                                    <li key={article.id}>
+                                        <a className="group block" href={`/rankings/${article.id}`}>
+                                            <span className="text-[10px] font-bold text-accent mb-1 block">
+                                                {article.id.includes('guide') ? 'BUYING GUIDE' : 'RANKING'}
+                                            </span>
+                                            <h4 className="text-sm font-bold text-primary leading-snug group-hover:text-accent transition-colors">
+                                                {article.title}
+                                            </h4>
+                                        </a>
+                                    </li>
+                                ))
+                            ) : (
+                                <li>
+                                    <a className="group block" href="/categories">
+                                        <span className="text-[10px] font-bold text-accent mb-1 block">CATEGORY</span>
+                                        <h4 className="text-sm font-bold text-primary leading-snug group-hover:text-accent transition-colors">
+                                            さらに多くの記事を探す
+                                        </h4>
+                                    </a>
                                 </li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div className="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-xl border border-gray-100 dark:border-gray-700">
-                        <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2 text-sm border-b border-gray-200 dark:border-gray-700 pb-2">
-                            <span className="material-symbols-outlined text-gray-500">thumb_down</span>
-                            気になった点 (デメリット)
-                        </h3>
-                        <ul className="space-y-3">
-                            {['コンパクトに折りたためない', '前モデルより価格が上昇', '防水性能の表記なし'].map((item, i) => (
-                                <li key={i} className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-400">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-2 shrink-0"></span>
-                                    <span>{item}</span>
-                                </li>
-                            ))}
+                            )}
                         </ul>
                     </div>
                 </div>
             </div>
-
-            {/* Comparison Table */}
-            <div className="bg-white dark:bg-surface-dark rounded-xl p-6 sm:p-8 shadow-soft border border-gray-100 dark:border-gray-800 overflow-hidden">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
-                    <span className="w-1.5 h-6 bg-brand-blue rounded-full"></span>
-                    他製品との比較
-                </h2>
-                <div className="overflow-x-auto">
-                    <table className="w-full min-w-[600px] text-left border-collapse text-sm">
-                        <thead>
-                            <tr className="bg-gray-50 dark:bg-gray-800">
-                                <th className="p-4 border border-gray-200 dark:border-gray-700 w-1/4 font-medium text-gray-600 dark:text-gray-400 rounded-tl-lg">機能・スペック</th>
-                                <th className="p-4 border border-blue-200 dark:border-blue-900 w-1/4 bg-blue-50/50 dark:bg-blue-900/20 border-t-4 border-t-brand-blue relative">
-                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand-blue text-white text-[10px] px-3 py-0.5 rounded-full shadow-sm font-bold tracking-wide">イチオシ</div>
-                                    <div className="font-bold text-brand-blue dark:text-blue-300 mt-1 text-center">Sony WH-1000XM5</div>
-                                </th>
-                                <th className="p-4 border border-gray-200 dark:border-gray-700 w-1/4">
-                                    <div className="font-bold text-text-main dark:text-white text-center">Bose QC45</div>
-                                </th>
-                                <th className="p-4 border border-gray-200 dark:border-gray-700 w-1/4 rounded-tr-lg">
-                                    <div className="font-bold text-text-main dark:text-white text-center">Apple AirPods Max</div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[
-                                { label: 'バッテリー', v1: '30時間', v2: '24時間', v3: '20時間' },
-                                { label: '重量', v1: '250g', v2: '240g', v3: '384g' },
-                                { label: 'ドライバー', v1: '30mm カーボン', v2: 'TriPort', v3: '40mm ダイナミック' },
-                            ].map((row, idx) => (
-                                <tr key={idx} className="border-b border-gray-100 dark:border-gray-800">
-                                    <td className="p-4 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 font-medium text-gray-600">{row.label}</td>
-                                    <td className="p-4 border border-blue-200 dark:border-blue-900 bg-blue-50/20 dark:bg-blue-900/10 font-bold text-text-main dark:text-white text-center">{row.v1}</td>
-                                    <td className="p-4 border border-gray-200 dark:border-gray-700 text-center">{row.v2}</td>
-                                    <td className="p-4 border border-gray-200 dark:border-gray-700 text-center">{row.v3}</td>
-                                </tr>
-                            ))}
-                            <tr>
-                                <td className="p-4 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 font-medium text-gray-600 rounded-bl-lg">参考価格</td>
-                                <td className="p-4 border border-blue-200 dark:border-blue-900 bg-blue-50/20 dark:bg-blue-900/10 font-bold text-red-600 text-center text-base">¥46,800</td>
-                                <td className="p-4 border border-gray-200 dark:border-gray-700 text-center">¥39,600</td>
-                                <td className="p-4 border border-gray-200 dark:border-gray-700 text-center rounded-br-lg">¥84,800</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {/* Specs */}
-            <div className="bg-white dark:bg-surface-dark rounded-xl p-6 sm:p-8 shadow-soft border border-gray-100 dark:border-gray-800">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
-                    <span className="w-1.5 h-6 bg-brand-blue rounded-full"></span>
-                    製品仕様（スペック）
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0 text-sm">
-                    {[
-                        { label: 'ブランド', value: 'Sony (ソニー)' },
-                        { label: 'モデル名', value: 'WH-1000XM5' },
-                        { label: 'カラー', value: 'ブラック, シルバー, ブルー' },
-                        { label: '装着方式', value: 'オーバーイヤー' },
-                        { label: '接続方式', value: 'Bluetooth 5.2' },
-                        { label: '充電端子', value: 'USB Type-C' }
-                    ].map((spec, i) => (
-                        <div key={i} className="flex justify-between border-b border-gray-100 dark:border-gray-800 py-4 group hover:bg-gray-50 transition-colors px-2 rounded-sm">
-                            <span className="text-gray-500">{spec.label}</span>
-                            <span className="font-medium text-text-main dark:text-white">{spec.value}</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* User Reviews */}
-            <div id="reviews" className="bg-white dark:bg-surface-dark rounded-xl p-6 sm:p-8 shadow-soft border border-gray-100 dark:border-gray-800">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
-                    <span className="w-1.5 h-6 bg-brand-blue rounded-full"></span>
-                    ユーザーレビュー
-                </h2>
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 mb-8 border border-gray-100 dark:border-gray-700">
-                    <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-                        <div className="flex flex-col gap-1 items-center justify-center min-w-[150px]">
-                            <p className="text-text-main dark:text-white text-5xl font-bold">4.8</p>
-                            <div className="flex text-accent-yellow mb-1">
-                                {[1, 2, 3, 4].map(i => <span key={i} className="material-symbols-outlined fill-current">star</span>)}
-                                <span className="material-symbols-outlined fill-current">star_half</span>
-                            </div>
-                            <p className="text-gray-500 text-xs font-medium">12,450件の評価</p>
-                        </div>
-                        <div className="flex-1 w-full grid grid-cols-[20px_1fr_40px] items-center gap-y-2 gap-x-4 text-sm">
-                            {[
-                                { star: 5, pct: '80%', w: '80%' },
-                                { star: 4, pct: '12%', w: '12%' },
-                                { star: 3, pct: '5%', w: '5%' },
-                                { star: 2, pct: '2%', w: '2%' },
-                                { star: 1, pct: '1%', w: '1%' },
-                            ].map(row => (
-                                <React.Fragment key={row.star}>
-                                    <p className="text-gray-500 text-xs text-right font-medium">{row.star}</p>
-                                    <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                        <div className="h-full bg-accent-yellow rounded-full" style={{ width: row.w }}></div>
-                                    </div>
-                                    <p className="text-gray-500 text-xs font-medium">{row.pct}</p>
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="space-y-6">
-                    <div className="border-b border-gray-100 dark:border-gray-700 pb-6 last:border-0 last:pb-0">
-                        <div className="flex items-start justify-between mb-3">
-                            <div className="flex items-center gap-3">
-                                <div className="size-10 rounded-full bg-brand-blue/10 flex items-center justify-center text-xs font-bold text-brand-blue">JD</div>
-                                <div>
-                                    <p className="font-bold text-sm text-text-main dark:text-white">購入者さん</p>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                        <div className="flex text-accent-yellow text-xs">
-                                            {[1, 2, 3, 4, 5].map(i => <span key={i} className="material-symbols-outlined text-[14px] fill-current">star</span>)}
-                                        </div>
-                                        <span className="text-xs text-gray-400">• 2日前</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <h4 className="font-bold text-sm mb-2 text-text-main dark:text-white">価格だけの価値はある</h4>
-                        <p className="text-text-main dark:text-gray-300 text-sm leading-relaxed">
-                            XM3からの買い替えですが、違いは明らかです。通勤中のノイズキャンセリングの自動最適化機能が素晴らしい働きをします。新しいデザインは洗練されていますが、折りたたみ機能がないのは少し残念です。
-                        </p>
-                    </div>
-                    <div className="border-b border-gray-100 dark:border-gray-700 pb-6 last:border-0 last:pb-0">
-                        <div className="flex items-start justify-between mb-3">
-                            <div className="flex items-center gap-3">
-                                <div className="size-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-500">TK</div>
-                                <div>
-                                    <p className="font-bold text-sm text-text-main dark:text-white">Tanaka K.</p>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                        <div className="flex text-accent-yellow text-xs">
-                                            {[1, 2, 3, 4].map(i => <span key={i} className="material-symbols-outlined text-[14px] fill-current">star</span>)}
-                                            <span className="material-symbols-outlined text-[14px] fill-current">star_border</span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">• 1週間前</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <h4 className="font-bold text-sm mb-2 text-text-main dark:text-white">音質は最高だが...</h4>
-                        <p className="text-text-main dark:text-gray-300 text-sm leading-relaxed">
-                            音質と着け心地は文句なしの最高傑作。ただ、夏場はイヤーパッドが少し蒸れやすいかもしれません。室内での使用がメインなら問題なし。
-                        </p>
-                    </div>
-                </div>
-                <div className="mt-8 text-center">
-                    <button className="text-brand-blue font-bold text-sm hover:underline border border-brand-blue rounded-full px-8 py-2.5 hover:bg-blue-50 transition-colors bg-white">
-                        すべてのレビューを見る
-                    </button>
-                </div>
-            </div>
-        </div>
+        </main>
     );
 };
 

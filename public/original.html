@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html class="light" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChoiceGuide - 暮らしを豊かにする家電選び</title>
+<meta content="専門家が厳選した家電・日用品のおすすめランキング。冷蔵庫、洗濯機から最新ガジェットまで、失敗しない買い物ガイド。" name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3E3B38", // Dark earthy charcoal (Warm black)
+                        "primary-hover": "#292524",
+                        "accent": "#5E8C6A", // Sage Green - Clean & Natural
+                        "accent-dark": "#43694D",
+                        "accent-light": "#F0F5F1", // Very pale green
+                        "accent-subtle": "#E2EBE5",
+                        "rank-gold": "#C5A059", // Muted elegant gold
+                        "rank-silver": "#9CA3AF", // Cool grey
+                        "rank-bronze": "#A87964", // Terracotta
+                        "background-light": "#F9F9F8", // Warm stone white
+                        "background-white": "#FFFFFF",
+                        "surface-light": "#FFFFFF",
+                        "surface-subtle": "#F5F5F4", // Warm Grey 100
+                        "text-main": "#44403C", // Stone 700
+                        "text-sub": "#78716C", // Stone 500
+                        "border-color": "#E7E5E4", // Stone 200
+                        "brand-brown": "#8D7B68", // Earthy brown for badges
+                    },
+                    fontFamily: {
+                        "sans": ["Manrope", "Noto Sans JP", "sans-serif"],
+                    },
+                    boxShadow: {
+                        "soft": "0 4px 20px -2px rgba(62, 59, 56, 0.04), 0 0 0 1px rgba(0,0,0,0.02)",
+                        "card": "0 1px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.04)",
+                        "card-hover": "0 20px 40px -12px rgba(94, 140, 106, 0.12), 0 0 0 1px rgba(94, 140, 106, 0.05)",
+                        "float": "0 30px 60px -15px rgba(62, 59, 56, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.8) inset",
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', 'Noto Sans JP', sans-serif; }
+        .hero-pattern {
+            background-color: #F9F9F8;
+            background-image: radial-gradient(#E7E5E4 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .text-balance {
+            text-wrap: balance;
+        }
+        html { scroll-behavior: smooth; }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F9F9F8;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D6D3D1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A8A29E;
+        }
+        .clip-path-slant {
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+    </style>
+</head>
+<body class="bg-background-light text-text-main antialiased selection:bg-accent/20 selection:text-primary">
+<header class="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-xl border-b border-border-color/60 transition-all duration-300">
+<div class="px-4 md:px-6 lg:px-8 h-16 md:h-20 flex items-center justify-between max-w-7xl mx-auto">
+<div class="flex items-center gap-8 lg:gap-12">
+<a aria-label="ChoiceGuide Home" class="flex items-center gap-2.5 group" href="#">
+<div class="size-9 bg-primary text-white rounded-lg flex items-center justify-center shadow-sm group-hover:bg-accent transition-colors duration-300">
+<span class="material-symbols-outlined text-[20px]">checklist</span>
+</div>
+<div class="flex flex-col justify-center">
+<span class="text-lg font-extrabold tracking-tight text-primary leading-none group-hover:text-accent transition-colors font-sans">ChoiceGuide</span>
+</div>
+</a>
+<nav class="hidden lg:flex items-center gap-8">
+<a class="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group" href="#ranking">
+                    おすすめランキング
+                    <span class="absolute bottom-0 left-0 w-full h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+</a>
+<a class="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group" href="#categories">
+                    カテゴリ一覧
+                    <span class="absolute bottom-0 left-0 w-full h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+</a>
+<a class="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group" href="#reviews">
+                    新着レビュー
+                    <span class="absolute bottom-0 left-0 w-full h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+</a>
+</nav>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden md:flex relative group w-64 lg:w-72 transition-all focus-within:w-80 duration-300">
+<form action="#" class="w-full relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-[20px]">search</span>
+<input aria-label="サイト内検索" class="w-full bg-surface-subtle border-transparent focus:border-accent/30 focus:bg-white focus:ring-4 focus:ring-accent/10 rounded-full py-2.5 pl-10 pr-4 text-sm transition-all placeholder-stone-400 text-text-main font-medium shadow-inner" placeholder="商品名、キーワード..." type="search"/>
+</form>
+</div>
+<a class="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-full text-text-main font-bold text-sm hover:bg-surface-subtle transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+<span>ログイン</span>
+</a>
+</div>
+</div>
+</header>
+<section class="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden hero-pattern">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/60 to-background-light pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+<div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+<div class="flex-1 text-center lg:text-left max-w-3xl mx-auto lg:mx-0">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-accent/20 text-accent mb-8 animate-fade-in-up shadow-sm">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+</span>
+<span class="text-xs font-bold tracking-wide uppercase">Updated: 2024.03</span>
+</div>
+<h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-primary leading-[1.15] tracking-tight mb-6 text-balance animate-fade-in-up" style="animation-delay: 0.1s;">
+                    後悔しない<br class="md:hidden"/>
+<span class="relative inline-block text-accent px-1">
+                        「最高の選択」
+                        <svg class="absolute w-full h-3 -bottom-1 left-0 text-accent/20" preserveAspectRatio="none" viewBox="0 0 100 10">
+<path d="M0 5 Q 50 12 100 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="8"></path>
+</svg>
+</span>
+                    を、<br/>あなたの暮らしに。
+                </h1>
+<p class="text-base md:text-lg text-text-sub mb-10 leading-relaxed font-medium animate-fade-in-up max-w-xl mx-auto lg:mx-0" style="animation-delay: 0.2s;">
+                    情報過多な時代だからこそ、心地よく、信頼できる情報を。<br class="hidden lg:inline"/>
+                    専門家の検証データと実際のユーザーレビューに基づき、<br class="hidden lg:inline"/>
+                    長く愛用できる「本物」だけを厳選してご紹介します。
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up" style="animation-delay: 0.3s;">
+<a class="group bg-primary hover:bg-accent text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-3 min-w-[220px]" href="#ranking">
+<span>今月のベストバイ</span>
+<span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<a class="bg-white border border-border-color text-text-main font-bold py-4 px-8 rounded-full hover:bg-surface-subtle transition-all min-w-[220px] shadow-sm hover:shadow-md flex items-center justify-center gap-2" href="#categories">
+<span class="material-symbols-outlined text-[20px] text-stone-400">category</span>
+<span>カテゴリから探す</span>
+</a>
+</div>
+<div class="mt-12 pt-8 border-t border-border-color flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4 animate-fade-in-up" style="animation-delay: 0.4s;">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-accent">check_circle</span>
+<span class="text-sm font-bold text-text-sub">徹底した実機検証</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-accent">check_circle</span>
+<span class="text-sm font-bold text-text-sub">専門家による執筆</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-accent">check_circle</span>
+<span class="text-sm font-bold text-text-sub">情報は毎日更新</span>
+</div>
+</div>
+</div>
+<div class="flex-1 w-full max-w-[500px] lg:max-w-none relative animate-fade-in-up" style="animation-delay: 0.4s;">
+<div class="relative z-10 perspective-1000">
+<div class="bg-white rounded-[2rem] p-3 md:p-4 shadow-float border border-white ring-1 ring-stone-100 transform transition-transform duration-500 hover:rotate-1">
+<div class="aspect-[5/4] rounded-[1.5rem] overflow-hidden relative group bg-surface-subtle">
+<img alt="Modern Living Room with Appliances" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdwmDoUNhQFugaYfmqJacphz2RHCVbKLnpSE6HxVDqnoihGjnZCbMrXArUDPFdOrFuLz6mcUzJpxF2t2YvtHu5TjNA0M28YioydCJJDxKc26L7_ZG8R8wDKASscHQ_TPGrgu_JPYVsQfFEBJY-V3kJgSO1gU3ekqn_WmeA_qqT_R36baNC4Gb6xYov1CimjzWISfhJWVt0-FJd6YE1jVbZzIj1Z6JoWsImSE246f4wFLEfYxDjBG_xcYbwepLU5bbQlcoAGr-tcBo"/>
+<div class="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6">
+<div class="bg-white/95 backdrop-blur-md shadow-lg rounded-2xl p-5 border border-white/50 ring-1 ring-black/5">
+<div class="flex items-start justify-between mb-3">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Pickup</span>
+<span class="text-xs font-bold text-stone-500">ロボット掃除機</span>
+</div>
+<h3 class="text-lg font-bold text-primary line-clamp-1">SmartClean X1 Pro</h3>
+</div>
+<div class="flex flex-col items-end">
+<div class="flex text-rank-gold gap-0.5">
+<span class="material-symbols-outlined text-[16px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-[16px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-[16px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-[16px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-[16px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+</div>
+<span class="text-[10px] text-stone-400 font-medium">4.8 / 5.0</span>
+</div>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex items-center gap-2 text-xs text-text-sub">
+<span class="material-symbols-outlined text-[14px] text-accent">check</span>
+<span>障害物回避性能が大幅向上</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-text-sub">
+<span class="material-symbols-outlined text-[14px] text-accent">check</span>
+<span>静音設計で夜間も安心</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-dashed border-stone-200">
+<div>
+<span class="text-xs font-bold text-stone-400">参考価格</span>
+<div class="text-lg font-black text-primary">¥54,800<span class="text-xs font-normal text-stone-500 ml-1">~</span></div>
+</div>
+<button class="bg-primary hover:bg-accent text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1">
+                                                詳細を見る <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute -top-10 -right-10 w-40 h-40 opacity-40 -z-10 animate-pulse" style="background-image: radial-gradient(#5E8C6A 1.5px, transparent 1.5px); background-size: 12px 12px;"></div>
+<div class="absolute -bottom-10 -left-10 w-32 h-32 bg-accent/5 rounded-full blur-3xl -z-10"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-20 md:py-24 bg-white border-t border-border-color" id="categories">
+<div class="max-w-7xl mx-auto px-4 md:px-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+<div>
+<h2 class="text-2xl md:text-3xl font-black text-primary flex items-center gap-3">
+<span class="w-1.5 h-8 bg-accent rounded-full"></span>
+                    探したいモノから選ぶ
+                </h2>
+<p class="mt-3 text-text-sub text-sm font-medium">生活を便利にするアイテムをカテゴリごとに比較・紹介しています。</p>
+</div>
+<a class="hidden md:flex items-center gap-1 text-sm font-bold text-accent hover:text-accent-dark transition-colors group" href="#">
+                全カテゴリを見る <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
+</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+<a class="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="#">
+<div class="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
+<span class="material-symbols-outlined text-[28px]">kitchen</span>
+</div>
+<h3 class="font-bold text-sm text-primary mb-1">キッチン家電</h3>
+<span class="text-[10px] text-text-sub">冷蔵庫・レンジ</span>
+</a>
+<a class="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="#">
+<div class="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
+<span class="material-symbols-outlined text-[28px]">local_laundry_service</span>
+</div>
+<h3 class="font-bold text-sm text-primary mb-1">生活家電</h3>
+<span class="text-[10px] text-text-sub">洗濯機・掃除機</span>
+</a>
+<a class="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="#">
+<div class="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
+<span class="material-symbols-outlined text-[28px]">devices</span>
+</div>
+<h3 class="font-bold text-sm text-primary mb-1">PC・スマホ</h3>
+<span class="text-[10px] text-text-sub">パソコン・周辺機器</span>
+</a>
+<a class="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="#">
+<div class="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
+<span class="material-symbols-outlined text-[28px]">headphones</span>
+</div>
+<h3 class="font-bold text-sm text-primary mb-1">オーディオ</h3>
+<span class="text-[10px] text-text-sub">イヤホン・スピーカー</span>
+</a>
+<a class="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="#">
+<div class="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
+<span class="material-symbols-outlined text-[28px]">chair</span>
+</div>
+<h3 class="font-bold text-sm text-primary mb-1">インテリア</h3>
+<span class="text-[10px] text-text-sub">家具・収納</span>
+</a>
+<a class="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="#">
+<div class="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
+<span class="material-symbols-outlined text-[28px]">health_and_beauty</span>
+</div>
+<h3 class="font-bold text-sm text-primary mb-1">美容・健康</h3>
+<span class="text-[10px] text-text-sub">ドライヤー・ケア</span>
+</a>
+</div>
+<div class="mt-8 text-center md:hidden">
+<a class="inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-lg bg-surface-subtle text-sm font-bold text-text-main border border-border-color" href="#">
+                全カテゴリ一覧 <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+<section class="py-24 bg-background-light relative overflow-hidden" id="ranking">
+<div class="absolute inset-0 bg-[radial-gradient(#E7E5E4_1px,transparent_1px)] bg-[length:32px_32px] opacity-50 pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+<div class="text-center mb-16">
+<span class="inline-block py-1.5 px-4 rounded-full bg-white shadow-sm text-accent font-bold text-xs mb-5 uppercase tracking-wider border border-accent/20">
+                Monthly Feature
+            </span>
+<h2 class="text-3xl md:text-4xl font-black text-primary mb-4 tracking-tight">
+                今、最も「買い」な完全ワイヤレスイヤホン
+            </h2>
+<p class="text-text-sub max-w-2xl mx-auto text-sm leading-relaxed font-medium">
+                2024年3月時点での価格、性能、使い勝手を徹底比較。<br class="hidden md:inline"/>
+                数ある製品の中から、自信を持っておすすめできるTOP3を選出しました。
+            </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start relative max-w-6xl mx-auto">
+<article class="bg-white rounded-3xl p-6 shadow-soft border border-white hover:border-border-color transition-all duration-300 lg:mt-12 order-2 lg:order-1 h-full flex flex-col relative z-0 group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-10 bg-surface-subtle rounded-full text-rank-silver font-black text-xl font-sans shadow-inner">2</div>
+<span class="text-xs font-bold text-stone-400 uppercase tracking-wide">Excellent</span>
+</div>
+<span class="text-[10px] font-bold text-text-sub bg-surface-subtle px-2.5 py-1 rounded-full border border-border-color">バランス型</span>
+</div>
+<div class="aspect-[4/3] rounded-2xl overflow-hidden mb-5 bg-surface-subtle border border-border-color relative">
+<img alt="AirSound Pods 3" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjaYBqNsAgCcbVu9bd4G06u_MCgt0858ppWCePA6KbzkQnJox94lF-csuRHA40CiSF3o2RjdxT8tH0iDkMfRGEz_3nGRvg2AhYP_YQYX-Cmg0hj6QVNshlhvBShGVS9wQvLqN8pzIgXNeF4rRJ64OOsui9nvtfB0eT43yADAk93KZF6CvweYodNVsSXvUqKaiyrIE_IZSiJVT1tZW8Ioswx96mIxDq08dsWxqAPGqGsV-x7oFW1xsLgnhkeY3LWldIT8XelNHy7GQ"/>
+</div>
+<h3 class="text-lg font-bold text-primary mb-2 line-clamp-1">AirSound Pods 3</h3>
+<div class="flex items-center gap-2 mb-4">
+<div class="flex text-rank-gold text-sm gap-0.5">
+<span class="material-symbols-outlined text-[18px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-[18px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-[18px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-[18px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-[18px] filled" style="font-variation-settings: 'FILL' 1">star_half</span>
+</div>
+<span class="text-sm font-bold text-primary">4.5</span>
+</div>
+<div class="space-y-2 mb-6 text-xs text-text-sub flex-grow">
+<p class="leading-relaxed font-medium">iPhoneユーザーなら連携機能で最有力候補。空間オーディオの臨場感は圧巻。</p>
+</div>
+<a class="block w-full py-3 rounded-xl border border-border-color bg-white text-center font-bold text-sm text-text-main hover:bg-surface-subtle transition-colors" href="#">詳細レビュー</a>
+</article>
+<article class="relative bg-white rounded-3xl p-8 shadow-card-hover border border-accent/20 flex flex-col h-full order-1 lg:order-2 z-10 ring-4 ring-accent/5 group">
+<div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-accent text-white px-6 py-1.5 rounded-full shadow-lg text-sm font-bold flex items-center gap-2 ring-4 ring-background-light">
+<span class="material-symbols-outlined text-[18px]">trophy</span>
+                    総合 No.1
+                </div>
+<div class="mt-4 flex items-center justify-between mb-6">
+<span class="bg-brand-brown/10 text-brand-brown text-[11px] font-bold px-2.5 py-1 rounded-full border border-brand-brown/20">編集部イチオシ</span>
+<span class="text-xs text-stone-400 font-medium">更新: 2024.03.15</span>
+</div>
+<div class="aspect-video rounded-2xl overflow-hidden mb-6 bg-surface-subtle border border-border-color relative">
+<img alt="SonicFlow Pro X" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnXzX6vUEI3r6p526T4n85nwePCZvyPrbKLEBW8ojeixblKP7eO1yzXplkrAT7dBHMf041uyvVoyuQjnL5LUlkayPyzPtvMbk06FKQiSlqmsv1BdX5eVM311-2HoJcblqyFLyJa35ZuFPGru8_CAIZPWmtbjGdiW5lTTKrBUiyLlIpw9TubgT1tOFTCs7OqM1VmkeJf4yDn5jW0zIn-RovSUFT-aKRm1FO-l4RS49cprBC7dcOwV3-d0ZgYmgH9aDBJRJMYyVMttw"/>
+</div>
+<h3 class="text-2xl font-black text-primary mb-2">SonicFlow Pro X</h3>
+<p class="text-sm text-text-sub mb-6 leading-relaxed font-medium">
+                    「静寂」を手に入れるならこれ一択。業界最高クラスのノイズキャンセリングと、原音に忠実な高解像度サウンドを両立したフラッグシップモデル。
+                </p>
+<div class="bg-surface-subtle rounded-2xl p-5 mb-6 border border-border-color/60">
+<div class="flex items-end justify-between mb-2">
+<span class="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Score</span>
+<span class="text-3xl font-black text-primary leading-none">5.0</span>
+</div>
+<div class="flex text-rank-gold gap-0.5 mb-4">
+<span class="material-symbols-outlined filled text-[22px]" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined filled text-[22px]" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined filled text-[22px]" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined filled text-[22px]" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined filled text-[22px]" style="font-variation-settings: 'FILL' 1">star</span>
+</div>
+<ul class="text-xs space-y-2 text-text-main font-bold">
+<li class="flex items-center gap-2"><span class="size-1.5 bg-accent rounded-full"></span> 圧倒的なノイズ除去性能</li>
+<li class="flex items-center gap-2"><span class="size-1.5 bg-accent rounded-full"></span> 長時間つけても疲れない装着感</li>
+</ul>
+</div>
+<div class="mt-auto grid gap-3">
+<a class="w-full py-4 rounded-xl bg-primary hover:bg-accent text-white text-center font-bold shadow-lg shadow-primary/20 hover:shadow-accent/30 transition-all flex items-center justify-center gap-2" href="#">
+                        最安値をチェック <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</a>
+</div>
+</article>
+<article class="bg-white rounded-3xl p-6 shadow-soft border border-white hover:border-border-color transition-all duration-300 lg:mt-12 order-3 lg:order-3 h-full flex flex-col relative z-0 group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-10 bg-surface-subtle rounded-full text-rank-bronze font-black text-xl font-sans shadow-inner">3</div>
+<span class="text-xs font-bold text-stone-400 uppercase tracking-wide">Good Value</span>
+</div>
+<span class="text-[10px] font-bold text-text-sub bg-surface-subtle px-2.5 py-1 rounded-full border border-border-color">コスパ最強</span>
+</div>
+<div class="aspect-[4/3] rounded-2xl overflow-hidden mb-5 bg-surface-subtle border border-border-color relative">
+<img alt="BudgetBass Z" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQ7AyJb2SKNXosVqhnY9aXJk2v3ixbHKNXdAQUc16YZYMBWuIOs1-cqcuj5Abay0Y6pWPKVIDKbi4USGhZlal0004BryifY8tnTHe_CMEHdzDOZveWkzSvm5O2sayIdXCnqiCKAGNRvFIjt35FsGKUQVoRquOWW1QN4vclzAEuG0fsmdPe0V1vTew-CYpMf7RMKOYD5ukFUjxI7xsmg24ws9d6NZJI45QK8uuRxATGDQIUhmRLmIhZz5H7xMJr3MZ4aXaWeWN5Yc0"/>
+</div>
+<h3 class="text-lg font-bold text-primary mb-2 line-clamp-1">BudgetBass Z</h3>
+<div class="flex items-center gap-2 mb-4">
+<div class="flex text-rank-gold text-sm gap-0.5">
+<span class="material-symbols-outlined text-[18px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-[18px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-[18px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-[18px] filled" style="font-variation-settings: 'FILL' 1">star</span>
+<span class="material-symbols-outlined text-stone-300 text-[18px]">star</span>
+</div>
+<span class="text-sm font-bold text-primary">4.0</span>
+</div>
+<div class="space-y-2 mb-6 text-xs text-text-sub flex-grow">
+<p class="leading-relaxed font-medium">5,000円以下とは思えない重低音。初めての完全ワイヤレスに最適な一台。</p>
+</div>
+<a class="block w-full py-3 rounded-xl border border-border-color bg-white text-center font-bold text-sm text-text-main hover:bg-surface-subtle transition-colors" href="#">詳細レビュー</a>
+</article>
+</div>
+<div class="mt-16 text-center">
+<a class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white border border-border-color text-text-main font-bold hover:bg-surface-subtle hover:shadow-md transition-all text-sm" href="#">
+                他のランキングも見る <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+<section class="py-24 bg-white" id="reviews">
+<div class="max-w-7xl mx-auto px-4 md:px-8">
+<div class="flex items-center justify-between mb-12 border-b border-border-color pb-6">
+<h2 class="text-2xl md:text-3xl font-black text-primary flex items-center gap-3">
+<span class="material-symbols-outlined text-accent text-[32px]">article</span>
+                新着レビュー記事
+            </h2>
+<a class="text-sm font-bold text-accent hover:text-accent-dark flex items-center gap-1 group" href="#">
+                記事一覧 <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
+<article class="group cursor-pointer flex flex-col h-full">
+<div class="rounded-2xl overflow-hidden mb-5 relative aspect-[3/2] shadow-sm group-hover:shadow-card-hover transition-all duration-300">
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors z-10"></div>
+<img alt="VPN Service Review" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLMBwlGmMAk3jqWWu4-ZnTD6U1GwVbrmL1zSIYs2Yq0cb4gyk6Oj6Vpff4-cj9QNQqMKL04qzgYGwKsJndwz1VWfPEIh-zwfU9s2i3BNUK1QPWzjjBqWmxnKwMSZ_sbmUApNfIxEXGIlU8Q4IHddqIq_wLkQfzY-V0DBZug632OEjF1z2hm3FPnTcNxUIbbHJFSB1FvUwMWI8POgD69yc1Mu0WykbNjMfJcWX9VJjJM0lknX53c0o_Y5aVoHH-BxlCxcgG7-YXCf4"/>
+<span class="absolute top-3 left-3 bg-white/90 text-primary px-3 py-1 text-[10px] font-bold rounded-full backdrop-blur-md shadow-sm border border-white z-20">Webサービス</span>
+</div>
+<div class="flex flex-col flex-grow">
+<h3 class="font-bold text-base leading-snug mb-3 group-hover:text-accent transition-colors text-primary line-clamp-2">海外から日本の動画を見るならこのVPN！速度比較TOP5【2024年版】</h3>
+<div class="mt-auto pt-4 border-t border-border-color/50 flex items-center justify-between text-[11px] text-stone-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> 2024.03.15</span>
+<span class="font-bold text-stone-300 group-hover:text-accent transition-colors flex items-center gap-1">Read More <span class="material-symbols-outlined text-[12px]">arrow_forward</span></span>
+</div>
+</div>
+</article>
+<article class="group cursor-pointer flex flex-col h-full">
+<div class="rounded-2xl overflow-hidden mb-5 relative aspect-[3/2] shadow-sm group-hover:shadow-card-hover transition-all duration-300">
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors z-10"></div>
+<img alt="Credit Card Review" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt6h1V-rh7HfINw4f7of6SOi8BQM899u7f_TztZm1Wf540Im9ht87ikJ-1v08ZNQooCrF7zJ64UgfOELhzqFcfBIlwYfqjbJxOfqnLIIgsLAnLNtpzXg4qJcN7OAQvRfLnmJF_iTKd1X-aj7-_SHK12Vw5rIPwX-g9jMa3fDl_cLZRf8cZ-1Ow-f_WBBfPN6uZdnybiXVJAA9elnmupxMhI8jPZs1Kw60T2jtSx2I7QBOP4FmzR8S4QCwa76Ji5YE9mqrqqJsJvWo"/>
+<span class="absolute top-3 left-3 bg-white/90 text-primary px-3 py-1 text-[10px] font-bold rounded-full backdrop-blur-md shadow-sm border border-white z-20">マネー</span>
+</div>
+<div class="flex flex-col flex-grow">
+<h3 class="font-bold text-base leading-snug mb-3 group-hover:text-accent transition-colors text-primary line-clamp-2">ポイント還元率最強はどれ？メインカードにおすすめの厳選3枚</h3>
+<div class="mt-auto pt-4 border-t border-border-color/50 flex items-center justify-between text-[11px] text-stone-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> 2024.03.12</span>
+<span class="font-bold text-stone-300 group-hover:text-accent transition-colors flex items-center gap-1">Read More <span class="material-symbols-outlined text-[12px]">arrow_forward</span></span>
+</div>
+</div>
+</article>
+<article class="group cursor-pointer flex flex-col h-full">
+<div class="rounded-2xl overflow-hidden mb-5 relative aspect-[3/2] shadow-sm group-hover:shadow-card-hover transition-all duration-300">
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors z-10"></div>
+<img alt="Smart Watch Review" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDezEAYvw3KHQVVRo3f3E3pysb9oMaAcK3cp2OexLSwLTcS-7ayc8Jd_R5KbcoHX5pNdq4U6MXu3J0cQ8eXedmmiYzyakRJ0QMomOgPa0hGcwAsK9P37RASbHL2F6HvmWOtepiphepbLBN6y8zv4feEk4Z9ecilYCIS1TpDM1xPWG_UYbNLPqgPLPnn7NDmYQVnzsObLbj9oj5rF0pULf84jMWd3xJLuq9GpIE71zI2b_RDKwRF2vXxBvdofoiOMsn4iwIPfCZq04U"/>
+<span class="absolute top-3 left-3 bg-white/90 text-primary px-3 py-1 text-[10px] font-bold rounded-full backdrop-blur-md shadow-sm border border-white z-20">ガジェット</span>
+</div>
+<div class="flex flex-col flex-grow">
+<h3 class="font-bold text-base leading-snug mb-3 group-hover:text-accent transition-colors text-primary line-clamp-2">Apple Watch以外で選ぶなら？Androidユーザー向けベストバイ</h3>
+<div class="mt-auto pt-4 border-t border-border-color/50 flex items-center justify-between text-[11px] text-stone-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> 2024.03.10</span>
+<span class="font-bold text-stone-300 group-hover:text-accent transition-colors flex items-center gap-1">Read More <span class="material-symbols-outlined text-[12px]">arrow_forward</span></span>
+</div>
+</div>
+</article>
+<article class="group cursor-pointer flex flex-col h-full">
+<div class="rounded-2xl overflow-hidden mb-5 relative aspect-[3/2] shadow-sm group-hover:shadow-card-hover transition-all duration-300">
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors z-10"></div>
+<img alt="Earphones Review" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASJIzK31bEoZfyExiaG7Msr2SLuiD9qoANTEeEXBQCQLeHtWKxRGzSDjunHP3wg7PTQKre2FwzwgNXIgjmZTEGO-RtGPeX0OQHFXK5sHex6lR7cXJUa66gO9AGEgbOJ5wJQYEjZuWG9AYHkLfoqwcDkTTIEsl_yiCBwKWoudoEGLbBmt0tJzmd2aDgGLWm2bCFePa8ibzV1zokfA6MwUS-Zag22c0FDW66N9l2IrWe7DUvtmKBQipggDLWIfQkl7W04ISywLASmoY"/>
+<span class="absolute top-3 left-3 bg-white/90 text-primary px-3 py-1 text-[10px] font-bold rounded-full backdrop-blur-md shadow-sm border border-white z-20">オーディオ</span>
+</div>
+<div class="flex flex-col flex-grow">
+<h3 class="font-bold text-base leading-snug mb-3 group-hover:text-accent transition-colors text-primary line-clamp-2">1万円以下でも高音質！コスパで選ぶ完全ワイヤレスイヤホン特集</h3>
+<div class="mt-auto pt-4 border-t border-border-color/50 flex items-center justify-between text-[11px] text-stone-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> 2024.03.08</span>
+<span class="font-bold text-stone-300 group-hover:text-accent transition-colors flex items-center gap-1">Read More <span class="material-symbols-outlined text-[12px]">arrow_forward</span></span>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<footer class="bg-primary text-white pt-16 pb-10 border-t border-primary-hover">
+<div class="max-w-7xl mx-auto px-4 md:px-8">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+<div class="md:col-span-5 lg:col-span-4">
+<a class="flex items-center gap-3 mb-6 group w-fit" href="#">
+<div class="size-8 bg-white text-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">checklist</span>
+</div>
+<span class="text-xl font-black tracking-tight font-sans">ChoiceGuide</span>
+</a>
+<p class="text-stone-400 text-sm leading-relaxed mb-8 max-w-sm">
+                    ChoiceGuideは、あなたの「失敗しない買い物」をサポートする製品比較メディアです。専門家の知見と検証データを元に、公平なランキング情報をお届けします。
+                </p>
+<div class="flex gap-4">
+<a class="text-stone-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full" href="#"><span class="material-symbols-outlined">public</span></a>
+<a class="text-stone-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full" href="#"><span class="material-symbols-outlined">rss_feed</span></a>
+</div>
+</div>
+<div class="md:col-span-7 lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-8">
+<div>
+<h3 class="font-bold text-sm mb-6 text-stone-200 uppercase tracking-wide">人気ランキング</h3>
+<ul class="space-y-3 text-sm text-stone-400">
+<li><a class="hover:text-accent transition-colors inline-block hover:translate-x-1 duration-200" href="#">PC・周辺機器</a></li>
+<li><a class="hover:text-accent transition-colors inline-block hover:translate-x-1 duration-200" href="#">スマートフォン・タブレット</a></li>
+<li><a class="hover:text-accent transition-colors inline-block hover:translate-x-1 duration-200" href="#">キッチン・生活家電</a></li>
+<li><a class="hover:text-accent transition-colors inline-block hover:translate-x-1 duration-200" href="#">美容・健康家電</a></li>
+</ul>
+</div>
+<div>
+<h3 class="font-bold text-sm mb-6 text-stone-200 uppercase tracking-wide">サイト情報</h3>
+<ul class="space-y-3 text-sm text-stone-400">
+<li><a class="hover:text-accent transition-colors inline-block hover:translate-x-1 duration-200" href="#">ChoiceGuideについて</a></li>
+<li><a class="hover:text-accent transition-colors inline-block hover:translate-x-1 duration-200" href="#">ランキングの根拠・基準</a></li>
+<li><a class="hover:text-accent transition-colors inline-block hover:translate-x-1 duration-200" href="#">運営会社情報</a></li>
+<li><a class="hover:text-accent transition-colors inline-block hover:translate-x-1 duration-200" href="#">お問い合わせ</a></li>
+</ul>
+</div>
+<div class="col-span-2 sm:col-span-1">
+<h3 class="font-bold text-sm mb-6 text-stone-200 uppercase tracking-wide">規約・ポリシー</h3>
+<ul class="space-y-3 text-sm text-stone-400">
+<li><a class="hover:text-accent transition-colors inline-block hover:translate-x-1 duration-200" href="#">プライバシーポリシー</a></li>
+<li><a class="hover:text-accent transition-colors inline-block hover:translate-x-1 duration-200" href="#">利用規約</a></li>
+<li><a class="hover:text-accent transition-colors inline-block hover:translate-x-1 duration-200" href="#">アフィリエイト・広告掲載</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="border-t border-primary-hover pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+<p class="text-xs text-stone-500 font-medium">© 2024 ChoiceGuide. All rights reserved.</p>
+<div class="text-[10px] text-stone-600 font-bold uppercase tracking-wider">
+                Reliable Product Reviews &amp; Comparisons
+            </div>
+</div>
+</div>
+</footer>
+
+</body></html>

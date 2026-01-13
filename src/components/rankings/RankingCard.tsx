@@ -24,10 +24,10 @@ export default function RankingCard({ product }: RankingCardProps) {
                     <span className="material-symbols-outlined text-[28px]">trophy</span>
                 </div>
                 <h2 className="text-2xl md:text-3xl font-black text-primary">第{product.rank}位</h2>
-                {product.tags.bestBuy && (
+                {product.tags?.bestBuy && (
                     <span className="bg-rank-gold/10 text-rank-gold px-3 py-1 rounded text-xs font-bold border border-rank-gold/20">総合No.1</span>
                 )}
-                {product.tags.editorPick && (
+                {product.tags?.editorPick && (
                     <span className="bg-accent/10 text-accent px-3 py-1 rounded text-xs font-bold border border-accent/20">編集部おすすめ</span>
                 )}
             </div>
@@ -37,7 +37,7 @@ export default function RankingCard({ product }: RankingCardProps) {
                         <div className="md:w-1/2">
                             <Link href={`/reviews/${product.id}`} className="block aspect-[4/3] rounded-2xl overflow-hidden bg-surface-subtle border border-border-color relative group">
                                 <img alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src={product.image} />
-                                {product.tags.flagship && (
+                                {product.tags?.flagship && (
                                     <div className="absolute top-3 left-3">
                                         <span className="bg-white/90 backdrop-blur text-primary text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                                             Flagship Model
@@ -51,15 +51,22 @@ export default function RankingCard({ product }: RankingCardProps) {
                                 <h3 className="text-2xl font-bold text-primary mb-2 leading-tight group-hover:text-accent group-hover:underline decoration-2 underline-offset-4 decoration-accent/30">{product.name}</h3>
                             </Link>
                             <div className="flex items-center gap-3 mb-6">
-                                <div className={`flex ${rankTextColorClass}`}>
-                                    {[1, 2, 3, 4, 5].map(i => (
-                                        <span key={i} className={`material-symbols-outlined text-[20px] ${i <= product.rating ? 'filled' : ''}`} style={i <= product.rating ? { fontVariationSettings: "'FILL' 1" } : {}}>
-                                            star
-                                        </span>
-                                    ))}
-                                </div>
-                                <span className="text-xl font-black text-primary">{product.rating.toFixed(1)}</span>
-                                <span className="text-xs text-text-sub font-medium ml-auto">レビュー数: {product.reviewCount.toLocaleString()}件</span>
+                                {/* Use calculatedRating if available to match ComparisonTable */}
+                                {(() => {
+                                    const displayRating = (product as any).calculatedRating || product.rating;
+                                    return (
+                                        <>
+                                            <div className={`flex ${rankTextColorClass}`}>
+                                                {[1, 2, 3, 4, 5].map(i => (
+                                                    <span key={i} className={`material-symbols-outlined text-[20px] ${i <= Math.round(displayRating) ? 'filled' : ''}`} style={i <= Math.round(displayRating) ? { fontVariationSettings: "'FILL' 1" } : {}}>
+                                                        star
+                                                    </span>
+                                                ))}
+                                            </div>
+                                            <span className="text-xl font-black text-primary">{displayRating.toFixed(2)}</span>
+                                        </>
+                                    );
+                                })()}
                             </div>
                             <div className="grid grid-cols-2 gap-3 mb-6">
                                 {product.specs.map((spec, idx) => (
@@ -97,7 +104,7 @@ export default function RankingCard({ product }: RankingCardProps) {
                                 ここがおすすめ（メリット）
                             </div>
                             <ul className="space-y-2 text-sm text-primary">
-                                {product.pros.map((pro, idx) => (
+                                {product.pros?.map((pro, idx) => (
                                     <li key={idx} className="flex items-start gap-2"><span className="text-[#2E7D32] mt-1">•</span>{pro}</li>
                                 ))}
                             </ul>
@@ -108,7 +115,7 @@ export default function RankingCard({ product }: RankingCardProps) {
                                 ここは注意（デメリット）
                             </div>
                             <ul className="space-y-2 text-sm text-primary">
-                                {product.cons.map((con, idx) => (
+                                {product.cons?.map((con, idx) => (
                                     <li key={idx} className="flex items-start gap-2"><span className="text-[#C62828] mt-1">•</span>{con}</li>
                                 ))}
                             </ul>

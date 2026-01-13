@@ -1,0 +1,149 @@
+{
+  "seed_keyword": "ワイヤレスイヤホン",
+  "best_keyword": "ワイヤレスイヤホン 片方しか聞こえない",
+  "market_type": "GRAY",
+  "target_intent": "High Viability",
+  "competitors": [],
+  "all_candidates": [
+    {
+      "keyword": "ワイヤレスイヤホン 片方しか聞こえない",
+      "score": 17,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン おすすめ",
+      "score": -10.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン ランキング",
+      "score": -11,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン アンドロイド おすすめ",
+      "score": -13.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン イヤーカフ",
+      "score": -30,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン amazon",
+      "score": -30.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン インナーイヤー",
+      "score": -30.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン アップル",
+      "score": -31,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン 寿命",
+      "score": -31.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン アニメコラボ",
+      "score": -31.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン 接続",
+      "score": -32,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン asmr",
+      "score": -32,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン 捨て方",
+      "score": -32.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン アイフォン",
+      "score": -32.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン aviot",
+      "score": -33,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン ノイズキャンセリング",
+      "score": -33.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン ソニー",
+      "score": -34,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン android",
+      "score": -34,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン アンカー",
+      "score": -34.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ワイヤレスイヤホン anc",
+      "score": -34.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    }
+  ]
+}

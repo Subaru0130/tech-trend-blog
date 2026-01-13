@@ -65,31 +65,45 @@ export async function verifyProducts(productNames) {
                 let finalTitle = asinResult.title;
 
                 try {
-                    await page.goto(asinResult.url, { waitUntil: 'domcontentloaded', timeout: 10000 });
-                    const details = await page.evaluate(() => {
-                        const pageTitle = document.title;
-                        if (pageTitle.includes('Robot Check') || pageTitle.includes('Captcha')) return { error: 'Blocked' };
+                    const response = await page.goto(asinResult.url, { waitUntil: 'domcontentloaded', timeout: 10000 });
 
-                        const titleEl = document.querySelector('#productTitle');
-                        const imgWrapper = document.querySelector('#landingImage, #imgTagWrapperId img, #main-image');
-
-                        let img = null;
-                        if (imgWrapper) {
-                            const dynamicData = imgWrapper.getAttribute('data-a-dynamic-image');
-                            if (dynamicData) {
-                                try { img = Object.keys(JSON.parse(dynamicData))[0]; } catch (e) { }
-                            }
-                            if (!img) img = imgWrapper.src;
-                        }
-
-                        return { title: titleEl ? titleEl.innerText.trim() : null, image: img };
+                    // Check for 404 or "Page Not Found" title
+                    const isDead = await page.evaluate(() => {
+                        const title = document.title;
+                        return title.includes('ページが見つかりません') || title.includes('404');
                     });
 
-                    if (details.image) amazonImage = details.image;
-                    if (details.title) finalTitle = details.title;
+                    if (response.status() === 404 || isDead) {
+                        console.warn(`⚠️ ASIN Link Dead: ${asinResult.url} -> Falling back to Search`);
+                        asinResult.url = `https://www.amazon.co.jp/s?k=${encodeURIComponent(name)}`;
+                        asinResult.asin = null; // Clear ASIN as it is invalid
+                        // Skip image scraping from this dead page
+                    } else {
+                        const details = await page.evaluate(() => {
+                            const pageTitle = document.title;
+                            if (pageTitle.includes('Robot Check') || pageTitle.includes('Captcha')) return { error: 'Blocked' };
+
+                            const titleEl = document.querySelector('#productTitle');
+                            const imgWrapper = document.querySelector('#landingImage, #imgTagWrapperId img, #main-image');
+
+                            let img = null;
+                            if (imgWrapper) {
+                                const dynamicData = imgWrapper.getAttribute('data-a-dynamic-image');
+                                if (dynamicData) {
+                                    try { img = Object.keys(JSON.parse(dynamicData))[0]; } catch (e) { }
+                                }
+                                if (!img) img = imgWrapper.src;
+                            }
+
+                            return { title: titleEl ? titleEl.innerText.trim() : null, image: img };
+                        });
+
+                        if (details.image) amazonImage = details.image;
+                        if (details.title) finalTitle = details.title;
+                    }
 
                 } catch (e) {
-                    console.warn(`Amazon visit failed for ${name}`);
+                    console.warn(`Amazon visit failed for ${name}: ${e.message}`);
                 }
 
                 // Clean Title
