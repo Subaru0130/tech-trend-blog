@@ -3,6 +3,73 @@ const path = require('path');
 const { processRakutenLink } = require('./affiliate_processor');
 
 /**
+ * Convert Japanese keyword to English slug for URL compatibility
+ * Xserver Apache doesn't handle Japanese URLs properly
+ */
+function keywordToEnglishSlug(keyword) {
+    // Common keyword mappings
+    const mappings = {
+        'ワイヤレスイヤホン おすすめ ノイズキャンセリング': 'wireless-earphones-noise-cancelling',
+        'ワイヤレスイヤホン おすすめ 1万円以下': 'wireless-earphones-under-10000yen',
+        'ワイヤレスイヤホン': 'wireless-earphones',
+        'ノイズキャンセリング': 'noise-cancelling',
+        'イヤホン': 'earphones',
+        'ヘッドホン': 'headphones',
+        'スピーカー': 'speaker',
+        '冷蔵庫': 'refrigerator',
+        '洗濯機': 'washing-machine',
+        'エアコン': 'air-conditioner',
+        '掃除機': 'vacuum-cleaner',
+        'ロボット掃除機': 'robot-vacuum',
+        'カメラ': 'camera',
+        '一眼レフ': 'dslr-camera',
+        'ミラーレス': 'mirrorless-camera',
+        'テレビ': 'tv',
+        'モニター': 'monitor',
+        'キーボード': 'keyboard',
+        'マウス': 'mouse',
+        'おすすめ': 'recommended',
+        '1万円以下': 'under-10000yen',
+        '2万円以下': 'under-20000yen',
+        '3万円以下': 'under-30000yen',
+        '5万円以下': 'under-50000yen',
+        '高級': 'premium',
+        'コスパ': 'cost-effective',
+        '初心者': 'beginner',
+        '一人暮らし': 'single-living',
+    };
+
+    // Check for exact match first
+    if (mappings[keyword]) {
+        return mappings[keyword];
+    }
+
+    // Try to build a slug from parts
+    let slug = keyword;
+
+    // Replace known Japanese terms with English
+    Object.entries(mappings).forEach(([jp, en]) => {
+        slug = slug.replace(new RegExp(jp, 'g'), en);
+    });
+
+    // Clean up: replace spaces with hyphens, remove non-ASCII
+    slug = slug
+        .trim()
+        .replace(/\s+/g, '-')           // spaces to hyphens
+        .replace(/[^\w\-]/g, '')        // remove non-word chars except hyphens
+        .replace(/--+/g, '-')           // collapse multiple hyphens
+        .replace(/^-|-$/g, '')          // trim hyphens from ends
+        .toLowerCase();
+
+    // If still contains no useful chars, generate a timestamp-based slug
+    if (!slug || slug.length < 3) {
+        slug = `article-${Date.now()}`;
+    }
+
+    return slug;
+}
+
+/**
  * Generate dynamic spec labels based on keyword/category
  */
 function generateDefaultLabels(keyword, blueprint = {}) {
@@ -155,7 +222,8 @@ ${articleBody}
     const dir = path.resolve(__dirname, '../../src/content/articles');
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-    const fileName = `${targetKeyword}.md`;
+    const englishSlug = keywordToEnglishSlug(targetKeyword);
+    const fileName = `${englishSlug}.md`;
     saveMarkdown(path.join(dir, fileName), content);
 }
 
@@ -208,9 +276,11 @@ function updateDatabase(targetKeyword, products, productsData, seoMetadata, blue
         ? aiThumbnail
         : (topProduct.image || '/images/placeholder.jpg');
 
+    const englishSlug = keywordToEnglishSlug(targetKeyword);
+
     const newEntry = {
-        id: targetKeyword,
-        slug: targetKeyword,
+        id: englishSlug,
+        slug: englishSlug,
         title: title,
         description: description,
         publishedAt: dateStr,
@@ -266,8 +336,8 @@ function updateDatabase(targetKeyword, products, productsData, seoMetadata, blue
         products: products.map(p => p.id)
     };
 
-    // Remove existing if exists
-    db = db.filter(item => item.id !== targetKeyword);
+    // Remove existing if exists (check both old Japanese and new English slugs)
+    db = db.filter(item => item.id !== englishSlug && item.id !== targetKeyword);
     // Add new (at top)
     db.unshift(newEntry);
 
