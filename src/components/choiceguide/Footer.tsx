@@ -26,7 +26,12 @@ const Footer: React.FC = () => {
                     </div>
                 </div>
                 <div className="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <p className="text-xs text-gray-400 font-medium">© 2024 ChoiceGuide. All rights reserved.</p>
+                    <div className="text-center md:text-left">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            ※当サイトはアフィリエイト広告を利用しています
+                        </p>
+                        <p className="text-xs text-gray-400 font-medium">© 2024 ChoiceGuide. All rights reserved.</p>
+                    </div>
                 </div>
             </div>
         </footer>

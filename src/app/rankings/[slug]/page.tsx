@@ -16,6 +16,8 @@ import ComparisonTable from '@/components/rankings/ComparisonTable';
 import { RankingCard } from '@/components/affiliate/RankingCard';
 import rehypeSlug from 'rehype-slug';
 import TableOfContents from '@/components/shared/TableOfContents';
+import AuthorProfile from '@/components/shared/AuthorProfile';
+import GlossarySection from '@/components/shared/GlossarySection';
 
 // Utility to slugs
 const slugify = (text: string) => {
@@ -464,6 +466,11 @@ export default async function RankingPage({ params }: Props) {
                         </section>
                     )}
                 </main>
+
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <GlossarySection category={article.category === 'audio' ? 'イヤホン' : article.category === 'beauty' ? 'シャンプー' : 'default'} className="mt-12" />
+                    <AuthorProfile />
+                </div>
 
                 <Footer />
             </div>
