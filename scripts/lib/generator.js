@@ -345,4 +345,78 @@ function updateDatabase(targetKeyword, products, productsData, seoMetadata, blue
     console.log(`  💾 Database Updated: articles.json`);
 }
 
-module.exports = { generateRankingArticle, generateReviewPage, updateDatabase, generateDefaultLabels };
+/**
+ * Generate sitemap.xml from articles.json
+ * Idempotent - can be run multiple times without creating duplicates
+ */
+function generateSitemap() {
+    const baseUrl = 'https://choiceguide.jp';
+    const today = new Date().toISOString().split('T')[0];
+
+    // Read all articles from database
+    const dbPath = path.resolve(__dirname, '../../src/data/articles.json');
+    let articles = [];
+    try {
+        articles = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+    } catch (e) {
+        console.error('  ⚠️ Failed to read articles.json for sitemap:', e.message);
+    }
+
+    // Use Set to prevent duplicates
+    const urls = new Set();
+
+    // Static pages
+    const staticPages = [
+        { loc: '/', priority: '1.0', changefreq: 'daily' },
+        { loc: '/about/', priority: '0.5', changefreq: 'monthly' },
+        { loc: '/contact/', priority: '0.5', changefreq: 'monthly' },
+        { loc: '/privacy/', priority: '0.3', changefreq: 'yearly' },
+    ];
+
+    // Build XML
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+    // Add static pages
+    staticPages.forEach(page => {
+        const fullUrl = `${baseUrl}${page.loc}`;
+        if (!urls.has(fullUrl)) {
+            urls.add(fullUrl);
+            xml += `  <url>\n`;
+            xml += `    <loc>${fullUrl}</loc>\n`;
+            xml += `    <lastmod>${today}</lastmod>\n`;
+            xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+            xml += `    <priority>${page.priority}</priority>\n`;
+            xml += `  </url>\n`;
+        }
+    });
+
+    // Add article pages (rankings)
+    articles.forEach(article => {
+        const slug = article.slug || article.id;
+        // Skip if slug contains Japanese characters (old format)
+        if (/[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf]/.test(slug)) {
+            return;
+        }
+        const fullUrl = `${baseUrl}/rankings/${encodeURIComponent(slug)}/`;
+        if (!urls.has(fullUrl)) {
+            urls.add(fullUrl);
+            const lastmod = article.updatedDate || article.publishedAt || today;
+            xml += `  <url>\n`;
+            xml += `    <loc>${fullUrl}</loc>\n`;
+            xml += `    <lastmod>${lastmod}</lastmod>\n`;
+            xml += `    <changefreq>weekly</changefreq>\n`;
+            xml += `    <priority>0.8</priority>\n`;
+            xml += `  </url>\n`;
+        }
+    });
+
+    xml += '</urlset>\n';
+
+    // Write to public folder
+    const sitemapPath = path.resolve(__dirname, '../../public/sitemap.xml');
+    fs.writeFileSync(sitemapPath, xml, 'utf8');
+    console.log(`  🗺️  Sitemap Updated: sitemap.xml (${urls.size} URLs)`);
+}
+
+module.exports = { generateRankingArticle, generateReviewPage, updateDatabase, generateDefaultLabels, generateSitemap };

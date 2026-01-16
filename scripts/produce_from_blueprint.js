@@ -57,7 +57,7 @@ console.log(`   Hook: ${BLUEPRINT.sales_hook}`);
 
 
 // Deduce Target Spec Labels (for AI to generate consistent columns)
-const { generateDefaultLabels } = require('./lib/generator');
+const { generateDefaultLabels, generateSitemap } = require('./lib/generator');
 const targetLabels = generateDefaultLabels(TARGET_KEYWORD, BLUEPRINT);
 console.log(`🎯 Target Spec Labels: ${JSON.stringify(targetLabels)}`);
 
@@ -908,7 +908,10 @@ function cleanProductName(rawName, knownBrand = null) {
     // 6. Update DB
     updateDatabase(TARGET_KEYWORD, validatedLineup, productsData, seoMetadata, BLUEPRINT, thumbPath);
 
-    // 7. Save Enriched Data to Master JSON
+    // 7. Auto-generate Sitemap (idempotent - safe to run multiple times)
+    generateSitemap();
+
+    // 8. Save Enriched Data to Master JSON
     fs.writeFileSync(PRODUCTS_JSON_PATH, JSON.stringify(productsData, null, 4));
     console.log(`\n🎉 Article Generated: src/content/articles/${TARGET_KEYWORD}.md`);
 
