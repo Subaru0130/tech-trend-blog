@@ -52,22 +52,23 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
 
     return (
         <section className="mb-20">
-            <div className="w-fit mx-auto max-w-full">
+            <div className="w-full mx-auto max-w-full">
                 <h2 className="text-2xl font-black text-primary mb-8 text-center md:text-left">TOP{topProducts.length} 徹底比較表 (最新版)</h2>
 
+                <div className="md:hidden text-xs text-center text-text-sub mb-2">← 横にスクロールできます →</div>
                 <div className="bg-white rounded-2xl shadow-soft overflow-hidden border border-border-color">
                     <div className="overflow-x-auto">
-                        <table className="w-auto min-w-max text-sm text-left border-collapse comparison-table">
+                        <table className="w-full min-w-[800px] text-sm text-left border-collapse comparison-table">
                             <thead className="bg-surface-subtle text-text-sub font-bold text-xs uppercase tracking-wider border-b border-border-color">
                                 <tr>
-                                    <th className="px-3 py-3 w-12 text-center">順位</th>
-                                    <th className="px-3 py-3 max-w-[200px]">商品名</th>
+                                    <th className="px-3 py-3 w-12 text-center sticky left-0 bg-surface-subtle z-10">順位</th>
+                                    <th className="px-3 py-3 max-w-[200px] sticky left-12 bg-surface-subtle z-10">商品名</th>
                                     <th className="px-3 py-3 min-w-[140px] text-center">購入・詳細</th>
                                     <th className="px-3 py-3 text-center whitespace-nowrap">評価</th>
+                                    <th className="px-3 py-3 text-center whitespace-nowrap">参考価格</th>
                                     {headers.map((header, idx) => (
                                         <th key={idx} className="px-3 py-3 text-center whitespace-nowrap text-xs">{header}</th>
                                     ))}
-                                    <th className="px-3 py-3 text-center whitespace-nowrap">参考価格</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border-color">
@@ -122,12 +123,12 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
 
                                     return (
                                         <tr key={product.id} className={`hover:bg-surface-subtle/30 transition-colors ${rowBgClass}`}>
-                                            <td className="px-3 py-3 text-center">
+                                            <td className="px-3 py-3 text-center sticky left-0 bg-white z-10">
                                                 <span className={`inline-flex items-center justify-center size-8 rounded-full font-black text-sm ${rankBgClass}`}>
                                                     {displayRank}
                                                 </span>
                                             </td>
-                                            <td className="px-3 py-3 max-w-[200px]">
+                                            <td className="px-3 py-3 max-w-[200px] sticky left-12 bg-white z-10">
                                                 <div className="flex items-center gap-3">
                                                     <div className="size-12 rounded-lg relative overflow-hidden border border-border-color bg-white shrink-0">
                                                         <img
@@ -172,15 +173,15 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
                                                 </div>
                                             </td>
 
+                                            <td className="px-3 py-3 text-center font-bold text-primary whitespace-nowrap text-xs">
+                                                {product.price}
+                                            </td>
+
                                             {specValues.map((val, idx) => (
                                                 <td key={idx} className="px-3 py-3 text-center font-bold text-text-main text-xs whitespace-nowrap">
                                                     {val}
                                                 </td>
                                             ))}
-
-                                            <td className="px-3 py-3 text-center font-bold text-primary whitespace-nowrap text-xs">
-                                                {product.price}
-                                            </td>
                                         </tr>
                                     );
                                 })}

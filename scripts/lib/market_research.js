@@ -629,6 +629,312 @@ const KAKAKU_CATEGORY_MAP = {
     'PlayStation': { path: 'game-machine', code: '2501' },
     'Nintendo': { path: 'game-machine', code: '2501' },
     'Switch': { path: 'game-machine', code: '2501' },
+    'PS5': { path: 'game-machine', code: '2501' },
+    'Xbox': { path: 'game-machine', code: '2501' },
+
+    // ================================================================
+    // ホビー (Hobby) - section: hobby
+    // ================================================================
+    'フィギュア': { section: 'hobby', path: 'figure', code: '3010' },
+    'プラモデル': { section: 'hobby', path: 'plastic-model', code: '3015' },
+    'ラジコン': { section: 'hobby', path: 'radio-control', code: '3020' },
+    'ミニ四駆': { section: 'hobby', path: 'mini-yonku', code: '3025' },
+    'ドローン': { section: 'hobby', path: 'drone', code: '7065' },
+    '電子ピアノ': { section: 'hobby', path: 'electronic-piano', code: '2570' },
+    'キーボード楽器': { section: 'hobby', path: 'keyboard-instrument', code: '2571' },
+    'ギター': { section: 'hobby', path: 'guitar', code: '2575' },
+    '電子楽器': { section: 'hobby', path: 'electronic-instrument', code: '2573' },
+
+    // ================================================================
+    // スマートフォン・携帯電話 (Smartphones) - section: keitai
+    // ================================================================
+    'スマートフォン': { section: 'keitai', path: 'smartphone', code: '7041' },
+    'スマホ': { section: 'keitai', path: 'smartphone', code: '7041' },
+    'iPhone': { section: 'keitai', path: 'smartphone', code: '7041' },
+    'Android': { section: 'keitai', path: 'smartphone', code: '7041' },
+    '携帯電話': { section: 'keitai', path: 'phs', code: '3147' },
+    'スマートウォッチ': { section: 'keitai', path: 'smartwatch', code: '7066' },
+
+    // ================================================================
+    // インテリア・家具 (Interior/Furniture) - section: interior
+    // ================================================================
+    'ソファ': { section: 'interior', path: 'sofa', code: '0066' },
+    'ソファー': { section: 'interior', path: 'sofa', code: '0066' },
+    'ベッド': { section: 'interior', path: 'bed', code: '0062' },
+    'マットレス': { section: 'interior', path: 'mattress', code: '0063' },
+    'デスク': { section: 'interior', path: 'desk', code: '0010' },
+    '机': { section: 'interior', path: 'desk', code: '0010' },
+    'チェア': { section: 'interior', path: 'chair', code: '0020' },
+    '椅子': { section: 'interior', path: 'chair', code: '0020' },
+    'オフィスチェア': { section: 'interior', path: 'office-chair', code: '0021' },
+    'ゲーミングチェア': { section: 'interior', path: 'gaming-chair', code: '7090' },
+    'テーブル': { section: 'interior', path: 'table', code: '0030' },
+    'ダイニングテーブル': { section: 'interior', path: 'dining-table', code: '0031' },
+    '本棚': { section: 'interior', path: 'bookshelf', code: '0050' },
+    'ラック': { section: 'interior', path: 'rack', code: '0051' },
+    '収納': { section: 'interior', path: 'storage', code: '0052' },
+    'カーテン': { section: 'interior', path: 'curtain', code: '0070' },
+    'ブラインド': { section: 'interior', path: 'blind', code: '0071' },
+    'カーペット': { section: 'interior', path: 'carpet', code: '0080' },
+    'ラグ': { section: 'interior', path: 'rug', code: '0081' },
+    'クッション': { section: 'interior', path: 'cushion', code: '0090' },
+    '枕': { section: 'interior', path: 'pillow', code: '0064' },
+    '布団': { section: 'interior', path: 'futon', code: '0065' },
+
+    // ================================================================
+    // ファッション (Fashion) - section: fashion
+    // ================================================================
+    'バッグ': { section: 'fashion', path: 'bag', code: '0010' },
+    'リュック': { section: 'fashion', path: 'backpack', code: '0011' },
+    'バックパック': { section: 'fashion', path: 'backpack', code: '0011' },
+    'トートバッグ': { section: 'fashion', path: 'tote-bag', code: '0012' },
+    'ショルダーバッグ': { section: 'fashion', path: 'shoulder-bag', code: '0013' },
+    '財布': { section: 'fashion', path: 'wallet', code: '0020' },
+    'サングラス': { section: 'fashion', path: 'sunglasses', code: '0030' },
+    'メガネ': { section: 'fashion', path: 'glasses', code: '0031' },
+    'ベルト': { section: 'fashion', path: 'belt', code: '0040' },
+    'ネクタイ': { section: 'fashion', path: 'necktie', code: '0041' },
+    'マフラー': { section: 'fashion', path: 'muffler', code: '0050' },
+    'ストール': { section: 'fashion', path: 'stole', code: '0051' },
+    '帽子': { section: 'fashion', path: 'hat', code: '0060' },
+    'キャップ': { section: 'fashion', path: 'cap', code: '0061' },
+    '手袋': { section: 'fashion', path: 'gloves', code: '0070' },
+    '傘': { section: 'fashion', path: 'umbrella', code: '0080' },
+    'レインウェア': { section: 'fashion', path: 'rainwear', code: '0081' },
+
+    // ================================================================
+    // 靴・シューズ (Shoes) - section: shoes
+    // ================================================================
+    'スニーカー': { section: 'shoes', path: 'sneakers', code: '0010' },
+    'ランニングシューズ': { section: 'shoes', path: 'running-shoes', code: '0011' },
+    'ビジネスシューズ': { section: 'shoes', path: 'business-shoes', code: '0020' },
+    '革靴': { section: 'shoes', path: 'leather-shoes', code: '0021' },
+    'ブーツ': { section: 'shoes', path: 'boots', code: '0030' },
+    'サンダル': { section: 'shoes', path: 'sandals', code: '0040' },
+    'スリッパ': { section: 'shoes', path: 'slippers', code: '0050' },
+
+    // ================================================================
+    // 腕時計・アクセサリー (Watch/Accessory) - section: watch_accessory
+    // ================================================================
+    '腕時計': { section: 'watch_accessory', path: 'watch', code: '0010' },
+    'メンズ腕時計': { section: 'watch_accessory', path: 'mens-watch', code: '0011' },
+    'レディース腕時計': { section: 'watch_accessory', path: 'ladies-watch', code: '0012' },
+    'G-SHOCK': { section: 'watch_accessory', path: 'gshock', code: '0013' },
+    'スマートウォッチ': { section: 'watch_accessory', path: 'smartwatch', code: '7066' },
+    'ネックレス': { section: 'watch_accessory', path: 'necklace', code: '0020' },
+    'ブレスレット': { section: 'watch_accessory', path: 'bracelet', code: '0021' },
+    'リング': { section: 'watch_accessory', path: 'ring', code: '0022' },
+    '指輪': { section: 'watch_accessory', path: 'ring', code: '0022' },
+    'ピアス': { section: 'watch_accessory', path: 'piercing', code: '0023' },
+    'イヤリング': { section: 'watch_accessory', path: 'earring', code: '0024' },
+
+    // ================================================================
+    // スポーツ (Sports) - section: sports
+    // ================================================================
+    'ゴルフクラブ': { section: 'sports', path: 'golf-club', code: '0010' },
+    'ゴルフ': { section: 'sports', path: 'golf', code: '0010' },
+    'ゴルフバッグ': { section: 'sports', path: 'golf-bag', code: '0011' },
+    'ゴルフシューズ': { section: 'sports', path: 'golf-shoes', code: '0012' },
+    'テニスラケット': { section: 'sports', path: 'tennis-racket', code: '0020' },
+    'テニス': { section: 'sports', path: 'tennis', code: '0020' },
+    '野球': { section: 'sports', path: 'baseball', code: '0030' },
+    'グローブ': { section: 'sports', path: 'baseball-glove', code: '0031' },
+    'バット': { section: 'sports', path: 'baseball-bat', code: '0032' },
+    'サッカー': { section: 'sports', path: 'soccer', code: '0040' },
+    'サッカーボール': { section: 'sports', path: 'soccer-ball', code: '0041' },
+    'サッカースパイク': { section: 'sports', path: 'soccer-spike', code: '0042' },
+    'バスケットボール': { section: 'sports', path: 'basketball', code: '0050' },
+    'バレーボール': { section: 'sports', path: 'volleyball', code: '0055' },
+    '水泳': { section: 'sports', path: 'swimming', code: '0060' },
+    '水着': { section: 'sports', path: 'swimwear', code: '0061' },
+    'ゴーグル': { section: 'sports', path: 'goggles', code: '0062' },
+    'フィットネス': { section: 'sports', path: 'fitness', code: '0070' },
+    'トレーニング': { section: 'sports', path: 'training', code: '0071' },
+    'ダンベル': { section: 'sports', path: 'dumbbell', code: '0072' },
+    'ヨガマット': { section: 'sports', path: 'yoga-mat', code: '0073' },
+    'プロテイン': { section: 'sports', path: 'protein', code: '0074' },
+    'スキー': { section: 'sports', path: 'ski', code: '0080' },
+    'スノーボード': { section: 'sports', path: 'snowboard', code: '0081' },
+    'ウェア': { section: 'sports', path: 'sports-wear', code: '0090' },
+
+    // ================================================================
+    // アウトドア (Outdoor) - section: outdoor
+    // ================================================================
+    'テント': { section: 'outdoor', path: 'tent', code: '0010' },
+    'タープ': { section: 'outdoor', path: 'tarp', code: '0011' },
+    'シュラフ': { section: 'outdoor', path: 'sleeping-bag', code: '0020' },
+    '寝袋': { section: 'outdoor', path: 'sleeping-bag', code: '0020' },
+    'キャンプ': { section: 'outdoor', path: 'camp', code: '0001' },
+    'キャンプ用品': { section: 'outdoor', path: 'camp', code: '0001' },
+    'アウトドアチェア': { section: 'outdoor', path: 'outdoor-chair', code: '0030' },
+    'アウトドアテーブル': { section: 'outdoor', path: 'outdoor-table', code: '0031' },
+    'クーラーボックス': { section: 'outdoor', path: 'cooler-box', code: '0040' },
+    'バーベキュー': { section: 'outdoor', path: 'bbq', code: '0050' },
+    'BBQ': { section: 'outdoor', path: 'bbq', code: '0050' },
+    'グリル': { section: 'outdoor', path: 'grill', code: '0051' },
+    'ランタン': { section: 'outdoor', path: 'lantern', code: '0060' },
+    'ヘッドライト': { section: 'outdoor', path: 'headlight', code: '0061' },
+    '登山': { section: 'outdoor', path: 'mountain', code: '0070' },
+    'トレッキング': { section: 'outdoor', path: 'trekking', code: '0071' },
+    '登山靴': { section: 'outdoor', path: 'trekking-shoes', code: '0072' },
+    '釣り': { section: 'outdoor', path: 'fishing', code: '0080' },
+    'フィッシング': { section: 'outdoor', path: 'fishing', code: '0080' },
+    'ロッド': { section: 'outdoor', path: 'fishing-rod', code: '0081' },
+    'リール': { section: 'outdoor', path: 'fishing-reel', code: '0082' },
+    'ルアー': { section: 'outdoor', path: 'lure', code: '0083' },
+
+    // ================================================================
+    // 自転車 (Bicycle) - section: bicycle
+    // ================================================================
+    '自転車': { section: 'bicycle', path: 'bicycle', code: '0001' },
+    'ロードバイク': { section: 'bicycle', path: 'road-bike', code: '0010' },
+    'クロスバイク': { section: 'bicycle', path: 'cross-bike', code: '0011' },
+    'マウンテンバイク': { section: 'bicycle', path: 'mtb', code: '0012' },
+    'MTB': { section: 'bicycle', path: 'mtb', code: '0012' },
+    '電動自転車': { section: 'bicycle', path: 'electric-bike', code: '0020' },
+    '電動アシスト': { section: 'bicycle', path: 'electric-bike', code: '0020' },
+    '折りたたみ自転車': { section: 'bicycle', path: 'folding-bike', code: '0030' },
+    'ミニベロ': { section: 'bicycle', path: 'mini-velo', code: '0031' },
+    'シティサイクル': { section: 'bicycle', path: 'city-cycle', code: '0040' },
+    'ママチャリ': { section: 'bicycle', path: 'city-cycle', code: '0040' },
+    '子供用自転車': { section: 'bicycle', path: 'kids-bike', code: '0050' },
+    'ヘルメット': { section: 'bicycle', path: 'helmet', code: '0060' },
+    'サイクルウェア': { section: 'bicycle', path: 'cycle-wear', code: '0070' },
+
+    // ================================================================
+    // ベビー・キッズ (Baby/Kids) - section: baby
+    // ================================================================
+    'ベビーカー': { section: 'baby', path: 'baby-car', code: '0010' },
+    'チャイルドシート': { section: 'baby', path: 'child-seat', code: '0020' },
+    'ベビーベッド': { section: 'baby', path: 'baby-bed', code: '0030' },
+    'ベビーチェア': { section: 'baby', path: 'baby-chair', code: '0040' },
+    '抱っこ紐': { section: 'baby', path: 'baby-carrier', code: '0050' },
+    'おむつ': { section: 'baby', path: 'diaper', code: '0060' },
+    'ミルク': { section: 'baby', path: 'baby-milk', code: '0070' },
+    '粉ミルク': { section: 'baby', path: 'baby-milk', code: '0070' },
+    '哺乳瓶': { section: 'baby', path: 'baby-bottle', code: '0071' },
+    'ベビー服': { section: 'baby', path: 'baby-wear', code: '0080' },
+    'おもちゃ': { section: 'baby', path: 'toy', code: '0090' },
+    '知育玩具': { section: 'baby', path: 'educational-toy', code: '0091' },
+    'キッズ': { section: 'baby', path: 'kids', code: '0100' },
+    'ランドセル': { section: 'baby', path: 'school-bag', code: '0101' },
+
+    // ================================================================
+    // ペット (Pet) - section: pet
+    // ================================================================
+    'ペット': { section: 'pet', path: 'pet', code: '0001' },
+    'ドッグフード': { section: 'pet', path: 'dog-food', code: '0010' },
+    '犬': { section: 'pet', path: 'dog', code: '0010' },
+    'キャットフード': { section: 'pet', path: 'cat-food', code: '0020' },
+    '猫': { section: 'pet', path: 'cat', code: '0020' },
+    'ペット用品': { section: 'pet', path: 'pet-goods', code: '0030' },
+    'ペットケージ': { section: 'pet', path: 'pet-cage', code: '0031' },
+    'ペットキャリー': { section: 'pet', path: 'pet-carrier', code: '0032' },
+    '水槽': { section: 'pet', path: 'fish-tank', code: '0040' },
+    'アクアリウム': { section: 'pet', path: 'aquarium', code: '0041' },
+
+    // ================================================================
+    // DIY・工具 (DIY/Tools) - section: diy
+    // ================================================================
+    '電動ドリル': { section: 'diy', path: 'electric-drill', code: '0010' },
+    'インパクトドライバー': { section: 'diy', path: 'impact-driver', code: '0011' },
+    '電動ドライバー': { section: 'diy', path: 'electric-driver', code: '0012' },
+    '丸ノコ': { section: 'diy', path: 'circular-saw', code: '0020' },
+    'チェーンソー': { section: 'diy', path: 'chainsaw', code: '0021' },
+    'サンダー': { section: 'diy', path: 'sander', code: '0022' },
+    'グラインダー': { section: 'diy', path: 'grinder', code: '0023' },
+    '工具セット': { section: 'diy', path: 'tool-set', code: '0030' },
+    'レンチ': { section: 'diy', path: 'wrench', code: '0031' },
+    'ドライバーセット': { section: 'diy', path: 'driver-set', code: '0032' },
+    'ペンキ': { section: 'diy', path: 'paint', code: '0040' },
+    '塗料': { section: 'diy', path: 'paint', code: '0040' },
+    '溶接機': { section: 'diy', path: 'welder', code: '0050' },
+    'コンプレッサー': { section: 'diy', path: 'compressor', code: '0051' },
+
+    // ================================================================
+    // キッチン用品 (Kitchen Goods) - section: kitchen
+    // ================================================================
+    '鍋': { section: 'kitchen', path: 'pot', code: '0010' },
+    'フライパン': { section: 'kitchen', path: 'frying-pan', code: '0011' },
+    '圧力鍋': { section: 'kitchen', path: 'pressure-cooker', code: '0012' },
+    '包丁': { section: 'kitchen', path: 'knife', code: '0020' },
+    'まな板': { section: 'kitchen', path: 'cutting-board', code: '0021' },
+    '食器': { section: 'kitchen', path: 'tableware', code: '0030' },
+    'グラス': { section: 'kitchen', path: 'glass', code: '0031' },
+    'マグカップ': { section: 'kitchen', path: 'mug', code: '0032' },
+    'カトラリー': { section: 'kitchen', path: 'cutlery', code: '0040' },
+    '弁当箱': { section: 'kitchen', path: 'lunch-box', code: '0050' },
+    '水筒': { section: 'kitchen', path: 'water-bottle', code: '0051' },
+    'タンブラー': { section: 'kitchen', path: 'tumbler', code: '0052' },
+    '保存容器': { section: 'kitchen', path: 'storage-container', code: '0060' },
+
+    // ================================================================
+    // 生活雑貨 (Household Goods) - section: houseware
+    // ================================================================
+    '洗剤': { section: 'houseware', path: 'detergent', code: '0010' },
+    '柔軟剤': { section: 'houseware', path: 'softener', code: '0011' },
+    '掃除用品': { section: 'houseware', path: 'cleaning-goods', code: '0020' },
+    'タオル': { section: 'houseware', path: 'towel', code: '0030' },
+    'バスタオル': { section: 'houseware', path: 'bath-towel', code: '0031' },
+    'バスマット': { section: 'houseware', path: 'bath-mat', code: '0032' },
+    'トイレ用品': { section: 'houseware', path: 'toilet-goods', code: '0040' },
+    '芳香剤': { section: 'houseware', path: 'air-freshener', code: '0050' },
+    '消臭剤': { section: 'houseware', path: 'deodorizer', code: '0051' },
+    '虫よけ': { section: 'houseware', path: 'insect-repellent', code: '0060' },
+    '殺虫剤': { section: 'houseware', path: 'insecticide', code: '0061' },
+    'ゴミ箱': { section: 'houseware', path: 'trash-can', code: '0070' },
+    '文房具': { section: 'houseware', path: 'stationery', code: '0080' },
+    'ノート': { section: 'houseware', path: 'notebook', code: '0081' },
+    'ペン': { section: 'houseware', path: 'pen', code: '0082' },
+
+    // ================================================================
+    // ビューティー追加 (Beauty/Health Extra) - section: beauty_health
+    // ================================================================
+    'コスメ': { section: 'beauty_health', path: 'cosmetics', code: '0010' },
+    '化粧品': { section: 'beauty_health', path: 'cosmetics', code: '0010' },
+    'ファンデーション': { section: 'beauty_health', path: 'foundation', code: '0011' },
+    'リップ': { section: 'beauty_health', path: 'lipstick', code: '0012' },
+    'アイシャドウ': { section: 'beauty_health', path: 'eyeshadow', code: '0013' },
+    'マスカラ': { section: 'beauty_health', path: 'mascara', code: '0014' },
+    'スキンケア': { section: 'beauty_health', path: 'skincare', code: '0020' },
+    '化粧水': { section: 'beauty_health', path: 'lotion', code: '0021' },
+    '乳液': { section: 'beauty_health', path: 'emulsion', code: '0022' },
+    '美容液': { section: 'beauty_health', path: 'serum', code: '0023' },
+    '日焼け止め': { section: 'beauty_health', path: 'sunscreen', code: '0024' },
+    'シャンプー': { section: 'beauty_health', path: 'shampoo', code: '0030' },
+    'コンディショナー': { section: 'beauty_health', path: 'conditioner', code: '0031' },
+    'ボディソープ': { section: 'beauty_health', path: 'body-soap', code: '0032' },
+    '香水': { section: 'beauty_health', path: 'perfume', code: '0040' },
+    'サプリメント': { section: 'beauty_health', path: 'supplement', code: '0050' },
+    'ビタミン': { section: 'beauty_health', path: 'vitamin', code: '0051' },
+
+    // ================================================================
+    // 食品・ドリンク (Food/Drink) - section: food / drink
+    // ================================================================
+    '米': { section: 'food', path: 'rice', code: '0010' },
+    'お米': { section: 'food', path: 'rice', code: '0010' },
+    'パスタ': { section: 'food', path: 'pasta', code: '0020' },
+    '麺': { section: 'food', path: 'noodle', code: '0021' },
+    '調味料': { section: 'food', path: 'seasoning', code: '0030' },
+    '醤油': { section: 'food', path: 'soy-sauce', code: '0031' },
+    'オリーブオイル': { section: 'food', path: 'olive-oil', code: '0032' },
+    'お菓子': { section: 'food', path: 'sweets', code: '0040' },
+    'チョコレート': { section: 'food', path: 'chocolate', code: '0041' },
+    'コーヒー豆': { section: 'food', path: 'coffee-beans', code: '0050' },
+    '紅茶': { section: 'food', path: 'tea', code: '0051' },
+    '缶詰': { section: 'food', path: 'canned-food', code: '0060' },
+    'レトルト': { section: 'food', path: 'retort', code: '0061' },
+    'ミネラルウォーター': { section: 'drink', path: 'water', code: '0010' },
+    '水': { section: 'drink', path: 'water', code: '0010' },
+    '炭酸水': { section: 'drink', path: 'sparkling-water', code: '0011' },
+    'ジュース': { section: 'drink', path: 'juice', code: '0020' },
+    'お茶': { section: 'drink', path: 'tea', code: '0030' },
+    '緑茶': { section: 'drink', path: 'green-tea', code: '0031' },
+    'ビール': { section: 'drink', path: 'beer', code: '0040' },
+    'ワイン': { section: 'drink', path: 'wine', code: '0041' },
+    '日本酒': { section: 'drink', path: 'sake', code: '0042' },
+    'ウイスキー': { section: 'drink', path: 'whisky', code: '0043' },
+    '焼酎': { section: 'drink', path: 'shochu', code: '0044' },
 };
 
 /**

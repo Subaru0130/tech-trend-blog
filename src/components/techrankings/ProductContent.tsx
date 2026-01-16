@@ -200,23 +200,102 @@ const ProductContent: React.FC<ProductContentProps> = ({
                         <div className="overflow-hidden rounded-2xl border border-border-color bg-white">
                             <table className="w-full text-sm text-left">
                                 <tbody className="divide-y divide-border-color">
-                                    {product.specs.filter(spec =>
-                                        !spec.label.includes("お届け") &&
-                                        !spec.label.includes("ニュース") &&
-                                        !spec.label.includes("関連") &&
-                                        !spec.label.includes("保証") &&
-                                        !spec.label.includes("在庫") &&
-                                        !spec.label.includes("特集") &&
-                                        !spec.label.includes("満足度") &&
-                                        !spec.label.includes("ランキング") &&
-                                        !spec.label.includes("PV") &&
-                                        !spec.label.includes("記事")
-                                    ).map((spec, i) => (
-                                        <tr key={i} className={i % 2 === 0 ? "bg-surface-subtle/30" : ""}>
-                                            <th className="py-5 px-8 font-bold text-primary w-1/3">{spec.label}</th>
-                                            <td className="py-5 px-8 text-text-main">{spec.value}</td>
-                                        </tr>
-                                    ))}
+                                    {(() => {
+                                        // Filter useless labels
+                                        const uselessLabels = [
+                                            'お届け', 'ニュース', '関連', '保証', '在庫', '特集', '満足度',
+                                            'ランキング', 'PV', '記事', 'ASIN', 'JAN', 'EAN', 'UPC',
+                                            'Amazon', 'ベストセラー', 'Date First', '発売日', 'カスタマーレビュー',
+                                            'Package Dimensions', 'Item Weight', 'Product Weight', 'Batteries',
+                                            'Manufacturer', 'Country', '原産国', '販売元', '出品者', 'Number of Items',
+                                            'Age Range', 'Included Components', '付属品', 'Warranty', 'Item Model Number'
+                                        ];
+
+                                        // English to Japanese value translations
+                                        const valueTranslations: Record<string, string> = {
+                                            'Waterproof': '防水対応',
+                                            'Water Resistant': '防滴対応',
+                                            'Yes': '対応',
+                                            'No': '非対応',
+                                            'True': '対応',
+                                            'False': '非対応',
+                                            'Wireless': 'ワイヤレス',
+                                            'Wired': '有線',
+                                            'Both': '両対応',
+                                            'Active Noise Cancellation': 'アクティブノイズキャンセリング',
+                                            'Black': 'ブラック',
+                                            'White': 'ホワイト',
+                                            'Silver': 'シルバー',
+                                            'Gold': 'ゴールド',
+                                            'Bluetooth': 'Bluetooth',
+                                        };
+
+                                        // Label normalization (merge duplicates)
+                                        const labelNormalization: Record<string, string> = {
+                                            '接続タイプ': '接続方式',
+                                            'Connectivity Technology': '接続方式',
+                                            'Wireless Communication Technology': 'ワイヤレス技術',
+                                            '防水性能': '防水',
+                                            'Waterproof Rating': '防水',
+                                            'Bluetoothバージョン': 'Bluetooth',
+                                            'Bluetooth Version': 'Bluetooth',
+                                            'Control Type': '操作方式',
+                                            'Control Method': '操作方式',
+                                            '重量': '本体重量',
+                                            'Weight': '本体重量',
+                                            '再生時間': 'バッテリー',
+                                            'Battery Life': 'バッテリー',
+                                            'Playtime': 'バッテリー',
+                                        };
+
+                                        // Filter and process specs
+                                        const filteredSpecs = (product.specs || [])
+                                            .filter(spec => {
+                                                // Remove useless labels
+                                                const isUseless = uselessLabels.some(ul =>
+                                                    spec.label.toLowerCase().includes(ul.toLowerCase())
+                                                );
+                                                if (isUseless) return false;
+
+                                                // Remove empty or placeholder values
+                                                if (!spec.value || spec.value === '-' || spec.value === '記載なし' || spec.value === 'N/A') return false;
+
+                                                return true;
+                                            })
+                                            .map(spec => {
+                                                // Normalize label
+                                                let normalizedLabel = labelNormalization[spec.label] || spec.label;
+
+                                                // Translate value
+                                                let translatedValue = spec.value;
+                                                Object.entries(valueTranslations).forEach(([en, ja]) => {
+                                                    if (translatedValue === en) translatedValue = ja;
+                                                });
+
+                                                // Clean up "Ver.X.X" format
+                                                if (normalizedLabel === 'Bluetooth' && translatedValue.match(/^Ver\.?\s*\d/i)) {
+                                                    translatedValue = translatedValue.replace(/^Ver\.?\s*/i, '');
+                                                }
+
+                                                return { label: normalizedLabel, value: translatedValue };
+                                            });
+
+                                        // Deduplicate by label (keep first occurrence)
+                                        const seenLabels = new Set<string>();
+                                        const deduplicatedSpecs = filteredSpecs.filter(spec => {
+                                            if (seenLabels.has(spec.label)) return false;
+                                            seenLabels.add(spec.label);
+                                            return true;
+                                        });
+
+                                        // Limit to 12 most useful specs
+                                        return deduplicatedSpecs.slice(0, 12).map((spec, i) => (
+                                            <tr key={i} className={i % 2 === 0 ? "bg-surface-subtle/30" : ""}>
+                                                <th className="py-5 px-8 font-bold text-primary w-1/3">{spec.label}</th>
+                                                <td className="py-5 px-8 text-text-main">{spec.value}</td>
+                                            </tr>
+                                        ));
+                                    })()}
                                 </tbody>
                             </table>
                         </div>

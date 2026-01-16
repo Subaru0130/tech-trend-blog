@@ -430,7 +430,7 @@ function cleanProductName(rawName, knownBrand = null) {
                 // --- D. Full Enrichment (Specs) ---
                 console.log(`   🔍 Enriching Specs: ${verifiedItem.name}...`);
                 const externalSpecs = await searchProductSpecs(verifiedItem.name);
-                const enrichedData = await genSpecs(verifiedItem.name, { target_reader: BLUEPRINT.target_reader, comparison_axis: BLUEPRINT.comparison_axis }, verifiedItem.asin, externalSpecs);
+                const enrichedData = await genSpecs(verifiedItem.name, { target_reader: BLUEPRINT.target_reader, comparison_axis: BLUEPRINT.comparison_axis }, verifiedItem.asin, externalSpecs, Object.values(targetLabels));
                 Object.assign(verifiedItem, enrichedData);
 
                 // --- E. Feature Filter (Generic for any category) ---
@@ -535,7 +535,7 @@ function cleanProductName(rawName, knownBrand = null) {
                                 { comparison_axis: BLUEPRINT.comparison_axis },
                                 verifiedItem.asin,
                                 rawSpecContext,
-                                targetLabels // <--- The Key Fix
+                                targetLabels ? Object.values(targetLabels) : null // <--- The Key Fix
                             );
 
                             if (aiSpecsData && aiSpecsData.specs && aiSpecsData.specs.length > 0) {
@@ -694,7 +694,7 @@ function cleanProductName(rawName, knownBrand = null) {
             // --- D. Full Enrichment (Specs) ---
             console.log(`   🔍 Enriching Specs: ${verifiedItem.name}...`);
             const externalSpecs = await searchProductSpecs(verifiedItem.name);
-            const enrichedData = await genSpecs(verifiedItem.name, { target_reader: BLUEPRINT.target_reader, comparison_axis: BLUEPRINT.comparison_axis }, verifiedItem.asin, externalSpecs);
+            const enrichedData = await genSpecs(verifiedItem.name, { target_reader: BLUEPRINT.target_reader, comparison_axis: BLUEPRINT.comparison_axis }, verifiedItem.asin, externalSpecs, Object.values(targetLabels));
 
             verifiedItem = { ...verifiedItem, ...enrichedData };
 
@@ -906,7 +906,7 @@ function cleanProductName(rawName, knownBrand = null) {
     }
 
     // 6. Update DB
-    updateDatabase(TARGET_KEYWORD, validatedLineup, productsData, seoMetadata, BLUEPRINT);
+    updateDatabase(TARGET_KEYWORD, validatedLineup, productsData, seoMetadata, BLUEPRINT, thumbPath);
 
     // 7. Save Enriched Data to Master JSON
     fs.writeFileSync(PRODUCTS_JSON_PATH, JSON.stringify(productsData, null, 4));

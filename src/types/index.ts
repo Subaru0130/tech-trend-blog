@@ -53,12 +53,12 @@ export interface RankingItem {
     productId: string;
     badge?: string;
     rating: number;
-    reviewCount: number;
+    reviewCount?: number; // Optional - not always present
     rankBadge?: 'gold' | 'silver' | 'bronze'; // Visual style
     pros: string[];
     cons: string[];
     specs: { label: string; value: string }[]; // Small grid in card
-    editorComment: string;
+    editorComment?: string; // Optional - not always present
     bestFor?: string; // e.g. "iPhoneに最適"
 }
 
@@ -81,8 +81,8 @@ export interface Article {
     slug: string;
     title: string;
     description: string;
-    publishDate: string;
-    publishedAt?: string; // Alias
+    publishDate?: string; // Optional alias
+    publishedAt: string; // Primary field
     updatedDate: string;
     thumbnail: string;
     author: string;
@@ -97,6 +97,7 @@ export interface Article {
     };
     rankingItems?: RankingItem[];
     products?: string[];
+    specLabels?: { [key: string]: string };
     buyingGuide?: {
         title: string;
         steps: {

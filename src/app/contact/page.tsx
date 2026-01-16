@@ -3,6 +3,8 @@ import Header from '@/components/shared/Header';
 import Footer from '@/components/shared/Footer';
 
 export default function ContactPage() {
+    const email = "subaruu0130@gmail.com";
+
     return (
         <div className="bg-background-light text-text-main antialiased font-sans min-h-screen flex flex-col">
             <Header />
@@ -11,40 +13,34 @@ export default function ContactPage() {
                     <h1 className="text-3xl font-bold mb-8 text-primary border-b pb-4 border-stone-200">お問い合わせ</h1>
 
                     <p className="mb-8 text-stone-600 text-sm leading-relaxed">
-                        当サイトに関するご質問、広告掲載のご依頼、プレスリリースの送付等は、以下のフォームよりお気軽にお問い合わせください。<br />
-                        通常、3営業日以内に担当者よりご返信させていただきます。
+                        当サイトに関するご質問、広告掲載のご依頼、プレスリリースの送付等は、以下のメールアドレスよりお気軽にお問い合わせください。<br />
+                        通常、3営業日以内にご返信させていただきます。
                     </p>
 
-                    <form className="space-y-6 bg-white p-8 rounded-xl border border-stone-200 shadow-sm">
-                        <div>
-                            <label htmlFor="name" className="block text-sm font-bold text-stone-700 mb-1">お名前 <span className="text-accent">*</span></label>
-                            <input type="text" id="name" name="name" required className="w-full bg-stone-50 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all outline-none" placeholder="山田 太郎" />
-                        </div>
+                    <div className="bg-white p-8 rounded-xl border border-stone-200 shadow-sm">
+                        <h2 className="text-lg font-bold text-primary mb-4">メールでのお問い合わせ</h2>
 
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-bold text-stone-700 mb-1">メールアドレス <span className="text-accent">*</span></label>
-                            <input type="email" id="email" name="email" required className="w-full bg-stone-50 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all outline-none" placeholder="example@choiceguide.jp" />
-                        </div>
+                        <a
+                            href={`mailto:${email}?subject=[ChoiceGuide] お問い合わせ`}
+                            className="flex items-center gap-3 p-4 bg-accent/10 hover:bg-accent/20 rounded-lg transition-colors group"
+                        >
+                            <span className="material-symbols-outlined text-accent text-2xl">mail</span>
+                            <div>
+                                <p className="text-sm text-stone-500">メールアドレス</p>
+                                <p className="text-lg font-bold text-primary group-hover:text-accent transition-colors">{email}</p>
+                            </div>
+                        </a>
 
-                        <div>
-                            <label htmlFor="subject" className="block text-sm font-bold text-stone-700 mb-1">件名</label>
-                            <select id="subject" name="subject" className="w-full bg-stone-50 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all outline-none cursor-pointer">
-                                <option>記事内容に関するご質問</option>
-                                <option>広告掲載について</option>
-                                <option>プレスリリースの送付</option>
-                                <option>その他のお問い合わせ</option>
-                            </select>
+                        <div className="mt-6 p-4 bg-stone-50 rounded-lg">
+                            <h3 className="text-sm font-bold text-stone-700 mb-2">お問い合わせの種類</h3>
+                            <ul className="text-sm text-stone-600 space-y-1">
+                                <li>・記事内容に関するご質問</li>
+                                <li>・広告掲載について</li>
+                                <li>・プレスリリースの送付</li>
+                                <li>・その他のお問い合わせ</li>
+                            </ul>
                         </div>
-
-                        <div>
-                            <label htmlFor="message" className="block text-sm font-bold text-stone-700 mb-1">お問い合わせ内容 <span className="text-accent">*</span></label>
-                            <textarea id="message" name="message" rows={5} required className="w-full bg-stone-50 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all outline-none resize-none" placeholder="お問い合わせ内容をご記入ください"></textarea>
-                        </div>
-
-                        <button type="submit" className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all transform active:scale-[0.99]">
-                            送信する
-                        </button>
-                    </form>
+                    </div>
                 </div>
             </main>
             <Footer />

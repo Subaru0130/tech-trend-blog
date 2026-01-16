@@ -1,4 +1,5 @@
 const { GoogleGenAI } = require('@google/genai');
+const Anthropic = require('@anthropic-ai/sdk').default;
 require('dotenv').config({ path: '.env.local' });
 
 const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
@@ -7,6 +8,23 @@ if (!apiKey) {
 }
 
 const client = apiKey ? new GoogleGenAI({ apiKey }) : null;
+
+// Article AI Provider: 'claude' for Claude Opus 4.5, 'gemini' for Gemini
+// Change ARTICLE_AI_PROVIDER in .env.local to switch (default: 'claude')
+const articleAiProvider = process.env.ARTICLE_AI_PROVIDER || 'claude';
+
+// Claude client for article generation (Opus 4.5)
+const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
+const claudeClient = anthropicApiKey ? new Anthropic({ apiKey: anthropicApiKey }) : null;
+
+if (articleAiProvider === 'claude' && !claudeClient) {
+    console.warn("⚠️ Warning: ARTICLE_AI_PROVIDER is 'claude' but ANTHROPIC_API_KEY not found. Falling back to Gemini.");
+}
+
+console.log(`📝 Article AI Provider: ${articleAiProvider === 'claude' && claudeClient ? 'Claude Opus 4.5' : 'Gemini'}`);
+
+// Helper function to check if Claude should be used
+const useClaudeForArticles = () => articleAiProvider === 'claude' && claudeClient;
 
 /**
  * Generate SEO Metadata (Title, Description)
@@ -124,6 +142,24 @@ ${productListString}
 3. **文体**: です・ます調、プロフェッショナルかつ親しみやすく
 4. **文字数**: 各セクション500-1000文字以上を目安に詳しく書く（SEO対策）
 5. **鍵かっこ「」の多用禁止**: 「〜」形式の引用を多用しない。AIっぽくなるため最小限に。ストレートに述べる
+6. **マーカー強調（重要）**: 記事内で**特に重要な部分（メリット、数値、結論）は必ず太文字（**重要なテキスト**）にしてください**。これがサイト上で「黄色いマーカー」として表示されます。
+   - 目安: 1段落につき1〜2箇所。
+   - 全文を太文字にするのはNG。単語や短いフレーズ単位で引くこと。
+
+# AIっぽい文章を避けるための絶対ルール
+7. **接続詞の連続使用禁止**: 「さらに」「また」「加えて」「そして」「一方で」を連続して使わない。同じ接続詞は記事全体で3回まで。代わりに文の構造を工夫する。
+8. **曖昧な形容詞禁止**: 以下の表現は使用禁止
+   - ❌ 「驚くべき」「素晴らしい」「圧倒的な」「究極の」「画期的な」「革命的な」「抜群の」
+   - ⭕️ 代わりに具体的な数値や比較を使う（例：「旧モデルより30%軽量」「電車の走行音が聞こえなくなる」）
+9. **問いかけパターンの制限**:
+   - ❌ 「〜ではないでしょうか？」「〜と思いませんか？」は記事全体で1回まで
+   - ❌ 「こんな経験ありませんか？」形式は使わない
+   - ⭕️ 代わりに断定的に読者の悩みを述べる（例：「通勤電車で音楽に集中できないストレスは大きい」）
+10. **語尾の単調さ回避**: 「〜です。〜です。〜です。」のように同じ語尾が3回以上続かないようにする。「〜でしょう」「〜といえます」「〜になります」などを織り交ぜる。
+11. **抽象的な約束禁止**:
+   - ❌ 「人生が変わる」「幸せになれる」「後悔しない」「間違いない」
+   - ⭕️ 具体的なベネフィット（例：「朝の満員電車でもポッドキャストに集中できる」）
+12. **リスト形式の乱用禁止**: 箇条書きは1セクションにつき1箇所まで。文章で説明することを優先する。
 
 # 記事構成（必須: この順番で全セクションを書いてください）
 **注意**: ランキング詳細は別コンポーネントで表示するため、ここでは書かない
@@ -139,8 +175,8 @@ ${productListString}
 
 ### 書くべき内容（詳しく書く）:
 1. **読者の悩みへの共感**（2-3段落）
-   - 「${ctx.target_reader}」が抱える具体的な悩みを言語化
-   - 「こんな経験ありませんか？」形式で共感を得る
+   - 「${ctx.target_reader}」が抱える具体的な悩みを断定的に言語化する
+   - 問いかけ形式ではなく、事実として述べる（例：「多くの人が〜で困っている」）
    - なぜこの悩みが解決されにくいのか、その理由
 
 2. **この記事の価値**（1-2段落）
@@ -271,15 +307,15 @@ ${productListString}
 
 形式例（この形式を必ず守るが、カテゴリはキーワード「${keyword}」に合わせて適切に変更すること）:
 
-### 🏆 ${ctx.comparison_axis}重視なら
+### **🏆 ${ctx.comparison_axis}重視なら**
 ▶ **[商品名をクリックして詳細を見る](Amazonリンク)** がベスト！ ※リストの1-3位から選ぶこと
 \> [なぜこの商品がベストなのか1-2文で解説]
 
-### 💰 コスパ重視なら
+### **💰 コスパ重視なら**
 ▶ **[商品名をクリックして詳細を見る](https://www.amazon.co.jp/dp/〇〇)** が最強！ ※リストの1-5位から選ぶこと
 \> [なぜこの商品がベストなのか1-2文で解説]
 
-### 🎯 [キーワードに合わせた別の切り口]
+### **🎯 [キーワードに合わせた別の切り口]**
 ▶ **[商品名をクリックして詳細を見る](Amazonリンク)** 一択！ ※リストの1-3位から選ぶこと
 \> [なぜこの商品がベストなのか1-2文で解説]
 
@@ -313,17 +349,29 @@ ${productListString}
 
     console.log(`  🤖 generating Buying Guide for "${keyword}"...`);
     try {
-        const response = await client.models.generateContent({
-            model: 'gemini-3-pro-preview',
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        });
+        let text;
 
-        if (!response.candidates || response.candidates.length === 0) {
-            console.error("  ❌ AI Error: No candidates returned.");
-            return "AI生成エラー";
+        // Use Claude Opus 4.5 if configured, fallback to Gemini
+        if (useClaudeForArticles()) {
+            console.log(`  🎭 Using Claude Opus 4.5...`);
+            const response = await claudeClient.messages.create({
+                model: 'claude-opus-4-5-20251101',
+                max_tokens: 16384,
+                messages: [{ role: 'user', content: prompt }],
+            });
+            text = response.content[0].text;
+        } else {
+            console.log(`  🤖 Using Gemini...`);
+            const response = await client.models.generateContent({
+                model: 'gemini-3-pro-preview',
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            });
+            if (!response.candidates || response.candidates.length === 0) {
+                console.error("  ❌ AI Error: No candidates returned.");
+                return "AI生成エラー";
+            }
+            text = response.candidates[0].content.parts[0].text;
         }
-
-        let text = response.candidates[0].content.parts[0].text;
 
         // AGGRESSIVE CLEANING
         text = text.replace(/```markdown/g, '').replace(/```/g, '').trim();
@@ -345,7 +393,7 @@ ${productListString}
             break;
         }
         text = lines.slice(starIndex).join('\n').trim();
-        text = text.replace(/\*\*/g, ''); // Remove bolding if desired (optional)
+        // Note: **bold** markers are preserved for yellow highlighter styling
 
         // DEDUPLICATION: Comparison Table
         // Sometimes AI generates the table, but the system also inserts one.
@@ -482,19 +530,17 @@ async function generateReviewBody(product, competitorName, blueprint = {}) {
         if (amazonPositive || amazonNegative || kakakuPositive || kakakuNegative) {
             reviewsContext = `
 
-## 実際のユーザーレビュー（引用してSEO価値を高めてください）
+## 参考情報：ユーザーの声（これを参考に自然な文章で書いてください）
+【重要】以下のレビューは参考情報です。直接引用（「」付きの引用や「〜より引用」）は禁止です。
+レビューから得られた知見を自分の体験として咀嚼し、自然な文章で書いてください。
+❌ 禁止例：「ノイズキャンセリングは非常に強力」（Amazon口コミより引用）
+⭕️ 推奨例：電車の走行音がほぼ聞こえなくなるほど、ノイズキャンセリングの効きは強力です。
 
-### Amazon口コミ
-【好評の声】
-${amazonPositive || '（なし）'}
-【不満の声】
-${amazonNegative || '（なし）'}
+### 好評の傾向
+${amazonPositive || kakakuPositive || '（情報なし）'}
 
-### 価格.com口コミ
-【好評の声】
-${kakakuPositive || '（なし）'}
-【不満の声】
-${kakakuNegative || '（なし）'}`;
+### 不満の傾向
+${amazonNegative || kakakuNegative || '（情報なし）'}`;
         }
     }
 
@@ -549,12 +595,29 @@ ${targetReader}
     - 「〜」形式の引用を多用しない。AIっぽくなるため最小限に。
     - 代わりに、ストレートに述べる。
 - **正直なデメリット**: 「すべてが最高」とは言わず、正直に伝えてください。
-- **柔軟な比較**: 主な比較対象は **${competitorName}** ですが、市場の他の競合製品（同価格帯）とも自由に比較してください。「${competitorName}以外とは比較してはいけない」という制限はありません。
 - **ユーザーレビュー引用の絶対ルール**: 
-    - 💬 **英語のレビューは禁止**です。引用する場合は**必ず自然な日本語に意訳**してください。
-    - 悪い例: 「"Amazing sound!"という声があります」
-    - 良い例: 「"驚くべき音質"と称賛する声があります」
+    - 【重要】デメリット（Cons）の表現バリエーション:
+      - 「〜は要検討です」という定型句は**禁止**します。
+      - 代わりに、ターゲットを絞った具体的なアドバイスにしてください。
+      - 良い例:
+        - 「重低音重視の人は物足りなさを感じるかもしれません」
+        - 「手が小さい人は、ケースが大きく感じる可能性があります」
+        - 「ノイキャン性能はマイルドなので、完全な静寂を求める人は注意が必要です」
+        - 「屋内利用なら全く気になりませんが、風の強い屋外ではノイズが入ります」
+      - バリエーション意識: 「〜な人は注意」「〜なら問題なし」「〜と感じるかも」など、文末を散らしてください。
+- **柔軟な比較**: 主な比較対象は **${competitorName}** ですが、市場の他の競合製品（同価格帯）とも自由に比較してください。「${competitorName}以外とは比較してはいけない」という制限はありません。
+
+# AIっぽい文章を避けるための絶対ルール
+- **接続詞の連続使用禁止**: 「さらに」「また」「加えて」「そして」「一方で」を連続して使わない。同じ接続詞は記事全体で2回まで。
+- **曖昧な形容詞禁止**: 「驚くべき」「素晴らしい」「圧倒的な」「究極の」「画期的な」「革命的な」「抜群の」は使用禁止。代わりに具体的な数値や体験を使う。
+- **問いかけパターンの制限**: 「〜ではないでしょうか？」「〜と思いませんか？」は使わない。断定的に述べる。
+- **語尾の単調さ回避**: 「〜です。〜です。〜です。」のように同じ語尾が3回以上続かないようにする。
+- **リスト形式の乱用禁止**: 箇条書きは最小限に。文章で説明することを優先する。
 - **比較対象の明記**: 「2倍の性能」などの表現を使う場合は、必ず「何と比べて（旧モデル比、競合他社比）」を明記すること。不明な場合はその表現を使わず、「電車の音が気にならないレベル」のように体験ベースで記述すること。
+- **マーカー強調（重要）**:
+    - 記事内で**特に重要な部分（メリット、数値、結論）は必ず太文字（**重要なテキスト**）にしてください**。これがサイト上で「黄色いマーカー」として表示されます。
+    - 目安: 1段落につき1〜2箇所。
+    - 全文を太文字にするのはNG。単語や短いフレーズ単位で引くこと。
 
 # Review Structure(Markdown)
 （導入文：${reviewContext}の観点で実機を検証しました。結論から言うと…で始める）
@@ -584,26 +647,35 @@ ${targetReader}
 
     console.log(`  🤖 generating Review for "${product.name}"...`);
     try {
-        const response = await client.models.generateContent({
-            model: 'gemini-3-pro-preview',
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        });
+        let text;
 
-        if (!response.candidates || response.candidates.length === 0) {
-            console.error("  ❌ AI Error: No candidates returned.");
-            return "AI生成エラー";
+        // Use Claude Opus 4.5 if configured, fallback to Gemini
+        if (useClaudeForArticles()) {
+            console.log(`  🎭 Using Claude Opus 4.5...`);
+            const response = await claudeClient.messages.create({
+                model: 'claude-opus-4-5-20251101',
+                max_tokens: 16384,
+                messages: [{ role: 'user', content: prompt }],
+            });
+            text = response.content[0].text;
+        } else {
+            console.log(`  🤖 Using Gemini...`);
+            const response = await client.models.generateContent({
+                model: 'gemini-3-pro-preview',
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            });
+            if (!response.candidates || response.candidates.length === 0) {
+                console.error("  ❌ AI Error: No candidates returned.");
+                return "AI生成エラー";
+            }
+            text = response.candidates[0].content.parts[0].text;
         }
-
-        let text = response.candidates[0].content.parts[0].text;
         // STRONG CLEANING
         text = text.replace(/```markdown/g, '').replace(/```/g, '').trim();
         text = text.replace(/^---[\s\S]*?---/g, '').trim();
         text = text.replace(/^title:.*$/gim, '');
         text = text.replace(/^description:.*$/gim, '');
-        text = text.replace(/\*\*/g, '');
-
-        text = text.replace(/^description:.*$/gim, '');
-        text = text.replace(/\*\*/g, '');
+        // Note: **bold** markers are preserved for yellow highlighter styling
 
         // Content Policing (User Feedback)
         // More aggressive regex to catch variations
@@ -782,7 +854,10 @@ async function generateProductSpecsAndProsCons(productInput, contextData, asin =
         ? `\n【Web検索等の外部スペック情報（Official Fallback）】:\n${externalSpecContext}`
         : '';
 
-    // ... (rest of the prompt construction) ...
+
+    // Combine contexts for the prompt
+    const specContext = [realDataContext, realSpecContext, fallbackContext].filter(Boolean).join('\n');
+
 
     const prompt = `
 # Role
@@ -863,8 +938,37 @@ Generate a JSON object containing:
     【禁止】括弧付き説明、長文評価、「-」や空欄
     【禁止項目】配送、保証、価格、JANコード、Amazonランキング
     
-    # Output Format (JSON Only)
-    ## CRITICAL: Specs must be EVALUATION SCORES, not raw data!
+    あなたはプロのガジェットレビュアーです。
+以下の製品のスペック情報と、ユーザーが重視する比較軸（${targetLabels ? targetLabels.join(', ') : (contextData.comparison_axis || '基本スペック')}）に基づいて、
+比較表に掲載するための「評価グレード（S/A/B/C）」および「簡潔なスペック値」を生成してください。
+
+# 製品情報
+- 製品名: ${productInput.name}
+- リアルなスペック情報:
+${specContext}
+
+# 重要: 新旧モデルの評価基準
+- **最新モデル・上位機種の優遇**: 型番が大きい、または明らかに最新のフラッグシップモデル（例: AZ80 → AZ100）である場合は、レビューが少なくても**スペック上の進化を信頼して「S」や「A」を積極的に付けてください**。
+- **旧モデルの相対評価**: 過去の名機であっても、最新世代と比較してスペックが見劣りする場合（例: コーデック、ANC性能）は、現在の基準で厳しく評価（S→A, A→B）してください。
+- "昔は凄かった" ではなく "今通用するか" で採点してください。
+
+# 出力要件
+1. ${targetLabels ? `**${targetLabels.join(', ')}** の${targetLabels.length}項目について、順に出力してください。` : `比較軸に基づいた重要なスペックを4項目出力してください。`}
+2. **主観的項目（音質、ノイキャンなど）**: 必ず **S, A, B, C** の4段階で評価してください。
+   - S: 業界最高クラス / 感動するレベル
+   - A: 非常に良い / 満足度高い
+   - B: 普通 / 価格相応
+   - C: 不満 / 改善の余地あり
+3. **客観的項目（重量、再生時間など）**: 具体的な数値（例: "約5.0g", "最大10時間"）を出力してください。詳細が不明な場合は "?" としてください。
+
+# 出力形式 (JSONのみ)
+{
+  "specs": [
+    ${targetLabels ? `{ "label": "${targetLabels[0]}", "value": "S" },` : `{ "label": "項目名", "value": "Evaluate S/A/B/C" },`}
+    ${targetLabels && targetLabels[1] ? `{ "label": "${targetLabels[1]}", "value": "約7.0時間" },` : `{ "label": "項目名", "value": "Spec Value" },`}
+    ...
+  ]
+}
     ## Example for Earphones (comparison_axis: 音質、ノイキャン、バッテリー、機能):
     {
       "pros": ["電車の騒音がほぼ消える", "8時間連続再生で通勤に十分", "3台同時接続が便利"],

@@ -104,9 +104,9 @@ export default async function ReviewPage({ params }: Props) {
 
 
     const parentArticle = getArticleByProductId(product.id);
-    const relatedProducts = parentArticle
+    const relatedProducts = parentArticle?.rankingItems
         ? (parentArticle.rankingItems
-            ?.sort((a, b) => a.rank - b.rank) // Ensure correct order
+            .sort((a, b) => a.rank - b.rank) // Ensure correct order
             .map(item => {
                 const p = getProductBySlug(item.productId);
                 if (p) {
@@ -117,10 +117,10 @@ export default async function ReviewPage({ params }: Props) {
                 }
                 return null;
             })
-            .filter(p => p) as any[])
+            .filter((p): p is NonNullable<typeof p> => p !== null) as any[])
         : [];
-    const relatedArticles = getArticleByProductId(product.id)?.category ?
-        getArticlesByCategory(getArticleByProductId(product.id)!.category)
+    const relatedArticles = parentArticle?.category ?
+        getArticlesByCategory(parentArticle.category)
         : [];
 
     // Filter top 3 related products

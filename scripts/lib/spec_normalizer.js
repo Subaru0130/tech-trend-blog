@@ -97,7 +97,11 @@ function normalizeSpecs(specs) {
         const junkKeywords = [
             'お届け', 'ニュース', '配送', '在庫', '価格', '送料', '保証', 'JAN', '型番', '発売日',
             '関連', 'キャンペーン', '決済', 'お支払い', '返品', '取扱', '店舗',
-            'Department', 'Date', 'Rank', 'Customer', 'Review', 'Best Sellers', 'Description'
+            'Department', 'Date', 'Rank', 'Customer', 'Review', 'Best Sellers', 'Description',
+            // User Requested Blacklist (Irrelevant/Verbose metadata)
+            '付属品', '対象年齢', '素材', '用途', '推奨用途', '対応機器',
+            '操作方式', '操作方法', 'ケーブル機能', '個数', 'カスタマーレビュー',
+            'ベストセラーランク', 'メーカー', 'ASIN', '商品モデル番号', '電池', '保証'
         ];
         // Filter if LABEL contains junk OR VALUE contains junk (long text only)
         if (junkKeywords.some(k => label.includes(k) || (value.length > 50 && value.includes(k)))) return;

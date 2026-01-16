@@ -1,0 +1,12 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+
+# Handle encoded URLs
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !.*\.(css|js|svg|png|jpg|jpeg|gif|ico|woff|woff2)$
+RewriteRule ^(.*)$ /$1/index.html [L]
+
+# Ensure proper UTF-8 handling
+AddDefaultCharset UTF-8

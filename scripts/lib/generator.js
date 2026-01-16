@@ -192,41 +192,21 @@ ${bodyContent || ""}
 }
 
 // 3. Update articles.json Database
-function updateDatabase(targetKeyword, products, productsData, seoMetadata, blueprint = {}) {
+function updateDatabase(targetKeyword, products, productsData, seoMetadata, blueprint = {}, aiThumbnail = null) {
     const dbPath = path.resolve(__dirname, '../../src/data/articles.json');
     let db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
 
-    // Remove markdown block if present (old bug fix, just in case)
-    if (Array.isArray(db) === false && typeof db === 'object') {
-        // Should be array
-    }
-
-    // Safety check for empty products
-    if (!products || products.length === 0) {
-        console.error(`  ❌ Error: No products to update database.`);
-        return;
-    }
-
-    // Find top product (try id first, then asin)
-    let topProduct = productsData.find(p => p.id === products[0].id || p.asin === products[0].asin);
-
-    // Fallback: use first product directly
-    if (!topProduct) {
-        topProduct = products[0];
-    }
-
-    if (!topProduct) {
-        console.error(`  ❌ Error: Top product data not found.`);
-        return;
-    }
+    // Variable declarations (restored)
     const dateStr = new Date().toISOString().split('T')[0];
-
-    // Dynamic Spec Labels based on blueprint or auto-detect from keyword
+    const topProduct = productsData.find(p => p.id === products[0]?.id) || products[0] || {};
     const defaultLabels = generateDefaultLabels(targetKeyword, blueprint);
+    const title = seoMetadata?.title || `【2025年】${targetKeyword} おすすめランキング`;
+    const description = seoMetadata?.description || `プロが選ぶ${targetKeyword}のおすすめ人気ランキング。選び方や比較ポイントも解説。`;
 
-    // Use AI Metadata
-    const title = seoMetadata ? seoMetadata.title : `【2025年】${targetKeyword} おすすめランキング`;
-    const description = seoMetadata ? seoMetadata.description : `2025年最新の${targetKeyword}を徹底比較。`;
+    // Use AI Thumbnail if provided and valid, otherwise fallback to top product image
+    const finalThumbnail = (aiThumbnail && aiThumbnail !== '/images/placeholder.jpg')
+        ? aiThumbnail
+        : (topProduct.image || '/images/placeholder.jpg');
 
     const newEntry = {
         id: targetKeyword,
@@ -235,8 +215,8 @@ function updateDatabase(targetKeyword, products, productsData, seoMetadata, blue
         description: description,
         publishedAt: dateStr,
         updatedDate: dateStr,
-        image: topProduct.image || '/images/placeholder.jpg',
-        thumbnail: topProduct.image || '/images/placeholder.jpg',
+        image: finalThumbnail, // Main image for OG and Listing
+        thumbnail: finalThumbnail, // Thumbnail for article header
         author: "ChoiceGuide編集部",
         category: "audio",
         categoryId: "audio",

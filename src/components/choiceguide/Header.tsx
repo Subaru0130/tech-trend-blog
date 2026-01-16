@@ -7,11 +7,11 @@ const Header: React.FC = () => {
             <div className="px-4 md:px-6 lg:px-8 h-20 flex items-center justify-between max-w-7xl mx-auto">
                 <div className="flex items-center gap-8">
                     <a className="flex items-center gap-3 group" href="/">
-                        <div className="size-10 bg-gradient-to-br from-primary to-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+                        <div className="size-10 bg-accent text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:bg-primary transition-colors duration-300">
                             <span className="material-symbols-outlined text-[24px]">equalizer</span>
                         </div>
                         <div className="flex flex-col">
-                            <h1 className="text-xl font-black tracking-tight text-gray-800 dark:text-white leading-none group-hover:text-primary transition-colors">ChoiceGuide</h1>
+                            <h1 className="text-xl font-black tracking-tight text-accent leading-none group-hover:text-primary transition-colors">ChoiceGuide</h1>
                             <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 tracking-wider mt-0.5">賢い家電選びをサポート</span>
                         </div>
                     </a>

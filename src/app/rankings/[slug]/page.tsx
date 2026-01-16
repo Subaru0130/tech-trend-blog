@@ -13,7 +13,6 @@ import { getAmazonLink, getRakutenLink } from '@/lib/affiliate';
 import { Metadata } from 'next';
 import { RankingItem, Product } from '@/types';
 import ComparisonTable from '@/components/rankings/ComparisonTable';
-import { ComparisonTable as MdxComparisonTable } from '@/components/affiliate/ComparisonTable';
 import { RankingCard } from '@/components/affiliate/RankingCard';
 import rehypeSlug from 'rehype-slug';
 import TableOfContents from '@/components/shared/TableOfContents';
@@ -41,6 +40,20 @@ const stripMarkdown = (text: string) => {
 type Props = {
     params: Promise<{ slug: string }>;
 };
+
+// Required for static export - pre-generate all ranking pages
+export async function generateStaticParams() {
+    const articlesPath = path.join(process.cwd(), 'src/data/articles.json');
+    try {
+        const articlesData = JSON.parse(fs.readFileSync(articlesPath, 'utf-8'));
+        return articlesData.map((article: any) => ({
+            slug: encodeURIComponent(article.slug || article.id),
+        }));
+    } catch (e) {
+        console.error('Failed to read articles for static params:', e);
+        return [];
+    }
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
@@ -257,13 +270,25 @@ export default async function RankingPage({ params }: Props) {
                         </div>
                     </div>
 
+                    {article.thumbnail && (
+                        <div className="max-w-4xl mx-auto px-4 md:px-6 mb-10">
+                            <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-sm border border-border-color">
+                                <img
+                                    src={`${article.thumbnail}?v=${new Date().getTime()}`}
+                                    alt={article.title}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     {/* TOC */}
                     <div className="max-w-4xl mx-auto px-4 md:px-6 mb-12">
                         <TableOfContents headings={tocHeadings} />
                     </div>
 
                     {/* 1. Comparison Table FIRST */}
-                    <div id="comparison-table" className="scroll-mt-32 mb-16">
+                    <div id="comparison-table" className="scroll-mt-32 mb-16 max-w-4xl mx-auto px-4 md:px-6">
                         <ComparisonTable
                             products={enrichedItems.map(item => ({
                                 ...item.product,

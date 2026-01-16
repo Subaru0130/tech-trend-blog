@@ -153,6 +153,20 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
             'Cache-Control': 'max-age=0'
         });
 
+        // WARMUP: Visit Home Page first to get cookies/session and look human
+        console.log("   🏠 Warmup: Visiting Amazon Home Page...");
+        try {
+            await page.goto('https://www.amazon.co.jp/', { waitUntil: 'domcontentloaded', timeout: 15000 });
+            await new Promise(r => setTimeout(r, 2000 + Math.random() * 1000)); // Random wait 2-3s
+        } catch (e) {
+            console.log(`      ⚠️ Warmup partial fail: ${e.message} (Proceeding anyway)`);
+        }
+
+        // Set Referer to Home Page
+        await page.setExtraHTTPHeaders({
+            'Referer': 'https://www.amazon.co.jp/',
+        });
+
         // KEY CHANGE: Try dedicated page first, but fail fast if blocked
         const reviewUrl = `https://www.amazon.co.jp/product-reviews/${asin}?reviewerType=all_reviews`;
         console.log(`   🔗 Fetching review page: ${reviewUrl}`);
@@ -161,16 +175,30 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
         let allReviews = [];
         let currentPage = 1;
         const maxPages = Math.ceil(maxReviews / 10);
+        let blocked = false;
 
         // Relaxed timeout to 25s (was 15s) to reduce false positives on slow connections
         try {
-            await page.goto(reviewUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
+            const response = await page.goto(reviewUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
+            const currentUrl = page.url();
+            const pageTitle = await page.title();
+
+            // CHECK FOR SIGN-IN REDIRECT
+            if (currentUrl.includes('signin') || pageTitle.includes('Sign-In') || pageTitle.includes('ログイン')) {
+                console.log("   🚨 Redirected to Sign-In page! Blocking detected.");
+                blocked = true;
+                throw new Error("Sign-In Redirect");
+            }
+
             // Wait for review list OR valid error message (to confirm it's not just slow)
             await page.waitForSelector('[data-hook="review"]', { timeout: 10000 });
         } catch (e) {
             console.log(`   ⚠️ Timeout or Blocked on review page (${e.message}). Switching to Product Page Fallback immediately.`);
-            await page.screenshot({ path: 'review_fail.png' });
-            console.log("      📸 Debug Screenshot saved to 'review_fail.png'");
+            if (!blocked) {
+                // Only take screenshot if it wasn't a known sign-in block (to save disk/time)
+                await page.screenshot({ path: 'review_fail.png' });
+                console.log("      📸 Debug Screenshot saved to 'review_fail.png'");
+            }
         }
 
         while (allReviews.length < maxReviews && currentPage <= maxPages) {

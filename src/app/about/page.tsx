@@ -44,15 +44,15 @@ export default function AboutPage() {
                                 </tr>
                                 <tr className="border-b border-stone-100">
                                     <th className="p-4 bg-stone-50 font-bold text-stone-700">運営責任者</th>
-                                    <td className="p-4 text-stone-600">ChoiceGuide 編集部 (運営統括: 山田太郎 ※見本)</td>
+                                    <td className="p-4 text-stone-600">ChoiceGuide 編集部</td>
                                 </tr>
                                 <tr className="border-b border-stone-100">
                                     <th className="p-4 bg-stone-50 font-bold text-stone-700">お問い合わせ</th>
-                                    <td className="p-4 text-stone-600">info@choiceguide.jp（平日10:00-18:00）</td>
+                                    <td className="p-4 text-stone-600">subaruu0130@gmail.com</td>
                                 </tr>
                                 <tr>
                                     <th className="p-4 bg-stone-50 font-bold text-stone-700">設立</th>
-                                    <td className="p-4 text-stone-600">2024年4月</td>
+                                    <td className="p-4 text-stone-600">2025年1月</td>
                                 </tr>
                             </tbody>
                         </table>
