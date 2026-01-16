@@ -253,57 +253,137 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
             }
         }
 
-        // Fallback: If 0 reviews found on Review Page, try Product Page
+        // Fallback: If 0 reviews found on Review Page, try Product Page with pagination
         if (allReviews.length === 0) {
-            console.log("   ⚠️ No reviews on dedicated page. Falling back to Product Page...");
+            console.log("   ⚠️ No reviews on dedicated page. Falling back to Product Page with pagination...");
             try {
                 await page.goto(`https://www.amazon.co.jp/dp/${asin}`, { waitUntil: 'networkidle2', timeout: 45000 });
                 await new Promise(r => setTimeout(r, 2000));
 
-                // Scroll down to trigger lazy loading of reviews
-                await page.evaluate(async () => {
-                    window.scrollBy(0, window.innerHeight);
-                    await new Promise(r => setTimeout(r, 1000));
-                    window.scrollBy(0, window.innerHeight);
-                    await new Promise(r => setTimeout(r, 1000));
-                    window.scrollBy(0, window.innerHeight);
-                    const reviewSection = document.getElementById('reviewsMedley') || document.getElementById('cm_cr-review_list');
-                    if (reviewSection) reviewSection.scrollIntoView();
-                });
-                await new Promise(r => setTimeout(r, 2000));
+                // Try to find and click "See all reviews" link to get to paginated review page
+                const seeAllReviewsLink = await page.$('a[data-hook="see-all-reviews-link-foot"], a.a-link-emphasis[href*="product-reviews"]');
 
-                const dpReviews = await page.evaluate((keywords) => {
-                    const results = [];
-                    // Selectors for DP page reviews
-                    const reviewEls = document.querySelectorAll('[data-hook="review"], .review, #cm_cr-review_list .a-section');
+                if (seeAllReviewsLink) {
+                    console.log("   🔗 Found 'See All Reviews' link, navigating...");
+                    try {
+                        await Promise.all([
+                            page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }),
+                            seeAllReviewsLink.click()
+                        ]);
+                        await new Promise(r => setTimeout(r, 2000));
 
-                    reviewEls.forEach(reviewEl => {
-                        const ratingEl = reviewEl.querySelector('[data-hook="review-star-rating"], .review-rating, i[class*="star"]');
-                        const bodyEl = reviewEl.querySelector('[data-hook="review-body"], .review-text, .review-text-content');
-                        const titleEl = reviewEl.querySelector('[data-hook="review-title"], .review-title');
+                        // Now we're on the reviews page - paginate!
+                        let fallbackPage = 1;
+                        const maxFallbackPages = Math.ceil(maxReviews / 10);
 
-                        if (bodyEl) {
-                            const ratingText = ratingEl?.innerText || ratingEl?.getAttribute('class') || '';
-                            let rating = 3;
-                            if (ratingText.includes('5')) rating = 5;
-                            else if (ratingText.includes('4')) rating = 4;
-                            else if (ratingText.includes('3')) rating = 3;
-                            else if (ratingText.includes('2')) rating = 2;
-                            else if (ratingText.includes('1')) rating = 1;
+                        while (allReviews.length < maxReviews && fallbackPage <= maxFallbackPages) {
+                            const pageReviews = await page.evaluate(() => {
+                                const results = [];
+                                const reviewEls = document.querySelectorAll('[data-hook="review"]');
 
-                            results.push({
-                                rating,
-                                title: titleEl?.innerText.trim().replace(/^\d\.0\s+/, '') || '',
-                                text: bodyEl.innerText.trim(),
-                                body: bodyEl.innerText.trim()
+                                reviewEls.forEach(reviewEl => {
+                                    const ratingEl = reviewEl.querySelector('[data-hook="review-star-rating"]');
+                                    const bodyEl = reviewEl.querySelector('[data-hook="review-body"]');
+                                    const titleEl = reviewEl.querySelector('[data-hook="review-title"]');
+
+                                    if (!bodyEl) return;
+
+                                    const ratingText = ratingEl?.innerText || '';
+                                    let rating = 3;
+                                    if (ratingText.includes('5')) rating = 5;
+                                    else if (ratingText.includes('4')) rating = 4;
+                                    else if (ratingText.includes('3')) rating = 3;
+                                    else if (ratingText.includes('2')) rating = 2;
+                                    else if (ratingText.includes('1')) rating = 1;
+
+                                    results.push({
+                                        rating,
+                                        title: titleEl?.innerText.trim().replace(/^\d\.0\s+/, '') || '',
+                                        text: bodyEl.innerText.trim(),
+                                        body: bodyEl.innerText.trim()
+                                    });
+                                });
+                                return results;
                             });
-                        }
-                    });
-                    return results;
-                }, situationKeywords);
 
-                allReviews = dpReviews;
-                console.log(`      📄 Product Page Fallback: Found ${allReviews.length} reviews`);
+                            if (pageReviews.length === 0) break;
+
+                            allReviews = allReviews.concat(pageReviews);
+                            console.log(`      📄 Fallback Page ${fallbackPage}: Found ${pageReviews.length} reviews (Total: ${allReviews.length})`);
+
+                            if (allReviews.length >= maxReviews) break;
+
+                            // Go to next page
+                            const nextButton = await page.$('.a-pagination .a-last a');
+                            if (nextButton) {
+                                fallbackPage++;
+                                try {
+                                    await Promise.all([
+                                        page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15000 }),
+                                        nextButton.click()
+                                    ]);
+                                    await new Promise(r => setTimeout(r, 1500));
+                                } catch (navErr) {
+                                    console.log(`      ⚠️ Pagination navigation failed: ${navErr.message}`);
+                                    break;
+                                }
+                            } else {
+                                break; // No more pages
+                            }
+                        }
+                    } catch (navErr) {
+                        console.log(`      ⚠️ See All Reviews navigation failed: ${navErr.message}`);
+                    }
+                }
+
+                // If still no reviews, scrape from product page directly (last resort)
+                if (allReviews.length === 0) {
+                    console.log("   📜 Scraping reviews directly from product page...");
+
+                    // Scroll down to trigger lazy loading of reviews
+                    await page.evaluate(async () => {
+                        window.scrollBy(0, window.innerHeight);
+                        await new Promise(r => setTimeout(r, 1000));
+                        window.scrollBy(0, window.innerHeight);
+                        await new Promise(r => setTimeout(r, 1000));
+                        window.scrollBy(0, window.innerHeight);
+                        const reviewSection = document.getElementById('reviewsMedley') || document.getElementById('cm_cr-review_list');
+                        if (reviewSection) reviewSection.scrollIntoView();
+                    });
+                    await new Promise(r => setTimeout(r, 2000));
+
+                    const dpReviews = await page.evaluate(() => {
+                        const results = [];
+                        const reviewEls = document.querySelectorAll('[data-hook="review"], .review, #cm_cr-review_list .a-section');
+
+                        reviewEls.forEach(reviewEl => {
+                            const ratingEl = reviewEl.querySelector('[data-hook="review-star-rating"], .review-rating, i[class*="star"]');
+                            const bodyEl = reviewEl.querySelector('[data-hook="review-body"], .review-text, .review-text-content');
+                            const titleEl = reviewEl.querySelector('[data-hook="review-title"], .review-title');
+
+                            if (bodyEl) {
+                                const ratingText = ratingEl?.innerText || ratingEl?.getAttribute('class') || '';
+                                let rating = 3;
+                                if (ratingText.includes('5')) rating = 5;
+                                else if (ratingText.includes('4')) rating = 4;
+                                else if (ratingText.includes('3')) rating = 3;
+                                else if (ratingText.includes('2')) rating = 2;
+                                else if (ratingText.includes('1')) rating = 1;
+
+                                results.push({
+                                    rating,
+                                    title: titleEl?.innerText.trim().replace(/^\d\.0\s+/, '') || '',
+                                    text: bodyEl.innerText.trim(),
+                                    body: bodyEl.innerText.trim()
+                                });
+                            }
+                        });
+                        return results;
+                    });
+
+                    allReviews = dpReviews;
+                    console.log(`      📄 Direct Product Page: Found ${allReviews.length} reviews`);
+                }
             } catch (e) {
                 console.log(`      ⚠️ Fallback failed: ${e.message}`);
             }
