@@ -20,10 +20,13 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 async function evaluateProductForTheme(product, blueprint) {
     if (!process.env.GOOGLE_API_KEY) {
         console.log(`      ⚠️ AI Rating: No API key, using fallback score`);
-        return { themeScore: 5, reason: "API key not available" };
+        return { themeScore: 5, costPerformance: 5, reason: "API key not available", costReason: "" };
     }
 
-    const comparisonAxis = blueprint.comparison_axis || blueprint.target_keyword || "総合性能";
+    // Use primary_evaluation_focus for specialized themes (single axis)
+    // Fall back to comparison_axis for general themes (multi-axis)
+    const comparisonAxis = blueprint.primary_evaluation_focus || blueprint.comparison_axis || blueprint.target_keyword || "総合性能";
+    const isSpecialized = blueprint.is_specialized_theme || false;
 
     // Build context from product data
     const specsText = buildSpecsContext(product);
@@ -36,7 +39,9 @@ async function evaluateProductForTheme(product, blueprint) {
 提供データにない情報を推測したり、学習データから補完しないでください。
 
 # タスク
-以下の製品を「${comparisonAxis}」という評価軸で1-10点で評価してください。
+以下の製品を評価してください。2つの評価を出力します：
+1. **テーマスコア**: 「${comparisonAxis}」という評価軸での評価（1-10点）
+2. **コスパスコア**: 価格に対する満足度の評価（1-10点）
 
 **重要: 0.1点刻みの採点を許可します（例: 7.5, 8.2）。**
 **「中間（5.0）」を平均基準とし、差を明確にしてください。**
@@ -53,33 +58,33 @@ ${specsText || '【スペック情報なし】'}
 ${reviewText || '【レビュー情報なし】'}
 
 ## 採点基準（Rubric）
+### テーマスコア（${comparisonAxis}）
 - **9.0 - 10.0**: 業界最高レベル（"Game Changer"、明確な技術的優位性あり）
 - **7.5 - 8.9**: 非常に優秀（欠点がほぼなく、主要機能が高性能）
-- **6.0 - 7.4**: 優秀〜良好（価格相応の性能、あるいは特定の強みがある）
-- **4.5 - 5.9**: 平均的（良くも悪くもない、あるいは賛否両論）
-- **3.0 - 4.4**: やや不満（スペック不足、または否定的なレビューが目立つ）
-- **1.0 - 2.9**: 重大な欠陥あり（致命的な不具合報告多数）
+- **6.0 - 7.4**: 優秀〜良好（特定の強みがある）
+- **4.5 - 5.9**: 平均的（良くも悪くもない）
+- **3.0 - 4.4**: やや不満（スペック不足）
+- **1.0 - 2.9**: 重大な欠陥あり
+
+### コスパスコア（価格に対する満足度）
+- **9.0 - 10.0**: 価格破壊級（価格の2倍以上の価値がある）
+- **7.5 - 8.9**: 非常にお買い得（価格以上の性能・機能）
+- **6.0 - 7.4**: 妥当（価格相応の価値）
+- **4.5 - 5.9**: やや高い（もう少し安ければ納得）
+- **3.0 - 4.4**: 割高（同等品がより安く買える）
+- **1.0 - 2.9**: ぼったくり（価格に見合っていない）
 
 # 評価方法
-1. **差をつけることを恐れない**:
-   「全員7点」は最も役に立たない評価です。
-   - ネガティブな要素が1つでもあれば、躊躇なく減点（-0.5〜-1.0）してください。
-   - 「無難にまとまっている」＝ 6.5点程度です。7点以上は明確な「強み」が必要です。
-
-2. **重み付け評価（Weighted Scoring）**:
-   - **評価軸「${comparisonAxis}」**: 70% (最重要)
-   - **その他の基礎性能/コスパ**: 30%
-   - 例: 「ノイキャン」記事で、ANC性能が普通(5.0)なら、他が良くても総合点は伸びません。
-
-3. **データ不足と新旧モデルの扱い**:
-   - **レビュー数バイアスを排除**: レビューが少なくても、スペックが優れている**最新モデルや上位機種**は、正当に高く評価（8.0〜10.0）してください。「レビューが少ないから5点」という安易な評価は禁止です。
-   - **新旧比較**: 明らかに後継機（例: AZ80 → AZ100）である場合、基本性能は「新型 ≧ 旧型」と見なしてください。旧型がいくら過去に高評価でも、最新スペックと比較して見劣りするなら、新型より低い点を付けてください。
-   - 情報が極端に少ない（スペック不明）場合のみ、「5.0 (中立)」としてください。
+1. **差をつけることを恐れない**: 「全員7点」は最も役に立たない評価です。
+2. **テーマスコア**: 「${comparisonAxis}」の観点で純粋に性能を評価（価格は考慮しない）
+3. **コスパスコア**: 価格と性能のバランスを評価（安くて高性能なら高得点、高くて普通なら低得点）
 
 # 出力形式（JSON）
 {
     "score": 7.5,
+    "costPerformance": 8.0,
     "reason": "ANC性能は業界最高クラス評価(9.0)だが、装着感に関する否定意見があり-0.5減点。",
+    "costReason": "1万円以下でLDAC対応・マルチポイント搭載は価格破壊級。",
     "dataQuality": "high/medium/low/none"
 }
 `;
@@ -114,7 +119,9 @@ ${reviewText || '【レビュー情報なし】'}
             const parsed = JSON.parse(jsonString);
             return {
                 themeScore: Math.min(10, Math.max(1, parsed.score || 5)),
-                reason: parsed.reason || ""
+                costPerformance: Math.min(10, Math.max(1, parsed.costPerformance || 5)),
+                reason: parsed.reason || "",
+                costReason: parsed.costReason || ""
             };
         } else {
             throw new Error("No JSON object found in response");
@@ -127,7 +134,7 @@ ${reviewText || '【レビュー情報なし】'}
         }
     }
 
-    return { themeScore: 5, reason: "Evaluation failed, defaulting to neutral" };
+    return { themeScore: 5, costPerformance: 5, reason: "Evaluation failed, defaulting to neutral", costReason: "" };
 }
 
 /**
@@ -226,12 +233,14 @@ async function evaluateAndRankProducts(products, blueprint) {
         const evaluation = await evaluateProductForTheme(product, blueprint);
         product.themeScore = evaluation.themeScore;
         product.themeReason = evaluation.reason;
+        product.costPerformance = evaluation.costPerformance;
+        product.costReason = evaluation.costReason;
 
         // Also set calculatedRating for backwards compatibility (scale 1-10 to 3.0-5.0)
         // Wider range: score 1→3.0, score 5→4.0, score 10→5.0 for meaningful differentiation
         product.calculatedRating = Math.round((3.0 + (evaluation.themeScore / 10) * 2.0) * 100) / 100;
 
-        console.log(`      → Score: ${evaluation.themeScore}/10 (${evaluation.reason?.slice(0, 40)}...)`);
+        console.log(`      → Theme: ${evaluation.themeScore}/10, Cost Performance: ${evaluation.costPerformance}/10`);
 
         // Small delay to avoid rate limiting
         if (i < products.length - 1) {

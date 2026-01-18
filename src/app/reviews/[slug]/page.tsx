@@ -12,6 +12,7 @@ import Footer from '@/components/shared/Footer';
 import { getProductBySlug, getAllSlugs, CATEGORY_MAP, getArticleByProductId, getArticlesByCategory } from '@/lib/data';
 import { getAmazonLink } from '@/lib/affiliate';
 import ProductContent from '@/components/techrankings/ProductContent';
+import { Metadata } from 'next';
 
 const REVIEW_DIR = path.join(process.cwd(), 'src/content/reviews');
 
@@ -25,6 +26,28 @@ export async function generateStaticParams() {
 type Props = {
     params: Promise<{ slug: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { slug } = await params;
+    const product = getProductBySlug(slug);
+
+    if (!product) {
+        return { title: '製品が見つかりません | ChoiceGuide' };
+    }
+
+    return {
+        title: `${product.name} 徹底レビュー | ChoiceGuide`,
+        description: product.description || `${product.name}の詳細レビュー。スペック・価格・ユーザー評価を徹底分析。`,
+        alternates: {
+            canonical: `https://choiceguide.jp/reviews/${slug}`,
+        },
+        openGraph: {
+            title: `${product.name} 徹底レビュー`,
+            description: product.description,
+            images: product.image ? [product.image] : [],
+        },
+    };
+}
 
 export default async function ReviewPage({ params }: Props) {
     const { slug } = await params;

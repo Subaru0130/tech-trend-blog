@@ -16,7 +16,6 @@ import ComparisonTable from '@/components/rankings/ComparisonTable';
 import { RankingCard } from '@/components/affiliate/RankingCard';
 import rehypeSlug from 'rehype-slug';
 import TableOfContents from '@/components/shared/TableOfContents';
-import AuthorProfile from '@/components/shared/AuthorProfile';
 import GlossarySection from '@/components/shared/GlossarySection';
 
 // Utility to slugs
@@ -86,6 +85,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
         title: `${article.title} | BestChoice`,
         description: article.description,
+        alternates: {
+            canonical: `https://choiceguide.jp/rankings/${slug}`,
+        },
         openGraph: {
             title: article.title,
             description: article.description,
@@ -264,6 +266,9 @@ export default async function RankingPage({ params }: Props) {
                                 <div>
                                     <div className="text-xs text-text-sub font-bold mb-0.5">この記事の監修・執筆</div>
                                     <div className="text-sm font-bold text-primary">{article.author}</div>
+                                    <p className="text-xs text-text-sub mt-1 max-w-xl">
+                                        スペック・価格・ユーザーの声など多角的な情報をもとに、最適な製品選びをサポートします。
+                                    </p>
                                 </div>
                             </div>
                             <div className="flex gap-2">
@@ -279,6 +284,9 @@ export default async function RankingPage({ params }: Props) {
                                     src={`${article.thumbnail}?v=${new Date().getTime()}`}
                                     alt={article.title}
                                     className="w-full h-full object-cover"
+                                    loading="eager"
+                                    width={1200}
+                                    height={675}
                                 />
                             </div>
                         </div>
@@ -305,6 +313,18 @@ export default async function RankingPage({ params }: Props) {
                             } : undefined}
                         />
                     </div>
+
+                    {/* Glossary Section - Collapsible */}
+                    <details className="max-w-4xl mx-auto px-4 md:px-6 mb-8">
+                        <summary className="cursor-pointer flex items-center gap-2 text-sm font-bold text-primary hover:text-accent transition-colors py-3 border-b border-border-color">
+                            <span className="material-symbols-outlined text-lg">menu_book</span>
+                            この記事で使われている用語を確認する
+                            <span className="material-symbols-outlined ml-auto">expand_more</span>
+                        </summary>
+                        <div className="pt-4">
+                            <GlossarySection content={content || ''} />
+                        </div>
+                    </details>
 
                     {/* 2. Article Content (Introduction, Selection Guide, Summary) SECOND */}
                     {content && (
@@ -354,7 +374,7 @@ export default async function RankingPage({ params }: Props) {
                                             <div className="flex flex-col md:flex-row gap-8 mb-8">
                                                 <div className="md:w-1/2">
                                                     <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-white border border-border-color relative group flex items-center justify-center p-4">
-                                                        <img alt={item.product.name} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" src={item.product.image || "https://placehold.co/600x400"} />
+                                                        <img alt={item.product.name} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" src={item.product.image || "https://placehold.co/600x400"} loading="lazy" width={600} height={450} />
                                                         {item.rank === 1 && (
                                                             <div className="absolute top-3 left-3">
                                                                 <span className="bg-white/90 backdrop-blur text-primary text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
@@ -466,11 +486,6 @@ export default async function RankingPage({ params }: Props) {
                         </section>
                     )}
                 </main>
-
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <GlossarySection category={article.category === 'audio' ? 'イヤホン' : article.category === 'beauty' ? 'シャンプー' : 'default'} className="mt-12" />
-                    <AuthorProfile />
-                </div>
 
                 <Footer />
             </div>

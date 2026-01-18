@@ -12,14 +12,77 @@
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: '.env.local' });
-const { execSync } = require('child_process');
+const { execSync, spawn } = require('child_process');
 const ai_writer = require('./lib/ai_writer');
 const { scoutAmazonProducts } = require('./lib/amazon_scout'); // ★ The "Missing Link"
 const { generateRankingArticle, generateReviewPage, updateDatabase } = require('./lib/generator');
 const { processAffiliateLinks, processAmazonLink } = require('./lib/affiliate_processor'); // ★ Affiliate tag processor
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { normalizeSpecs } = require('./lib/spec_normalizer.js');
+const http = require('http');
 
+// ★ Auto-start Chrome with Remote Debugging if not running
+let chromeProcess = null;
+
+async function ensureChromeDebugMode() {
+    // Helper to check debug port
+    const checkPort = () => new Promise((resolve) => {
+        const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+            resolve(true);
+        });
+        req.on('error', () => resolve(false));
+        req.setTimeout(2000, () => { req.destroy(); resolve(false); });
+    });
+
+    // First check
+    if (await checkPort()) {
+        console.log('✅ Chrome remote debugging already active');
+        return true;
+    }
+
+    // Not available - try to start Chrome with user profile
+    console.log('🚀 Starting Chrome with remote debugging...');
+    const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+    const userDataDir = process.env.LOCALAPPDATA + '\\Google\\Chrome\\User Data';
+
+    chromeProcess = spawn(chromePath, [
+        '--remote-debugging-port=9222',
+        `--user-data-dir=${userDataDir}`,
+        '--profile-directory=Default'
+    ], {
+        detached: true,
+        stdio: 'ignore'
+    });
+    chromeProcess.unref();
+
+    // Wait for Chrome to start
+    console.log('   ⏳ Waiting for Chrome to start...');
+    await new Promise(r => setTimeout(r, 4000));
+
+    // Check again
+    if (await checkPort()) {
+        console.log('✅ Chrome started with remote debugging on port 9222');
+        return true;
+    }
+
+    // Still not available - Chrome might already be running without debug mode
+    console.log('');
+    console.log('╔════════════════════════════════════════════════════════════════════╗');
+    console.log('║  ⚠️ Chrome remote debugging not available                          ║');
+    console.log('╠════════════════════════════════════════════════════════════════════╣');
+    console.log('║  Amazonレビュー取得にはデバッグモードのChromeが必要です             ║');
+    console.log('║                                                                    ║');
+    console.log('║  【手順】                                                          ║');
+    console.log('║  1. すべてのChromeウィンドウを閉じる                               ║');
+    console.log('║  2. 以下のコマンドをPowerShellで実行:                              ║');
+    console.log('╚════════════════════════════════════════════════════════════════════╝');
+    console.log('');
+    console.log('Start-Process "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" -ArgumentList "--remote-debugging-port=9222","--user-data-dir=$env:LOCALAPPDATA\\Google\\Chrome\\User Data","--profile-directory=Default"');
+    console.log('');
+    console.log('🔄 Falling back to headless mode (Amazonレビューは取得できない可能性あり)');
+    console.log('');
+    return false;
+}
 
 // Gemini AI for product filtering
 const GEMINI_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
@@ -297,6 +360,9 @@ function cleanProductName(rawName, knownBrand = null) {
 
 // 4. Main Workflow
 (async () => {
+    // ★ Ensure Chrome is running with remote debugging
+    await ensureChromeDebugMode();
+
     let productsData = JSON.parse(fs.readFileSync(PRODUCTS_JSON_PATH, 'utf-8'));
 
     // --- PHASE 0: MARKET DISCOVERY (Market-First, Multi-Source Approach) ---
@@ -571,12 +637,12 @@ function cleanProductName(rawName, knownBrand = null) {
                     console.log(`   📖 Collecting reviews for: ${verifiedItem.name.slice(0, 25)}...`);
                     try {
                         // 1. Amazon Reviews
-                        const reviewData = await scrapeProductReviews(verifiedItem.asin, 30);
+                        const reviewData = await scrapeProductReviews(verifiedItem.asin, 10); // Amazon: 10件（ページネーション不安定のため）
 
                         // 2. Kakaku Reviews
                         console.log(`   📝 Collecting 価格.com口コミ...`);
                         const kakakuUrl = verifiedItem.kakakuUrl || null;
-                        const kakakuReviews = await scrapeKakakuReviews(verifiedItem.name, kakakuUrl, 30);
+                        const kakakuReviews = await scrapeKakakuReviews(verifiedItem.name, kakakuUrl, 50); // 価格.com: 50件
 
                         // Store Raw Data
                         verifiedItem.reviewInsights = reviewData?.summary;
@@ -601,13 +667,15 @@ function cleanProductName(rawName, knownBrand = null) {
                         if (azCount > 0 || kkCount > 0) {
                             // --- I. AI Analysis: Generate pros/cons from REAL reviews (SEO value!) ---
                             try {
-                                // Merge data for AI
+                                // Merge data for AI (positive/negative only)
                                 const combinedData = {
-                                    ...reviewData,
-                                    situational: [...(reviewData?.situational || []), ...(kakakuReviews?.all || [])],
                                     positive: [...(reviewData?.positive || []), ...(kakakuReviews?.positive || [])],
                                     negative: [...(reviewData?.negative || []), ...(kakakuReviews?.negative || [])]
                                 };
+
+
+
+                                console.log(`      ⚡️ PASSING REVIEWS TO AI: Pos(${combinedData.positive.length}), Neg(${combinedData.negative.length})`);
 
                                 const insights = await analyzeReviewsForInsights(
                                     verifiedItem.name,
@@ -745,6 +813,74 @@ function cleanProductName(rawName, knownBrand = null) {
                 }
             }
 
+            // --- Review Collection Insertion Point ---
+            // FORCE: Always collect reviews to ensure quality, even if pros/cons exist
+            if (verifiedItem.asin) {
+                console.log(`   📖 Collecting reviews for: ${verifiedItem.name.slice(0, 25)}...`);
+                try {
+                    // 1. Amazon Reviews
+                    const reviewData = await scrapeProductReviews(verifiedItem.asin, 10); // Amazon: 10件
+
+                    // 2. Kakaku Reviews
+                    console.log(`   📝 Collecting 価格.com口コミ...`);
+                    const kakakuUrl = verifiedItem.kakakuUrl || null;
+                    const kakakuReviews = await scrapeKakakuReviews(verifiedItem.name, kakakuUrl, 50); // 価格.com: 50件
+
+                    // Store Raw Data
+                    verifiedItem.reviewInsights = reviewData?.summary;
+                    verifiedItem.rawReviews = {
+                        positive: reviewData?.positive?.slice(0, 5) || [],
+                        negative: reviewData?.negative?.slice(0, 3) || [],
+                        situational: reviewData?.situational?.slice(0, 5) || []
+                    };
+
+                    if (kakakuReviews && kakakuReviews.summary.totalFound > 0) {
+                        verifiedItem.rawReviews.kakaku = {
+                            positive: kakakuReviews.positive || [],
+                            negative: kakakuReviews.negative || [],
+                            all: kakakuReviews.all || []
+                        };
+                    }
+
+                    const azCount = reviewData?.summary?.totalFound || 0;
+                    const kkCount = kakakuReviews?.summary?.totalFound || 0;
+                    console.log(`      ✅ Got reviews: Amazon(${azCount}) + Kakaku(${kkCount})`);
+
+                    if (azCount > 0 || kkCount > 0) {
+                        // --- I. AI Analysis: Generate pros/cons from REAL reviews (SEO value!) ---
+                        try {
+                            // Merge data for AI
+                            const combinedData = {
+                                ...reviewData,
+                                situational: [...(reviewData?.situational || []), ...(kakakuReviews?.all || [])],
+                                positive: [...(reviewData?.positive || []), ...(kakakuReviews?.positive || [])],
+                                negative: [...(reviewData?.negative || []), ...(kakakuReviews?.negative || [])]
+                            };
+
+
+
+                            console.log(`      ⚡️ PASSING REVIEWS TO AI (Legacy Path): Situational(${combinedData.situational.length}), Pos(${combinedData.positive.length}), Neg(${combinedData.negative.length})`);
+
+                            const insights = await analyzeReviewsForInsights(
+                                verifiedItem.name,
+                                combinedData,
+                                BLUEPRINT.comparison_axis || ''
+                            );
+                            if (insights) {
+                                verifiedItem.pros = insights.enhancedPros || verifiedItem.pros;
+                                verifiedItem.cons = insights.enhancedCons || verifiedItem.cons;
+                                verifiedItem.editorComment = insights.editorComment;
+                                console.log(`      ✅ AI generated review-based pros/cons (Dual Source)`);
+                            }
+                        } catch (aiErr) {
+                            console.log(`      ⚠️ AI review analysis failed: ${aiErr.message?.slice(0, 30)}`);
+                        }
+                    }
+                } catch (reviewErr) {
+                    console.log(`      ⚠️ Review collection failed: ${reviewErr.message?.slice(0, 30)}`);
+                }
+            }
+
             // --- F. Final Duplicate Check (ID) ---
             const isDuplicate = validatedLineup.some(p => p.id === verifiedItem.id || p.asin === verifiedItem.asin);
             if (isDuplicate) {
@@ -823,7 +959,12 @@ function cleanProductName(rawName, knownBrand = null) {
             tags: {},
             kakakuSpecs: product.kakakuSpecs || {},
             themeScore: product.themeScore || 0,
-            themeReason: product.themeReason || ''
+            themeReason: product.themeReason || '',
+            costPerformance: product.costPerformance || 0,
+            costReason: product.costReason || '',
+            rawReviews: product.rawReviews || null,
+            reviewInsights: product.reviewInsights || null,
+            editorComment: product.editorComment || ''
         };
 
         if (existingIndex >= 0) {
@@ -909,11 +1050,19 @@ function cleanProductName(rawName, knownBrand = null) {
     updateDatabase(TARGET_KEYWORD, validatedLineup, productsData, seoMetadata, BLUEPRINT, thumbPath);
 
     // 7. Auto-generate Sitemap (idempotent - safe to run multiple times)
-    generateSitemap();
+    console.log('\n🗺️  Generating Sitemap...');
+    try {
+        generateSitemap();
+    } catch (e) {
+        console.error('   ⚠️ Sitemap generation failed:', e.message);
+    }
 
     // 8. Save Enriched Data to Master JSON
     fs.writeFileSync(PRODUCTS_JSON_PATH, JSON.stringify(productsData, null, 4));
     console.log(`\n🎉 Article Generated: src/content/articles/${TARGET_KEYWORD}.md`);
+
+    // Ensure clean exit
+    process.exit(0);
 
 })();
 

@@ -61,10 +61,34 @@ async function scrapeProductSpecs(productName, asin = null) {
  * Scrape from 価格.com
  */
 async function scrapeKakakuSpec(productName) {
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
-    });
+    // Try remote debugging first, fallback to launch
+    let browser;
+    let isRemote = false;
+    try {
+        const http = require('http');
+        const wsUrl = await new Promise((resolve, reject) => {
+            const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        resolve(json.webSocketDebuggerUrl);
+                    } catch (e) { reject(e); }
+                });
+            });
+            req.on('error', reject);
+            req.setTimeout(3000, () => { req.destroy(); reject(new Error('timeout')); });
+        });
+
+        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+        isRemote = true;
+    } catch (e) {
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
+        });
+    }
 
     try {
         const page = await browser.newPage();
@@ -72,7 +96,8 @@ async function scrapeKakakuSpec(productName) {
 
         // Search on kakaku.com
         const searchUrl = `https://kakaku.com/search_results/${encodeURIComponent(productName)}/`;
-        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        // Relaxed wait
+        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => { });
         await new Promise(r => setTimeout(r, 2000));
 
         // Get first result link
@@ -87,7 +112,7 @@ async function scrapeKakakuSpec(productName) {
         }
 
         // Go to product page
-        await page.goto(productLink, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.goto(productLink, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => { });
         await new Promise(r => setTimeout(r, 2000));
 
         // Try to go to spec page
@@ -97,7 +122,7 @@ async function scrapeKakakuSpec(productName) {
         });
 
         if (specLink) {
-            await page.goto(specLink, { waitUntil: 'domcontentloaded', timeout: 30000 });
+            await page.goto(specLink, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => { });
             await new Promise(r => setTimeout(r, 1500));
         }
 
@@ -130,7 +155,16 @@ async function scrapeKakakuSpec(productName) {
         return null;
 
     } catch (e) {
-        if (browser) await browser.close();
+        if (browser) {
+            if (isRemote) {
+                const pages = await browser.pages();
+                for (const p of pages) {
+                    if (p.url().includes('kakaku')) await p.close().catch(() => { });
+                }
+            } else {
+                await browser.close();
+            }
+        }
         console.log(`      ⚠️ 価格.com scrape failed: ${e.message}`);
         return null;
     }
@@ -141,10 +175,34 @@ async function scrapeKakakuSpec(productName) {
  * Dynamic approach: Extract brand from product name and search for official site
  */
 async function scrapeOfficialSite(productName) {
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
-    });
+    // Try remote debugging first, fallback to launch
+    let browser;
+    let isRemote = false;
+    try {
+        const http = require('http');
+        const wsUrl = await new Promise((resolve, reject) => {
+            const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        resolve(json.webSocketDebuggerUrl);
+                    } catch (e) { reject(e); }
+                });
+            });
+            req.on('error', reject);
+            req.setTimeout(3000, () => { req.destroy(); reject(new Error('timeout')); });
+        });
+
+        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+        isRemote = true;
+    } catch (e) {
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
+        });
+    }
 
     try {
         const page = await browser.newPage();
@@ -224,7 +282,13 @@ async function scrapeOfficialSite(productName) {
         }, brandName);
 
         if (!officialLink) {
-            await browser.close();
+            if (browser) {
+                if (isRemote) {
+                    await page.close().catch(() => { });
+                } else {
+                    await browser.close();
+                }
+            }
             console.log(`      ⚠️ No official site found for ${brandName || productName}`);
             return null;
         }
@@ -241,13 +305,28 @@ async function scrapeOfficialSite(productName) {
             return document.body.innerText.slice(0, 15000);
         });
 
-        await browser.close();
+        if (browser) {
+            if (isRemote) {
+                await page.close().catch(() => { });
+            } else {
+                await browser.close();
+            }
+        }
 
         // Use AI to extract specs from the page content
         return await extractSpecsWithAI(pageContent, productName, officialLink);
 
     } catch (e) {
-        if (browser) await browser.close();
+        if (browser) {
+            if (isRemote) {
+                const pages = await browser.pages();
+                for (const p of pages) {
+                    if (p.url().includes('bing') || p.url().includes('http')) await p.close().catch(() => { });
+                }
+            } else {
+                await browser.close();
+            }
+        }
         console.log(`      ⚠️ Official site scrape failed: ${e.message}`);
         return null;
     }
@@ -515,22 +594,90 @@ async function scrapeKakakuReviews(productName, kakakuUrl = null, maxReviews = 1
 
             if (allReviews.length >= maxReviews) break;
 
-            // Next Page
-            const nextLink = await page.$('a.next, li.next a, .nextPage a');
-            if (nextLink) {
-                currentPage++;
-                await Promise.all([
-                    page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-                    nextLink.click()
-                ]);
+            // Updated Pagination Logic
+            console.log(`      Looking for next page link (Current: ${currentPage})...`);
+
+            // Check existence first
+            const nextLinkExists = await page.evaluate(() => {
+                const selectors = ['a.next', 'li.next a', '.nextPage a', 'ul.pageLink li.next a', 'img[alt="次へ"]'];
+                for (const sel of selectors) {
+                    const el = document.querySelector(sel);
+                    if (el && el.href) return true;
+                }
+                const links = Array.from(document.querySelectorAll('a'));
+                return !!links.find(a => a.innerText.includes('次へ') || a.innerText.includes('次の'));
+            });
+
+            if (nextLinkExists) {
+                const oldUrl = page.url();
+
+                // Click next with retry logic
+                const clicked = await page.evaluate(() => {
+                    // Specific robust selectors matching existence check
+                    const selectors = ['a.next', 'li.next a', '.nextPage a', 'ul.pageLink li.next a', 'img[alt="次へ"]'];
+                    for (const sel of selectors) {
+                        const el = document.querySelector(sel);
+                        if (el) {
+                            // If it's an image, click parent anchor if possible
+                            if (el.tagName === 'IMG' && el.parentElement.tagName === 'A') {
+                                el.parentElement.click();
+                            } else {
+                                el.click();
+                            }
+                            return true;
+                        }
+                    }
+                    // Fallback
+                    const links = Array.from(document.querySelectorAll('a'));
+                    const nextLink = links.find(a => a.innerText.includes('次へ') || a.innerText.includes('次の'));
+                    if (nextLink) { nextLink.click(); return true; }
+                    return false;
+                });
+
+                if (!clicked) {
+                    console.log('      ⚠️ Could not click next link even though it was found.');
+                    break;
+                }
+
+                // Wait for URL to change (more robust than waitForNavigation)
+                try {
+                    await page.waitForFunction((oldUrl) => window.location.href !== oldUrl, { timeout: 10000 }, oldUrl);
+                    await new Promise(r => setTimeout(r, 2000)); // Chill
+
+                    // Verify we are on a new page
+                    const newUrl = page.url();
+                    // console.log(`      ✅ Navigated to: ${newUrl}`);
+                    currentPage++;
+
+                } catch (e) {
+                    console.log(`      ⚠️ Navigation failed (URL didn't change). URL: ${page.url()}`);
+                    // Try one more fallback: direct navigation if we can find the href
+                    const nextHref = await page.evaluate(() => {
+                        const el = document.querySelector('a.next, li.next a, .nextPage a');
+                        return el ? el.href : null;
+                    });
+
+                    if (nextHref && nextHref !== oldUrl) {
+                        console.log(`      🔄 Trying direct navigation to: ${nextHref}`);
+                        await page.goto(nextHref, { waitUntil: 'domcontentloaded', timeout: 30000 });
+                        currentPage++;
+                    } else {
+                        break;
+                    }
+                }
             } else {
+                console.log(`      ⚠️ Debug: No next link found. URL: ${page.url()}`);
+                const debugInfo = await page.evaluate(() => {
+                    const pageLink = document.querySelector('.pageLink, .pagination, .pager');
+                    if (pageLink) return pageLink.outerHTML;
+                    return document.body.innerText.slice(0, 500);
+                });
+                console.log(`      ⚠️ Debug Info: ${debugInfo ? debugInfo.slice(0, 500) : 'null'}`);
                 break;
             }
         }
 
         const reviewData = allReviews.slice(0, maxReviews);
-
-
 
         await browser.close();
 

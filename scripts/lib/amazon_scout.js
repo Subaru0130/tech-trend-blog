@@ -132,298 +132,347 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
     console.log(`\n📖 Scraping Reviews for ASIN: ${asin}...`);
     const situationKeywords = ['電車', '通勤', 'カフェ', 'ジム', 'ランニング', '風切り音', 'オフィス', '飛行機', '地下鉄', '会議', 'テレワーク', '在宅'];
 
-    // Use the SAME approach as scoutAmazonProducts (which works!)
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
-    });
+    // HELPER: Scrape logic to be reused for initial attempt and retry
+    const doScrape = async (isRetry = false) => {
+        console.log(isRetry ? `   🔄 Retry Attempt: Connecting to existing Chrome...` : `   🚀 Initial Attempt: Connecting to existing Chrome...`);
 
-    try {
-        const page = await browser.newPage();
-        // Improved UA and Headers for Bot Evasion
-        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36');
-        await page.setExtraHTTPHeaders({
-            'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-            'Referer': 'https://www.google.com/',
-            'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Windows"',
-            'Upgrade-Insecure-Requests': '1',
-            'Cache-Control': 'max-age=0'
-        });
-
-        // WARMUP: Visit Home Page first to get cookies/session and look human
-        console.log("   🏠 Warmup: Visiting Amazon Home Page...");
+        // Connect to existing Chrome instance via Remote Debugging
+        // Chrome must be started with: chrome.exe --remote-debugging-port=9222
+        let browser;
         try {
-            await page.goto('https://www.amazon.co.jp/', { waitUntil: 'domcontentloaded', timeout: 15000 });
-            await new Promise(r => setTimeout(r, 2000 + Math.random() * 1000)); // Random wait 2-3s
+            // First, get the WebSocket URL from Chrome's debugging endpoint
+            const http = require('http');
+            const wsUrl = await new Promise((resolve, reject) => {
+                http.get('http://127.0.0.1:9222/json/version', (res) => {
+                    let data = '';
+                    res.on('data', chunk => data += chunk);
+                    res.on('end', () => {
+                        try {
+                            const json = JSON.parse(data);
+                            resolve(json.webSocketDebuggerUrl);
+                        } catch (e) { reject(e); }
+                    });
+                }).on('error', reject);
+            });
+
+            console.log(`   🔌 WebSocket URL: ${wsUrl}`);
+            browser = await puppeteer.connect({
+                browserWSEndpoint: wsUrl,
+                defaultViewport: null
+            });
+            console.log("   ✅ Connected to existing Chrome instance!");
         } catch (e) {
-            console.log(`      ⚠️ Warmup partial fail: ${e.message} (Proceeding anyway)`);
-        }
+            console.log(`   ⚠️ Failed to connect to Chrome: ${e.message}`);
+            console.log("   🚀 Attempting to auto-start Chrome with remote debugging...");
 
-        // Set Referer to Home Page
-        await page.setExtraHTTPHeaders({
-            'Referer': 'https://www.amazon.co.jp/',
-        });
-
-        // KEY CHANGE: Try dedicated page first, but fail fast if blocked
-        const reviewUrl = `https://www.amazon.co.jp/product-reviews/${asin}?reviewerType=all_reviews`;
-        console.log(`   🔗 Fetching review page: ${reviewUrl}`);
-
-        // Pagination Loop
-        let allReviews = [];
-        let currentPage = 1;
-        const maxPages = Math.ceil(maxReviews / 10);
-        let blocked = false;
-
-        // Relaxed timeout to 25s (was 15s) to reduce false positives on slow connections
-        try {
-            const response = await page.goto(reviewUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
-            const currentUrl = page.url();
-            const pageTitle = await page.title();
-
-            // CHECK FOR SIGN-IN REDIRECT
-            if (currentUrl.includes('signin') || pageTitle.includes('Sign-In') || pageTitle.includes('ログイン')) {
-                console.log("   🚨 Redirected to Sign-In page! Blocking detected.");
-                blocked = true;
-                throw new Error("Sign-In Redirect");
-            }
-
-            // Wait for review list OR valid error message (to confirm it's not just slow)
-            await page.waitForSelector('[data-hook="review"]', { timeout: 10000 });
-        } catch (e) {
-            console.log(`   ⚠️ Timeout or Blocked on review page (${e.message}). Switching to Product Page Fallback immediately.`);
-            if (!blocked) {
-                // Only take screenshot if it wasn't a known sign-in block (to save disk/time)
-                await page.screenshot({ path: 'review_fail.png' });
-                console.log("      📸 Debug Screenshot saved to 'review_fail.png'");
-            }
-        }
-
-        while (allReviews.length < maxReviews && currentPage <= maxPages) {
-            await new Promise(r => setTimeout(r, 1500)); // Be nice
-
-            // Extract reviews from current page
-            const pageReviews = await page.evaluate((keywords) => {
-                const results = [];
-                const reviewEls = document.querySelectorAll('[data-hook="review"]');
-
-                reviewEls.forEach(reviewEl => {
-                    const ratingEl = reviewEl.querySelector('[data-hook="review-star-rating"]');
-                    const bodyEl = reviewEl.querySelector('[data-hook="review-body"]');
-                    const titleEl = reviewEl.querySelector('[data-hook="review-title"]');
-
-                    if (!bodyEl) return;
-
-                    const ratingText = ratingEl?.innerText || ratingEl?.getAttribute('class') || '';
-                    let rating = 3;
-                    if (ratingText.includes('5')) rating = 5;
-                    else if (ratingText.includes('4')) rating = 4;
-                    else if (ratingText.includes('3')) rating = 3;
-                    else if (ratingText.includes('2')) rating = 2;
-                    else if (ratingText.includes('1')) rating = 1;
-
-                    const body = bodyEl.innerText.trim();
-                    const title = titleEl?.innerText.trim().replace(/^\d\.0\s+/, '') || ''; // Clean star text from title
-
-                    results.push({ rating, title, text: body, body });
-                });
-                return results;
-            }, situationKeywords);
-
-            if (pageReviews.length === 0) break;
-
-            allReviews = allReviews.concat(pageReviews);
-            console.log(`      📄 Page ${currentPage}: Found ${pageReviews.length} reviews`);
-
-            // Check if we have enough
-            if (allReviews.length >= maxReviews) break;
-
-            // Go to next page
-            const nextButton = await page.$('.a-pagination .a-last a');
-            if (nextButton) {
-                currentPage++;
-                await Promise.all([
-                    page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-                    nextButton.click()
-                ]);
-            } else {
-                break; // No more pages
-            }
-        }
-
-        // Fallback: If 0 reviews found on Review Page, try Product Page with pagination
-        if (allReviews.length === 0) {
-            console.log("   ⚠️ No reviews on dedicated page. Falling back to Product Page with pagination...");
+            // Try to auto-start Chrome with remote debugging port
+            let chromeStarted = false;
             try {
-                await page.goto(`https://www.amazon.co.jp/dp/${asin}`, { waitUntil: 'networkidle2', timeout: 45000 });
-                await new Promise(r => setTimeout(r, 2000));
+                const { exec } = require('child_process');
+                const os = require('os');
 
-                // Try to find and click "See all reviews" link to get to paginated review page
-                const seeAllReviewsLink = await page.$('a[data-hook="see-all-reviews-link-foot"], a.a-link-emphasis[href*="product-reviews"]');
+                // Windows command to start Chrome with remote debugging
+                const chromeCmd = os.platform() === 'win32'
+                    ? 'start chrome --remote-debugging-port=9222 --no-first-run --no-default-browser-check'
+                    : 'google-chrome --remote-debugging-port=9222 --no-first-run --no-default-browser-check &';
 
-                if (seeAllReviewsLink) {
-                    console.log("   🔗 Found 'See All Reviews' link, navigating...");
+                exec(chromeCmd, (err) => {
+                    if (err) console.log(`      ⚠️ Chrome start command error: ${err.message}`);
+                });
+
+                // Wait for Chrome to be ready (poll for up to 10 seconds)
+                console.log("   ⏳ Waiting for Chrome to start...");
+                for (let i = 0; i < 20; i++) {
+                    await new Promise(r => setTimeout(r, 500));
                     try {
-                        await Promise.all([
-                            page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }),
-                            seeAllReviewsLink.click()
-                        ]);
-                        await new Promise(r => setTimeout(r, 2000));
-
-                        // Now we're on the reviews page - paginate!
-                        let fallbackPage = 1;
-                        const maxFallbackPages = Math.ceil(maxReviews / 10);
-
-                        while (allReviews.length < maxReviews && fallbackPage <= maxFallbackPages) {
-                            const pageReviews = await page.evaluate(() => {
-                                const results = [];
-                                const reviewEls = document.querySelectorAll('[data-hook="review"]');
-
-                                reviewEls.forEach(reviewEl => {
-                                    const ratingEl = reviewEl.querySelector('[data-hook="review-star-rating"]');
-                                    const bodyEl = reviewEl.querySelector('[data-hook="review-body"]');
-                                    const titleEl = reviewEl.querySelector('[data-hook="review-title"]');
-
-                                    if (!bodyEl) return;
-
-                                    const ratingText = ratingEl?.innerText || '';
-                                    let rating = 3;
-                                    if (ratingText.includes('5')) rating = 5;
-                                    else if (ratingText.includes('4')) rating = 4;
-                                    else if (ratingText.includes('3')) rating = 3;
-                                    else if (ratingText.includes('2')) rating = 2;
-                                    else if (ratingText.includes('1')) rating = 1;
-
-                                    results.push({
-                                        rating,
-                                        title: titleEl?.innerText.trim().replace(/^\d\.0\s+/, '') || '',
-                                        text: bodyEl.innerText.trim(),
-                                        body: bodyEl.innerText.trim()
-                                    });
+                        const wsUrl = await new Promise((resolve, reject) => {
+                            const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                                let data = '';
+                                res.on('data', chunk => data += chunk);
+                                res.on('end', () => {
+                                    try {
+                                        const json = JSON.parse(data);
+                                        resolve(json.webSocketDebuggerUrl);
+                                    } catch (e) { reject(e); }
                                 });
-                                return results;
                             });
+                            req.on('error', reject);
+                            req.setTimeout(1000, () => { req.destroy(); reject(new Error('timeout')); });
+                        });
 
-                            if (pageReviews.length === 0) break;
-
-                            allReviews = allReviews.concat(pageReviews);
-                            console.log(`      📄 Fallback Page ${fallbackPage}: Found ${pageReviews.length} reviews (Total: ${allReviews.length})`);
-
-                            if (allReviews.length >= maxReviews) break;
-
-                            // Go to next page
-                            const nextButton = await page.$('.a-pagination .a-last a');
-                            if (nextButton) {
-                                fallbackPage++;
-                                try {
-                                    await Promise.all([
-                                        page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15000 }),
-                                        nextButton.click()
-                                    ]);
-                                    await new Promise(r => setTimeout(r, 1500));
-                                } catch (navErr) {
-                                    console.log(`      ⚠️ Pagination navigation failed: ${navErr.message}`);
-                                    break;
-                                }
-                            } else {
-                                break; // No more pages
-                            }
-                        }
-                    } catch (navErr) {
-                        console.log(`      ⚠️ See All Reviews navigation failed: ${navErr.message}`);
+                        console.log(`   🔌 Chrome started! WebSocket URL: ${wsUrl}`);
+                        browser = await puppeteer.connect({
+                            browserWSEndpoint: wsUrl,
+                            defaultViewport: null
+                        });
+                        console.log("   ✅ Connected to auto-started Chrome!");
+                        chromeStarted = true;
+                        break;
+                    } catch (pollErr) {
+                        // Still waiting...
                     }
                 }
+            } catch (startErr) {
+                console.log(`   ⚠️ Chrome auto-start failed: ${startErr.message}`);
+            }
 
-                // If still no reviews, scrape from product page directly (last resort)
-                if (allReviews.length === 0) {
-                    console.log("   📜 Scraping reviews directly from product page...");
-
-                    // Scroll down to trigger lazy loading of reviews
-                    await page.evaluate(async () => {
-                        window.scrollBy(0, window.innerHeight);
-                        await new Promise(r => setTimeout(r, 1000));
-                        window.scrollBy(0, window.innerHeight);
-                        await new Promise(r => setTimeout(r, 1000));
-                        window.scrollBy(0, window.innerHeight);
-                        const reviewSection = document.getElementById('reviewsMedley') || document.getElementById('cm_cr-review_list');
-                        if (reviewSection) reviewSection.scrollIntoView();
+            // Final fallback: headless browser
+            if (!chromeStarted) {
+                console.log("   🔄 Falling back to internal headless browser...");
+                try {
+                    browser = await puppeteer.launch({
+                        headless: "new",
+                        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
                     });
-                    await new Promise(r => setTimeout(r, 2000));
-
-                    const dpReviews = await page.evaluate(() => {
-                        const results = [];
-                        const reviewEls = document.querySelectorAll('[data-hook="review"], .review, #cm_cr-review_list .a-section');
-
-                        reviewEls.forEach(reviewEl => {
-                            const ratingEl = reviewEl.querySelector('[data-hook="review-star-rating"], .review-rating, i[class*="star"]');
-                            const bodyEl = reviewEl.querySelector('[data-hook="review-body"], .review-text, .review-text-content');
-                            const titleEl = reviewEl.querySelector('[data-hook="review-title"], .review-title');
-
-                            if (bodyEl) {
-                                const ratingText = ratingEl?.innerText || ratingEl?.getAttribute('class') || '';
-                                let rating = 3;
-                                if (ratingText.includes('5')) rating = 5;
-                                else if (ratingText.includes('4')) rating = 4;
-                                else if (ratingText.includes('3')) rating = 3;
-                                else if (ratingText.includes('2')) rating = 2;
-                                else if (ratingText.includes('1')) rating = 1;
-
-                                results.push({
-                                    rating,
-                                    title: titleEl?.innerText.trim().replace(/^\d\.0\s+/, '') || '',
-                                    text: bodyEl.innerText.trim(),
-                                    body: bodyEl.innerText.trim()
-                                });
-                            }
-                        });
-                        return results;
-                    });
-
-                    allReviews = dpReviews;
-                    console.log(`      📄 Direct Product Page: Found ${allReviews.length} reviews`);
+                } catch (launchError) {
+                    console.error("   ❌ Failed to launch fallback browser:", launchError.message);
+                    throw new Error("Browser unavailable");
                 }
-            } catch (e) {
-                console.log(`      ⚠️ Fallback failed: ${e.message}`);
             }
         }
 
-        // Process results
-        const reviews = { positive: [], negative: [], situational: [] };
-        allReviews.forEach(r => {
-            const hasSituation = situationKeywords.some(kw => r.text.includes(kw) || r.title.includes(kw));
-            if (hasSituation) reviews.situational.push(r);
-            if (r.rating >= 4) reviews.positive.push(r);
-            else if (r.rating <= 3) reviews.negative.push(r);
-        });
+        // Create a new page
+        const page = await browser.newPage();
+        let shouldClosePage = true;
 
-        // Summary stats
-        const summaryEl = await page.$('#acrCustomerReviewText'); // Might be missing on review page
-        const totalCount = allReviews.length;
+        try {
+            // ... (rest of logic)
+            // No need to set User-Agent or headers - we use the browser's existing session!
 
-        // Return logic
-        await browser.close();
+            // WARMUP: Essential for bypassing auth wall
+            // Longer wait on retry
+            const warmupWait = isRetry ? 5000 : 2000;
+            console.log(`   🏠 Warmup: Visiting Amazon Home Page (wait ${warmupWait}ms)...`);
+            try {
+                await page.goto('https://www.amazon.co.jp/', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => { });
+                await new Promise(r => setTimeout(r, warmupWait + Math.random() * 1000));
 
-        const output = {
-            situational: reviews.situational.slice(0, 10),
-            positive: reviews.positive.slice(0, 10),
-            negative: reviews.negative.slice(0, 10),
-            summary: {
-                totalFound: totalCount,
-                situationalCount: reviews.situational.length,
+                // On retry, scroll a bit to look human
+                if (isRetry) {
+                    await page.evaluate(() => window.scrollBy(0, 300));
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            } catch (e) {
+                console.log(`      ⚠️ Warmup issue: ${e.message}`);
             }
-        };
-        console.log(`   ✅ Reviews scraped: ${output.summary.totalFound} total (${output.summary.situationalCount} situational)`);
-        return output;
 
-    } catch (e) {
-        console.error(`   ❌ Review Scrape Error: ${e.message}`);
-        if (browser) await browser.close();
-        return { situational: [], positive: [], negative: [], summary: { totalFound: 0, situationalCount: 0 } };
+            const reviewUrl = `https://www.amazon.co.jp/product-reviews/${asin}?reviewerType=all_reviews`;
+
+            // STRATEGY: Direct for initial, Indirect (via Product Page) for retry
+            let allReviews = [];
+            let currentPage = 1;
+            const maxPages = Math.ceil(maxReviews / 10);
+            let blocked = false;
+            let navSuccess = false;
+
+            if (!isRetry) {
+                // Initial: Try fast direct link
+                console.log(`   🔗 Fetching review page (Direct): ${reviewUrl}`);
+                try {
+                    await page.goto(reviewUrl, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(e => console.log(`      ⚠️ Nav timeout ignored`));
+                    const currentUrl = page.url();
+                    const pageTitle = await page.title();
+                    if (currentUrl.includes('signin') || pageTitle.includes('Sign-In') || pageTitle.includes('ログイン')) {
+                        console.log("   🚨 Redirected to Sign-In page! Blocking detected.");
+                        blocked = true;
+                    } else {
+                        // We're not blocked, so assume success even if reviews don't appear immediately
+                        navSuccess = true;
+                        try { await page.waitForSelector('[data-hook="review"]', { timeout: 8000 }); } catch (e) {
+                            console.log("      ⚠️ Review selector not found immediately, continuing anyway...");
+                        }
+                    }
+                } catch (e) {
+                    console.log(`      ⚠️ Nav error: ${e.message}`);
+                }
+            } else {
+                // Retry: Go via Product Page (Natural flow)
+                console.log(`   🔗 Fetching review page (Via Product Page): https://www.amazon.co.jp/dp/${asin}`);
+                try {
+                    await page.goto(`https://www.amazon.co.jp/dp/${asin}`, { waitUntil: 'domcontentloaded', timeout: 45000 }).catch(() => { });
+                    await new Promise(r => setTimeout(r, 2000));
+
+                    // Click "See all reviews"
+                    const seeAll = await page.$('a[data-hook="see-all-reviews-link-foot"], a[href*="product-reviews"]');
+                    if (seeAll) {
+                        console.log("   🔗 Following 'See All Reviews' link...");
+                        await Promise.all([
+                            page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }),
+                            seeAll.click()
+                        ]).catch(() => console.log("   ⚠️ Click nav timeout"));
+
+                        // Check for block again
+                        const currentUrl = page.url();
+                        if (currentUrl.includes('signin')) {
+                            console.log("   🚨 Redirected to Sign-In after click!");
+                            blocked = true;
+                        } else {
+                            navSuccess = true;
+                            try { await page.waitForSelector('[data-hook="review"]', { timeout: 8000 }); } catch (e) { }
+                        }
+                    } else {
+                        console.log("   ⚠️ 'See all reviews' link not found on Product Page.");
+                        // Treat as not blocked, but standard fallback will handle scraping from main page
+                    }
+                } catch (e) { console.log(`      ⚠️ Indirect nav failed: ${e.message}`); }
+            }
+
+            // PAGINATION LOOP (Only if we successfully reached a review list)
+            if (navSuccess && !blocked) {
+                while (allReviews.length < maxReviews && currentPage <= maxPages) {
+                    await new Promise(r => setTimeout(r, 1500));
+                    const pageReviews = await page.evaluate((keywords) => {
+                        const results = [];
+                        const reviewEls = document.querySelectorAll('[data-hook="review"]');
+                        reviewEls.forEach(reviewEl => {
+                            const ratingEl = reviewEl.querySelector('[data-hook="review-star-rating"]');
+                            const bodyEl = reviewEl.querySelector('[data-hook="review-body"]');
+                            const titleEl = reviewEl.querySelector('[data-hook="review-title"]');
+                            if (!bodyEl) return;
+
+                            const ratingText = ratingEl?.innerText || ratingEl?.getAttribute('class') || '';
+                            let rating = 3;
+                            if (ratingText.includes('5')) rating = 5;
+                            else if (ratingText.includes('4')) rating = 4;
+                            else if (ratingText.includes('3')) rating = 3;
+                            else if (ratingText.includes('2')) rating = 2;
+                            else if (ratingText.includes('1')) rating = 1;
+
+                            results.push({
+                                rating,
+                                title: titleEl?.innerText.trim().replace(/^\d\.0\s+/, '') || '',
+                                text: bodyEl.innerText.trim(),
+                                body: bodyEl.innerText.trim()
+                            });
+                        });
+                        return results;
+                    }, situationKeywords);
+
+                    if (pageReviews.length === 0) break;
+                    allReviews = allReviews.concat(pageReviews);
+                    console.log(`      📄 Page ${currentPage}: Found ${pageReviews.length} reviews`);
+                    if (allReviews.length >= maxReviews) break;
+
+                    // Add timeout to prevent hanging on next button search
+                    let nextButton = null;
+                    try {
+                        nextButton = await Promise.race([
+                            page.$('.a-pagination .a-last a'),
+                            new Promise((resolve) => setTimeout(() => resolve(null), 5000))
+                        ]);
+                    } catch (e) { console.log("      ⚠️ Next button search error"); }
+                    console.log(`      🔍 Next button found: ${!!nextButton}`);
+                    if (nextButton) {
+                        currentPage++;
+                        console.log(`      📄 Navigating to Page ${currentPage}...`);
+                        try {
+                            await Promise.race([
+                                Promise.all([
+                                    page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 10000 }),
+                                    nextButton.click()
+                                ]),
+                                new Promise((_, reject) => setTimeout(() => reject(new Error('pagination timeout')), 15000))
+                            ]);
+                            console.log(`      ✅ Page ${currentPage} loaded`);
+                        } catch (e) {
+                            console.log(`      ⚠️ Pagination nav issue: ${e.message}. Stopping pagination.`);
+                            break;
+                        }
+                    } else {
+                        console.log("      📄 No more pages available");
+                        break;
+                    }
+                }
+            }
+
+            // FALLBACK TO PRODUCT PAGE
+            if (allReviews.length === 0 && !blocked) {
+                console.log("   ⚠️ No reviews on dedicated page. Falling back to Product Page...");
+                await page.goto(`https://www.amazon.co.jp/dp/${asin}`, { waitUntil: 'domcontentloaded', timeout: 45000 }).catch(() => { });
+                await new Promise(r => setTimeout(r, 2000));
+
+                // Try "See all reviews" link first
+                const seeAll = await page.$('a[data-hook="see-all-reviews-link-foot"]');
+                if (seeAll) {
+                    console.log("   🔗 Following 'See All Reviews'...");
+                    await Promise.all([page.waitForNavigation({ waitUntil: 'domcontentloaded' }), seeAll.click()]).catch(() => { });
+                    // Reuse pagination loop code? For simplicity, we'll just scrape current page here
+                    // Ideally we refactor, but for now let's just scrape what's visible
+                }
+
+                // Scrape current page (either review list or product page body)
+                const fallbackReviews = await page.evaluate(() => {
+                    const results = [];
+                    const reviewEls = document.querySelectorAll('[data-hook="review"], .review, #cm_cr-review_list .a-section');
+                    reviewEls.forEach(reviewEl => {
+                        const bodyEl = reviewEl.querySelector('[data-hook="review-body"], .review-text-content');
+                        if (bodyEl) results.push({
+                            rating: 3, // simplified
+                            title: '',
+                            text: bodyEl.innerText.trim(),
+                            body: bodyEl.innerText.trim()
+                        });
+                    });
+                    return results;
+                });
+                allReviews = fallbackReviews;
+                console.log(`      📄 Fallback found ${allReviews.length} reviews`);
+            }
+
+            // Close the page
+            await page.close();
+
+            // If we launched a fallback browser (browser.isConnected() returns true mostly, but we can check if it was remote)
+            // Simpler check: If we launched it via puppeteer.launch, we own it. 
+            // However, distinguishing 'connected' vs 'launched' variable is tricky inside doScrape without extra var.
+            // But we know 'browser' variable. 
+            // If it's a remote connection, closing browser disconnects but doesn't kill process?
+            // Actually, puppeteer.connect().close() just disconnects. puppeteer.launch().close() kills it.
+            // We want to kill it if we launched it. We want to disconnect if we connected.
+            // For now, let's always close() - for remote it disconnects (fine), for launch it closes (good).
+            // WAIT - if we disconnect remote, we might lose the instance for next calls? 
+            // No, scrapeProductReviews calls doScrape which creates a fresh connection each time.
+            // So closing is safe and correct for both.
+            await browser.close();
+
+            // Return results AND block status
+            return { reviews: allReviews, blocked };
+
+        } catch (e) {
+            if (page) await page.close().catch(() => { }); // Close page on error
+            return { reviews: [], blocked: false, error: e };
+        }
+    };
+
+    // EXECUTION FLOW
+    let result = await doScrape(false); // Initial
+
+    // RETRY LOGIC
+    if (result.blocked || result.reviews.length === 0) {
+        console.log(`   ⚠️ Initial scrape failed (Blocked: ${result.blocked}, Count: ${result.reviews.length}). Initiating RETRY with enhanced warmup...`);
+        result = await doScrape(true); // Retry
     }
-}
 
+    // PROCESS RESULTS
+    const allReviews = result.reviews || [];
+    const reviews = { positive: [], negative: [] };
+
+    allReviews.forEach(r => {
+        if (r.rating >= 4) reviews.positive.push(r);
+        else if (r.rating <= 3) reviews.negative.push(r);
+    });
+
+    const output = {
+        positive: reviews.positive.slice(0, 10),
+        negative: reviews.negative.slice(0, 10),
+        situational: [], // Legacy: kept for compatibility but no longer populated
+        summary: {
+            totalFound: allReviews.length,
+        }
+    };
+    console.log(`   ✅ Reviews scraped: ${output.summary.totalFound} total`);
+    return output;
+}
 /**
  * Category-specific keyword filters
  * Products must contain at least one of these keywords to be valid
@@ -454,23 +503,65 @@ function matchesCategory(title, category) {
 async function verifyProductOnAmazon(productName, category = 'wireless-earphones') {
     console.log(`   🔍 Verifying on Amazon: "${productName}"`);
 
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
-    });
+    // Try remote debugging first, fallback to launch
+    let browser;
+    let isRemote = false;
+    try {
+        const http = require('http');
+        const wsUrl = await new Promise((resolve, reject) => {
+            const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        resolve(json.webSocketDebuggerUrl);
+                    } catch (e) { reject(e); }
+                });
+            });
+            req.on('error', reject);
+            req.setTimeout(3000, () => { req.destroy(); reject(new Error('timeout')); });
+        });
+
+        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+        isRemote = true;
+        console.log(`      ✅ Connected to Chrome (remote debugging)`);
+    } catch (e) {
+        // Fallback to headless launch
+        console.log(`      ⚠️ Remote debugging unavailable, using headless mode`);
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
+        });
+    }
 
     try {
         const page = await browser.newPage();
-        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+        if (!isRemote) {
+            await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+        }
+
+        // Warmup (short)
+        try {
+            await page.goto('https://www.amazon.co.jp/', { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => { });
+            await new Promise(r => setTimeout(r, 1000));
+        } catch (e) { }
 
         // Search Amazon with exact product name
         const searchUrl = `https://www.amazon.co.jp/s?k=${encodeURIComponent(productName)}`;
-        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        // RELAXED WAIT: Don't fail on timeout if content is loaded
+        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(e => console.log(`      ⚠️ Nav timeout ignored (search)`));
 
-        await new Promise(r => setTimeout(r, 1500));
+        // Ensure results are present before evaluating
+        try {
+            await page.waitForSelector('div[data-asin]', { timeout: 10000 });
+        } catch (e) {
+            console.log(`      ⚠️ Results selector timeout (continuing anyway)`);
+        }
+        await new Promise(r => setTimeout(r, 1000));
 
         // Find the best matching result
-        const result = await page.evaluate((expectedName, catKeywords) => {
+        let result = await page.evaluate((expectedName, catKeywords) => {
             const nodes = document.querySelectorAll('div[data-asin]');
             const expectedLower = expectedName.toLowerCase();
 
@@ -481,7 +572,6 @@ async function verifyProductOnAmazon(productName, category = 'wireless-earphones
                 const titleEl = node.querySelector('h2') || node.querySelector('span.a-text-normal');
                 const priceEl = node.querySelector('.a-price-whole');
                 const imgEl = node.querySelector('img.s-image');
-                const linkEl = node.querySelector('a.a-link-normal');
                 const ratingEl = node.querySelector('span[aria-label*="5つ星のうち"]');
                 const reviewCountEl = node.querySelector('span[aria-label*="個の評価"]');
 
@@ -491,7 +581,6 @@ async function verifyProductOnAmazon(productName, category = 'wireless-earphones
                 const lowerTitle = title.toLowerCase();
 
                 // Check if this result matches our product name
-                // Either the title contains the product name, or the product name contains key parts of the title
                 const nameParts = expectedLower.split(/[\s\-\/\(\)]+/).filter(w => w.length > 2);
                 const matchedParts = nameParts.filter(word => lowerTitle.includes(word.toLowerCase()));
                 const matchRatio = nameParts.length > 0 ? matchedParts.length / nameParts.length : 0;
@@ -503,13 +592,13 @@ async function verifyProductOnAmazon(productName, category = 'wireless-earphones
 
                 if (!strongMatch && !weakMatch) continue;
 
-                // Category validation - only for weak matches (strong matches are already validated by market research)
+                // Category validation
                 if (!strongMatch) {
                     const hasCategory = catKeywords.some(kw => lowerTitle.includes(kw.toLowerCase()));
                     if (!hasCategory) continue;
                 }
 
-                // Exclude junk (cases, cables, etc.)
+                // Exclude junk
                 const junkKeywords = ["ケース用", "カバー", "保護", "case for", "cover for", "cable", "ケーブル", "フィルム", "イヤーピース"];
                 if (junkKeywords.some(kw => lowerTitle.includes(kw))) continue;
 
@@ -526,59 +615,56 @@ async function verifyProductOnAmazon(productName, category = 'wireless-earphones
             return null;
         }, productName, CATEGORY_KEYWORDS[category] || CATEGORY_KEYWORDS['wireless-earphones']);
 
-        await browser.close();
-
         if (result) {
             console.log(`      📦 Amazon result: ${result.amazonTitle.slice(0, 60)}...`);
 
-            // AI Verification: Confirm this is the correct product
+            // AI Verification
             const isMatch = await verifyProductMatchWithAI(productName, result.amazonTitle);
 
             if (isMatch) {
                 console.log(`      ✅ AI confirmed: Correct product`);
-                // Use market research name (authoritative), not Amazon title
                 result.name = productName;
-                return result;
+                return result; // Return immediately
             } else {
                 console.log(`      ⚠️ AI rejected: Not the same product`);
-                // Consider retry here too? For now just return null allows fallback below
+                result = null; // Clear result to trigger fallback
             }
         }
 
         // Fallback: Try searching for model number only
         const modelNumberMatch = productName.match(/[a-zA-Z0-9-]{4,}/g);
-        if (modelNumberMatch) {
-            const candidates = modelNumberMatch.sort((a, b) => b.length - a.length); // Longest first
+        if (modelNumberMatch && !result) {
+            const candidates = modelNumberMatch.sort((a, b) => b.length - a.length);
             const bestCandidate = candidates[0];
 
             if (bestCandidate && bestCandidate !== productName && bestCandidate.length >= 5) {
                 console.log(`      ⚠️ Amazon verification retry: searching for model number "${bestCandidate}"...`);
-                // Recursive call or simplified search?
-                // Let's do a simplified search logic directly or just return null to let calling function handle?
-                // Calling scoutAmazonProducts might be easier but we want verify logic.
-                // Let's run the search loop again with new keyword.
 
-                await page.goto('https://www.amazon.co.jp/', { waitUntil: 'domcontentloaded' });
+                // REUSE SAME BROWSER PAGE
+                // RELAXED WAIT for Home Page + Search
+                await page.goto('https://www.amazon.co.jp/', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(e => { });
+                await new Promise(r => setTimeout(r, 1000));
+
                 await page.waitForSelector('#twotabsearchtextbox', { timeout: 15000 });
                 await page.type('#twotabsearchtextbox', bestCandidate);
-                await Promise.all([
-                    page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-                    page.click('#nav-search-submit-button')
-                ]);
 
-                // ... reuse the parsing logic? 
-                // It's better to refactor, but for now copying the parsing block is safer for inline edit.
-                // Actually, let's just make one attempt with bestCandidate.
+                try {
+                    await Promise.all([
+                        page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }),
+                        page.click('#nav-search-submit-button')
+                    ]);
+                } catch (e) {
+                    console.log(`      ⚠️ Retry search nav timeout ignored`);
+                }
+                await new Promise(r => setTimeout(r, 2000));
 
                 const retryNodes = await page.$$('[data-component-type="s-search-result"]');
-                // (Repeat parsing logic - abbreviated for safety, just getting first match)
                 for (const node of retryNodes) {
                     const asin = await node.evaluate(el => el.getAttribute('data-asin'));
                     if (!asin) continue;
                     const title = await node.evaluate(el => el.querySelector('h2')?.innerText.trim());
                     if (!title) continue;
 
-                    // Weak match verification
                     if (title.toLowerCase().includes(bestCandidate.toLowerCase())) {
                         console.log(`      ✅ Retrieval successful with model number: ${title.slice(0, 50)}...`);
                         const img = await node.evaluate(el => el.querySelector('.s-image')?.src);
@@ -586,12 +672,12 @@ async function verifyProductOnAmazon(productName, category = 'wireless-earphones
 
                         return {
                             amazonTitle: title,
-                            name: productName, // Keep original name
+                            name: productName,
                             asin: asin,
                             price: price ? `¥${price}` : null,
                             image: img,
                             link: `https://www.amazon.co.jp/dp/${asin}`,
-                            rating: null, // skip rating
+                            rating: null,
                             reviewCount: 0
                         };
                     }
@@ -604,11 +690,23 @@ async function verifyProductOnAmazon(productName, category = 'wireless-earphones
 
     } catch (e) {
         console.error(`      ❌ Amazon verification error: ${e.message}`);
-        if (browser) await browser.close();
         return null;
+    } finally {
+        // For remote debugging, only close the page (not the browser)
+        // For local launch, close the browser entirely
+        if (browser) {
+            if (isRemote) {
+                // Close pages we opened, but don't disconnect
+                const pages = await browser.pages();
+                for (const p of pages) {
+                    if (p.url().includes('amazon')) await p.close().catch(() => { });
+                }
+            } else {
+                await browser.close();
+            }
+        }
     }
 }
-
 /**
  * Use AI to verify that Amazon search result matches the market research product
  */

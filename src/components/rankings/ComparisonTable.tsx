@@ -66,6 +66,7 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
                                     <th className="px-3 py-3 min-w-[140px] text-center">購入・詳細</th>
                                     <th className="px-3 py-3 text-center whitespace-nowrap">評価</th>
                                     <th className="px-3 py-3 text-center whitespace-nowrap">参考価格</th>
+                                    <th className="px-3 py-3 text-center whitespace-nowrap">コスパ</th>
                                     {headers.map((header, idx) => (
                                         <th key={idx} className="px-3 py-3 text-center whitespace-nowrap text-xs">{header}</th>
                                     ))}
@@ -177,6 +178,24 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
                                                 {product.price}
                                             </td>
 
+                                            {/* コスパ (Cost Performance) Column */}
+                                            <td className="px-3 py-3 text-center">
+                                                {(() => {
+                                                    const cp = (product as any).costPerformance || 5;
+                                                    let grade = 'B';
+                                                    let colorClass = 'text-slate-500 bg-slate-100';
+                                                    if (cp >= 8.5) { grade = 'S'; colorClass = 'text-amber-600 bg-amber-100'; }
+                                                    else if (cp >= 7) { grade = 'A'; colorClass = 'text-blue-600 bg-blue-100'; }
+                                                    else if (cp >= 5) { grade = 'B'; colorClass = 'text-slate-600 bg-slate-100'; }
+                                                    else { grade = 'C'; colorClass = 'text-slate-400 bg-slate-50'; }
+                                                    return (
+                                                        <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-black text-sm ${colorClass}`}>
+                                                            {grade}
+                                                        </span>
+                                                    );
+                                                })()}
+                                            </td>
+
                                             {specValues.map((val, idx) => (
                                                 <td key={idx} className="px-3 py-3 text-center font-bold text-text-main text-xs whitespace-nowrap">
                                                     {val}
@@ -192,10 +211,10 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
 
                 {/* Show More Button */}
                 {!isExpanded && hiddenCount > 0 && (
-                    <div className="p-4 bg-gradient-to-t from-white to-transparent -mt-8 relative pt-12">
+                    <div className="p-4 bg-gradient-to-t from-white to-transparent -mt-8 relative pt-12 pointer-events-none">
                         <button
                             onClick={() => setIsExpanded(true)}
-                            className="w-full bg-surface-subtle hover:bg-surface-subtle/80 text-primary font-bold py-4 rounded-xl border border-border-color transition-all hover:shadow-md flex items-center justify-center gap-2 group"
+                            className="w-full bg-surface-subtle hover:bg-surface-subtle/80 text-primary font-bold py-4 rounded-xl border border-border-color transition-all hover:shadow-md flex items-center justify-center gap-2 group pointer-events-auto"
                         >
                             <span>比較表をすべて見る（残り{hiddenCount}商品）</span>
                             <span className="material-symbols-outlined group-hover:translate-y-1 transition-transform">expand_more</span>

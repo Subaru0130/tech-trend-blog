@@ -149,17 +149,46 @@ async function discoverProducts(keyword, blueprint, targetCount = 20) {
  * Search Bing and collect snippets from trusted sources
  */
 async function searchBing(query) {
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
-    });
+    // Try remote debugging first, fallback to launch
+    let browser;
+    let isRemote = false;
+    try {
+        const http = require('http');
+        const wsUrl = await new Promise((resolve, reject) => {
+            const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        resolve(json.webSocketDebuggerUrl);
+                    } catch (e) { reject(e); }
+                });
+            });
+            req.on('error', reject);
+            req.setTimeout(3000, () => { req.destroy(); reject(new Error('timeout')); });
+        });
+
+        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+        isRemote = true;
+        // console.log(`      ✅ Connected to Chrome (remote debugging)`);
+    } catch (e) {
+        // Fallback to headless launch
+        // console.log(`      ⚠️ Remote debugging unavailable, using headless mode`);
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
+        });
+    }
 
     try {
         const page = await browser.newPage();
-        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+        if (!isRemote) {
+            await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+        }
 
         const searchUrl = `https://www.bing.com/search?q=${encodeURIComponent(query)}&setmkt=ja-JP&setlang=ja`;
-        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
         await new Promise(r => setTimeout(r, 1500 + Math.random() * 1000));
 
@@ -394,7 +423,7 @@ async function scrapePageContent(url) {
         const page = await browser.newPage();
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
 
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
         await new Promise(r => setTimeout(r, 2000));
 
         const content = await page.evaluate(() => {
@@ -966,10 +995,34 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
     const maxPages = options.maxPages || 10; // Default: scrape 10 pages (200+ products)
     const allProducts = [];
 
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+    // Try remote debugging first (using manually-opened Chrome), fallback to headless
+    let browser;
+    let isRemote = false;
+    try {
+        const http = require('http');
+        const wsUrl = await new Promise((resolve, reject) => {
+            const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        resolve(json.webSocketDebuggerUrl);
+                    } catch (e) { reject(e); }
+                });
+            });
+            req.on('error', reject);
+            req.setTimeout(3000, () => { req.destroy(); reject(new Error('timeout')); });
+        });
+        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+        isRemote = true;
+        console.log('   🌐 Connected to remote Chrome for better Amazon compatibility');
+    } catch (e) {
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
+    }
 
     try {
         const page = await browser.newPage();
@@ -995,7 +1048,7 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                 // First, access the base ranking page to extract filter links
                 const section = categoryInfo.section || 'kaden';
                 const baseUrl = `https://kakaku.com/${section}/${categoryInfo.path}/ranking_${categoryInfo.code}/`;
-                await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+                await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
                 await new Promise(r => setTimeout(r, 2000));
 
                 // Extract all filter links from the page
@@ -1072,7 +1125,7 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
             console.log(`   🔗 Page ${pageNum}: ${url}`);
 
             try {
-                await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+                await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
                 await new Promise(r => setTimeout(r, 2000));
 
                 const products = await page.evaluate((pageNum) => {
@@ -1154,6 +1207,9 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
 
                 // Visit Detail Pages to get Amazon Link (User Request)
                 for (let i = 0; i < products.length; i++) {
+                    // Optimization: Stop if we've processed enough items for verification
+                    if (options.targetCount && i >= options.targetCount) break;
+
                     const p = products[i];
                     if (!p.kakakuUrl) continue;
 
@@ -1162,7 +1218,22 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
 
                     try {
                         console.log(`         🔎 [${i + 1}/${products.length}] Checking: ${p.name.slice(0, 15)}... (${p.kakakuUrl})`);
-                        await page.goto(p.kakakuUrl + '#tab', { waitUntil: 'networkidle2', timeout: 30000 });
+
+                        // Navigate with retry on timeout
+                        let navSuccess = false;
+                        for (let attempt = 1; attempt <= 2 && !navSuccess; attempt++) {
+                            try {
+                                await page.goto(p.kakakuUrl + '#tab', { waitUntil: 'domcontentloaded', timeout: 45000 });
+                                navSuccess = true;
+                            } catch (navErr) {
+                                if (attempt === 1 && navErr.message?.includes('timeout')) {
+                                    console.log(`         🔄 Retry ${attempt}/2 for timeout...`);
+                                    await new Promise(r => setTimeout(r, 2000));
+                                } else {
+                                    throw navErr;
+                                }
+                            }
+                        }
                         await new Promise(r => setTimeout(r, 2000)); // Wait for dynamic shop list
 
                         // Try to find Amazon on multiple pages if needed
@@ -1172,7 +1243,7 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                                 ? p.kakakuUrl + '#tab'
                                 : p.kakakuUrl + '?page=' + shopPage + '#tab';
 
-                            await page.goto(shopUrl, { waitUntil: 'networkidle2', timeout: 30000 });
+                            await page.goto(shopUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
                             await new Promise(r => setTimeout(r, 2000));
 
                             amazonInfo = await page.evaluate(() => {
@@ -1227,7 +1298,7 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                             // === STEP 2: Navigate to shop page and get forwarder link ===
                             console.log(`            🔄 Following redirect to get actual Amazon URL...`);
                             try {
-                                await page.goto(amazonInfo.url, { waitUntil: 'networkidle2', timeout: 30000 });
+                                await page.goto(amazonInfo.url, { waitUntil: 'domcontentloaded', timeout: 60000 });
                                 await new Promise(r => setTimeout(r, 2000));
 
                                 // Find the forwarder link (売り場へ行く button)
@@ -1242,17 +1313,36 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                                 });
 
                                 if (forwarderUrl) {
-                                    // === STEP 3: Follow forwarder to Amazon ===
-                                    await page.goto(forwarderUrl, { waitUntil: 'networkidle0', timeout: 30000 });
-                                    await new Promise(r => setTimeout(r, 3000)); // Wait for final redirect
+                                    // === STEP 3: Follow forwarder to Amazon (MULTI-HOP REDIRECT) ===
+                                    // Kakaku uses: c.kakaku.com/forwarder → kakaku.com/pt/ard.asp → amazon.co.jp
+                                    let finalUrl = '';
+                                    try {
+                                        // Navigate and wait for all redirects to complete
+                                        await page.goto(forwarderUrl, {
+                                            waitUntil: 'networkidle0', // Wait for all network activity to stop
+                                            timeout: 30000
+                                        }).catch(() => { });
 
-                                    const finalUrl = page.url();
+                                        // Check URL multiple times with delays (for slow redirects)
+                                        for (let check = 0; check < 5; check++) {
+                                            finalUrl = page.url();
+                                            if (finalUrl.includes('amazon.co.jp')) break;
+                                            await new Promise(r => setTimeout(r, 1000));
+                                        }
+
+                                    } catch (navErr) {
+                                        console.log(`            ⚠️ Navigation warning: ${navErr.message?.slice(0, 40)}`);
+                                        finalUrl = page.url();
+                                    }
+
+                                    finalUrl = page.url(); // Final URL check
                                     if (finalUrl.includes('amazon.co.jp')) {
                                         // Extract ASIN from URL
                                         const asinMatch = finalUrl.match(/\/dp\/([A-Z0-9]{10})/);
 
                                         // === STEP 4: Check stock availability AND price on Amazon ===
                                         const stockInfo = await page.evaluate(() => {
+                                            if (!document.body) return null;
                                             const bodyText = document.body.innerText || '';
 
                                             // Check for in-stock indicators
@@ -1311,7 +1401,7 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                                             };
                                         });
 
-                                        if (stockInfo.inStock) {
+                                        if (stockInfo && stockInfo.inStock) {
                                             p.amazonUrl = finalUrl;
                                             p.inStock = true;
                                             if (asinMatch) {
@@ -1320,16 +1410,18 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                                             } else {
                                                 console.log(`            ✅ In Stock (Amazon URL obtained)`);
                                             }
-                                        } else if (stockInfo.hasOutOfStockText) {
+                                        } else if (stockInfo && stockInfo.hasOutOfStockText) {
                                             console.log(`            ❌ Out of Stock on Amazon`);
                                             p.amazonUrl = null; // Clear so it gets skipped
                                             p.inStock = false;
                                         } else {
-                                            // Ambiguous - might be available, keep URL for later verification
+                                            // Ambiguous or failed extraction - might be available
+                                            // If stockInfo is null, it means we couldn't parse the page => assume failure or retry?
+                                            // For now, if we have URL, let's keep it but mark uncertain.
                                             p.amazonUrl = finalUrl;
-                                            p.inStock = stockInfo.hasAddToCart; // Best guess
+                                            p.inStock = stockInfo ? stockInfo.hasAddToCart : false;
                                             if (asinMatch) p.asin = asinMatch[1];
-                                            console.log(`            ⚠️ Stock uncertain, keeping URL`);
+                                            console.log(`            ⚠️ Stock uncertain (Info: ${!!stockInfo}), keeping URL`);
                                         }
                                     } else {
                                         console.log(`            ⚠️ Redirect did not reach Amazon: ${finalUrl.slice(0, 50)}...`);
@@ -1361,7 +1453,8 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                         console.log(`            📋 Checking specs for ${p.name.slice(0, 15)}...`);
                         try {
                             const specUrl = p.kakakuUrl.replace(/#.*$/, '').replace(/\?.*$/, '') + 'spec/';
-                            await page.goto(specUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
+                            // Relaxed wait for spec page
+                            await page.goto(specUrl, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => { });
                             await new Promise(r => setTimeout(r, 1000));
 
                             const specData = await page.evaluate(() => {
@@ -1419,8 +1512,8 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                             p.kakakuSpecs = {};
                         }
 
-                        // Short delay to avoid ban
-                        await new Promise(r => setTimeout(r, 500));
+                        // Longer delay to avoid rate limiting and bans
+                        await new Promise(r => setTimeout(r, 1500));
 
                     } catch (e) {
                         console.log(`         ⚠️ Detail check failed: ${e.message}`);
@@ -1523,7 +1616,7 @@ async function scrapeMyBestRanking(keyword) {
 
         // Search MyBest for the keyword
         const searchUrl = `https://my-best.com/search?q=${encodeURIComponent(keyword)}`;
-        await page.goto(searchUrl, { waitUntil: 'networkidle2', timeout: 30000 });
+        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
         // Extract product rankings from search results
         const products = await page.evaluate(() => {
@@ -1636,7 +1729,7 @@ async function scrapeAmazonBestseller(category = '3477981', options = {}) {
 
         // Amazon bestseller ranking URL
         const url = `https://www.amazon.co.jp/gp/bestsellers/electronics/${category}`;
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
         await new Promise(r => setTimeout(r, 3000));
 
         const products = await page.evaluate(() => {

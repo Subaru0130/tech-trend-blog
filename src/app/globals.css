@@ -183,6 +183,13 @@ html {
   padding: 0 2px;
 }
 
+/* Mark Tag Highlighter Style (Alternative to **bold**) */
+.prose mark {
+  background: linear-gradient(transparent 60%, #ffff66 60%);
+  color: var(--color-text-main);
+  padding: 0 2px;
+}
+
 /* Recommendation Heading Marker - Manually styled in content */
 /* For まとめ section headings, use **bold** in heading to trigger marker */
 /* Example: ### **🏆 音質重視なら** → auto-highlighted */
@@ -216,12 +223,33 @@ html {
 }
 
 .prose blockquote {
-  border-left: 4px solid var(--color-accent);
-  background-color: var(--color-accent-light);
-  padding: 1rem 1.5rem;
-  /* font-style: italic; Removed per user request */
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 60px;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border-color);
+  border-radius: 12px;
+  padding: 1rem 1.25rem 1rem 3.5rem;
   margin: 1.5rem 0;
-  border-radius: 0 0.5rem 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text-main);
+  line-height: 1.6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.prose blockquote::before {
+  content: '💡';
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.25rem;
+}
+
+.prose blockquote p {
+  margin: 0;
 }
 
 /* Link Styles - Make links clearly clickable */
@@ -249,4 +277,50 @@ html {
 
 .affiliate-btn {
   display: none !important;
+}
+
+/* User Voice Quote Block - Clear and Distinct */
+.review-quote,
+.prose blockquote.review-quote {
+  display: block !important;
+  position: relative;
+  background: #FAFAFA;
+  border: 1px solid var(--color-border-color);
+  border-radius: 8px;
+  padding: 2.5rem 1.25rem 1rem 1.25rem;
+  margin: 1.5rem 0;
+  font-style: normal;
+  min-height: auto;
+  align-items: unset;
+}
+
+.review-quote::before,
+.prose blockquote.review-quote::before {
+  content: '💬 ユーザーの声';
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px 0 8px 0;
+}
+
+.review-quote p,
+.prose blockquote.review-quote p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--color-text-main);
+}
+
+.review-quote cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--color-text-sub);
+  font-style: normal;
+  text-align: right;
 }

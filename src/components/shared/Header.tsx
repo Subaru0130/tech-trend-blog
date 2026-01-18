@@ -27,7 +27,7 @@ export default function Header() {
                         </div>
                     </a>
                     <nav className="hidden lg:flex items-center gap-8">
-                        <a className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group" href="/rankings/best-wireless-earphones-under-10000">
+                        <a className="text-sm font-bold text-text-sub hover:text-accent transition-colors py-2 relative group" href="/rankings/wireless-earphones-under-10000yen">
                             おすすめランキング
                             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
                         </a>
