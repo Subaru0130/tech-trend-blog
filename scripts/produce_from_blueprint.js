@@ -443,10 +443,18 @@ function cleanProductName(rawName, knownBrand = null) {
 
         console.log(`   📦 Found ${batch.length} candidates. Filtering...`);
 
+        // 1.4 PRE-FILTER: Remove products without Amazon links early
+        // (No point running AI filter on products we can't use)
+        const amazonLinkedBatch = batch.filter(p => p.asin || p.amazonUrl);
+        const noAmazonCount = batch.length - amazonLinkedBatch.length;
+        if (noAmazonCount > 0) {
+            console.log(`   🔗 Amazon Link Filter: ${amazonLinkedBatch.length}/${batch.length} have Amazon links (${noAmazonCount} skipped)`);
+        }
+
         // 1.5 AI Filter: Remove products that don't match article theme
         // (e.g., headphones from earphone search, wired from wireless search)
-        const filteredBatch = await filterProductsWithAI(batch, TARGET_KEYWORD, BLUEPRINT);
-        console.log(`   🤖 AI Filter: ${filteredBatch.length}/${batch.length} passed`);
+        const filteredBatch = await filterProductsWithAI(amazonLinkedBatch, TARGET_KEYWORD, BLUEPRINT);
+        console.log(`   🤖 AI Filter: ${filteredBatch.length}/${amazonLinkedBatch.length} passed`);
 
         // 2. Process Candidates (Amazon Verification & Enrichment)
         for (const candidate of filteredBatch) {
