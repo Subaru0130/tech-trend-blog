@@ -1425,15 +1425,15 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                                         }
                                     } else {
                                         console.log(`            ⚠️ Redirect did not reach Amazon: ${finalUrl.slice(0, 50)}...`);
-                                        p.amazonUrl = amazonInfo.url; // Keep Kakaku shop URL as fallback
+                                        // Don't set amazonUrl - we didn't get to Amazon, so no valid link
                                     }
                                 } else {
-                                    console.log(`            ⚠️ No forwarder link found, keeping shop URL`);
-                                    p.amazonUrl = amazonInfo.url;
+                                    console.log(`            ⚠️ No forwarder link found`);
+                                    // Don't set amazonUrl - no valid Amazon link
                                 }
                             } catch (redirectErr) {
                                 console.log(`            ⚠️ Redirect failed: ${redirectErr.message?.slice(0, 30)}`);
-                                p.amazonUrl = amazonInfo.url; // Keep original as fallback
+                                // Don't set amazonUrl on failure - no valid Amazon link
                             }
 
                             // Prefer Amazon page price (accurate) over Kakaku shop list price (truncated)
