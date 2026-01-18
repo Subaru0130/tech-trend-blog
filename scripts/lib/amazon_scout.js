@@ -171,9 +171,10 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
                 const { exec } = require('child_process');
                 const os = require('os');
 
-                // Windows command to start Chrome with remote debugging
+                // Windows command to start Chrome with remote debugging (using default profile for login sessions)
+                const userDataDir = process.env.LOCALAPPDATA ? `${process.env.LOCALAPPDATA}\\\\Google\\\\Chrome\\\\User Data` : '';
                 const chromeCmd = os.platform() === 'win32'
-                    ? 'start chrome --remote-debugging-port=9222 --no-first-run --no-default-browser-check'
+                    ? `start chrome --remote-debugging-port=9222 --no-first-run --no-default-browser-check${userDataDir ? ` --user-data-dir="${userDataDir}"` : ''}`
                     : 'google-chrome --remote-debugging-port=9222 --no-first-run --no-default-browser-check &';
 
                 exec(chromeCmd, (err) => {
