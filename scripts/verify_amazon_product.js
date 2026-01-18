@@ -38,12 +38,86 @@ async function verifyProductOnAmazon(productName) {
         };
     }
 
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
-    });
+    // Try to connect to existing Chrome with remote debugging
+    const http = require('http');
+    let browser;
+    let isRemote = false;
+
+    try {
+        const wsUrl = await new Promise((resolve, reject) => {
+            const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        resolve(json.webSocketDebuggerUrl);
+                    } catch (e) { reject(e); }
+                });
+            });
+            req.on('error', reject);
+            req.setTimeout(2000, () => { req.destroy(); reject(new Error('timeout')); });
+        });
+
+        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+        isRemote = true;
+        console.error("   ✅ Connected to Chrome (remote debugging)");
+    } catch (e) {
+        console.error("   ⚠️ Chrome not available, attempting auto-start...");
+
+        // Try to auto-start Chrome
+        let chromeStarted = false;
+        try {
+            const { exec } = require('child_process');
+            const os = require('os');
+            const chromeCmd = os.platform() === 'win32'
+                ? 'start chrome --remote-debugging-port=9222 --no-first-run --no-default-browser-check'
+                : 'google-chrome --remote-debugging-port=9222 --no-first-run --no-default-browser-check &';
+
+            exec(chromeCmd, () => { });
+
+            // Wait for Chrome to be ready (poll for up to 10 seconds)
+            for (let i = 0; i < 20; i++) {
+                await new Promise(r => setTimeout(r, 500));
+                try {
+                    const wsUrl = await new Promise((resolve, reject) => {
+                        const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                            let data = '';
+                            res.on('data', chunk => data += chunk);
+                            res.on('end', () => {
+                                try {
+                                    const json = JSON.parse(data);
+                                    resolve(json.webSocketDebuggerUrl);
+                                } catch (e) { reject(e); }
+                            });
+                        });
+                        req.on('error', reject);
+                        req.setTimeout(1000, () => { req.destroy(); reject(new Error('timeout')); });
+                    });
+
+                    browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+                    isRemote = true;
+                    chromeStarted = true;
+                    console.error("   ✅ Connected to auto-started Chrome");
+                    break;
+                } catch (pollErr) { /* still waiting */ }
+            }
+        } catch (startErr) { /* auto-start failed */ }
+
+        // Final fallback: headless browser
+        if (!chromeStarted) {
+            console.error("   🔄 Falling back to headless browser...");
+            browser = await puppeteer.launch({
+                headless: "new",
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
+            });
+        }
+    }
+
     const page = await browser.newPage();
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+    if (!isRemote) {
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+    }
 
     try {
 
