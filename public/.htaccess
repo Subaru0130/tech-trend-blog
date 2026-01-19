@@ -1,12 +1,10 @@
-Options -MultiViews
-RewriteEngine On
-RewriteBase /
 
-# Handle encoded URLs
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} !.*\.(css|js|svg|png|jpg|jpeg|gif|ico|woff|woff2)$
-RewriteRule ^(.*)$ /$1/index.html [L]
+# Force HTTPS
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
 
-# Ensure proper UTF-8 handling
-AddDefaultCharset UTF-8
+# Custom Error Pages (Optional, good for Xserver)
+ErrorDocument 404 /404.html

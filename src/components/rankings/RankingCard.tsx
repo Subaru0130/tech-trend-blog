@@ -15,7 +15,7 @@ export default function RankingCard({ product }: RankingCardProps) {
     const rankTextColorClass = isRank1 ? 'text-rank-gold' : product.rank === 2 ? 'text-rank-silver' : 'text-rank-bronze';
 
     // Use centralized helper
-    const amazonLink = getAmazonLink(product.asin, product.affiliateLinks?.amazon);
+    const amazonLink = getAmazonLink(product.asin, product.affiliateLinks?.amazon, product.id);
 
     return (
         <article className="scroll-mt-28" id={`rank-${product.rank}`}>
@@ -63,7 +63,7 @@ export default function RankingCard({ product }: RankingCardProps) {
                                                     </span>
                                                 ))}
                                             </div>
-                                            <span className="text-xl font-black text-primary">{displayRating.toFixed(2)}</span>
+                                            <span className="text-xl font-black text-primary">{displayRating.toFixed(1)}</span>
                                         </>
                                     );
                                 })()}

@@ -38,9 +38,10 @@ async function generateSeoMetadata(keyword, productName = null) {
 
     const prompt = `
 # Role
-**Pro Tech Blogger & Copywriter**
+**Tech Market Researcher & Data Analyst**
 Generate a "High CTR" Title and Meta Description for a Japanese Tech Blog.
 ${context}
+**STRICT RULE**: Do NOT claim to be a "pro blogger" or "expert". Do NOT lie about owning the product. Focus on "What the data/specs say".
 
 # 【重要】Before/After例（これを絶対守れ）
 
@@ -111,6 +112,8 @@ async function generateBuyingGuideBody(keyword, topProducts, intentData = null) 
 - **Price**: ${p.price || "N/A"}
 - **Rating (Score)**: ${p.calculatedRating || 4.0} / 5.0 (Theme Score: ${p.themeScore || 5}/10)
 - **Specs**: ${specsStr}
+- **[Verified] Spec Reality**: ${p.specVerification || "Analyzing..."}
+- **[Verified] Best Scenario**: ${p.userScenario || "Analyzing..."}
 - **Pros**: ${prosStr}
 - **Cons**: ${consStr}
 - **Amazon Link**: ${link}
@@ -127,14 +130,17 @@ async function generateBuyingGuideBody(keyword, topProducts, intentData = null) 
     // Use Blueprint data or fallback
     const ctx = {
         target_reader: intentData?.target_reader || defaultContext.target_reader,
+        target_reader_situation: intentData?.user_demographics?.situation || "あなたの日常",
         comparison_axis: intentData?.comparison_axis || defaultContext.comparison_axis,
         sales_hook: intentData?.sales_hook || defaultContext.sales_hook
     };
 
     const prompt = `
 # Role
-あなたは、日本のNo.1アフィリエイトメディア「マイベスト」のような**SEO最強の長文レビュー記事**を書くSEO歴40年の専門ライターです。
-Google検索で上位表示されるために、E-E-A-T（経験・専門性・権威性・信頼性）を意識した上でAIっぽくない文章を記事を書いてください。
+あなたは、情報過多で「何を買えばいいかわからない」と迷っている読者のために、**膨大な口コミとスペックを分析してくれる「徹底的なリサーチャー（分析官）」**です。
+重要な事実: **あなたはこの製品を所有していません。** したがって「実際に使った」という嘘は絶対につかないでください。
+代わりに「数百件のレビューを分析した結果」という**客観的なデータアナリストの視点**で、論理的に信頼性を獲得してください。
+「専門家」や「プロ」という言葉は絶対に使わず、「調査の結果」「データによると」という言葉で語ってください。
 
 # Blueprint（購買意図）データ
 このデータに基づいて、ターゲット読者に「刺さる」記事を書いてください：
@@ -155,10 +161,10 @@ ${productListString}
    - ❌ 「失敗したくない」という方にも → 失敗を避けたい方にも
    - ❌ 「コスパ最強」と言われる → コスパ最強と評価される
 6. **マーカー強調のルール**:
-   - **単語ではなく、読者に伝えたい「文章・フレーズ」** に <mark>...</mark> タグを使用してください。
-   - 1段落に1箇所程度に抑える（多用すると逆効果）
+   - **読者に伝えたい重要な「文章・フレーズ」** に <mark>...</mark> タグを使用してください。
+   - **1段落に1〜2箇所程度**（重要なメリットや注意点は積極的にマーカーを引く）
    - ❌ 悪い例：<mark>ノイズキャンセリング</mark>が優秀です → 単語だけで意味が薄い
-   - ⭕️ 良い例：<mark>電車の走行音がほぼ聞こえなくなる</mark>ほど強力 → 読者に刺さるフレーズ
+   - ⭕️ 良い例：口コミでも<mark>電車の走行音がほぼ聞こえなくなる</mark>と評判 → 読者に刺さるフレーズ
    - アスタリスク（**）による太字は禁止。使わないでください。
 
 # 【最重要】Before/After例で覚えろ（これを絶対守れ）
@@ -171,7 +177,7 @@ ${productListString}
 ⭕️ 「iPhoneからMacに切り替えるとき一瞬。地味に助かる」
 
 ❌ 「ノイズキャンセリングが極めて自然で、快適な静寂空間を提供します」
-⭕️ 「電車のガタンゴトンがスッと消える。これだけで買う価値ある」
+⭕️ 「口コミでも『電車の走行音が消える』という声が圧倒的多数。静寂性は本物」
 
 ❌ 「毎日の通勤や通学、あるいはカフェでの勉強中、周囲の騒音を消して自分だけの世界に没頭したい」
 ⭕️ 「電車で音楽に集中したい。それだけ」
@@ -207,10 +213,12 @@ ${productListString}
 **見出し例**: 「## 失敗しない選び方とは？」「## 本当に買うべきモデルはどれ？」
 
 ### 書くべき内容（詳しく書く）:
-1. **読者の悩みへの共感**（2-3段落）
-   - 「${ctx.target_reader}」が抱える具体的な悩みを断定的に言語化する
-   - 問いかけ形式ではなく、事実として述べる（例：「多くの人が〜で困っている」）
-   - なぜこの悩みが解決されにくいのか、その理由
+1. **読者の悩みへの共感（戦略的ターゲットへの直球）**（2-3段落）
+   - 冒頭の1文目で、**${ctx.target_reader}** が抱える「共通の悩み（ペイン）」を言い当てる。
+   - ❌ 禁止: 「最近人気ですね」のような一般論。
+   - ❌ 禁止: 「英会話教材が聞こえない」のような**過度な限定**（ブループリントで指定がない限り）。
+   - ⭕️ 推奨: 「毎朝の地下鉄の轟音。せっかくの自分の時間が台無しになっていませんか？」（多くの人に刺さる表現）
+   - その状況でなぜ従来の製品では満足できないのかを指摘する。
 
 2. **この記事の価値**（1-2段落）
    - 「${ctx.sales_hook}」を読者への約束として提示
@@ -219,25 +227,24 @@ ${productListString}
 ---
 
 ## セクション2: 検証ポイント（E-E-A-T強化セクション）
-**見出し**: 「## 今回の検証ポイント」
+**見出し**: 「## 今回の比較ポイント」
 
-### 【重要】E-E-A-T対策として以下を必ず含める:
+### 【重要】E-E-A-T対策（正直な分析者としてのスタンス）:
 
 **Experience（経験）**: 
-- 「実際に〇〇で使ってみた結果」という一人称の体験談風の記述
-- 「1週間使い続けてわかったこと」のような継続使用の知見
+- ❌ 「実際に使ってみた」「プロの私から見て」という嘘は禁止。
+- ⭕️ **「[Verified] Spec Reality」**や**「[Verified] Best Scenario」**の情報を引用し、「データ上はこうだが、実際はこう」という**「分析結果」**を提示する。
+- 「膨大な口コミを分析してわかったこと」という**「データに基づいた知見」**を書く。
+- 「多くのユーザーが〜と言っている」「特に〜という意見が目立つ」という形式で書く。
 
 **Expertise（専門性）**:
-- 専門用語を使う場合は必ずカッコ内で初心者向けに解説
-- 「なぜこの数値が重要なのか」の理由を説明
+- 肩書きで語らず、**知識の深さ**で語る。
+- 専門用語を使う場合は必ずカッコ内で初心者向けに解説。
+- 「なぜこの数値が重要なのか」の理由を説明することで信頼を得る。
 
 **Authoritativeness（権威性）**:
-- 具体的な数値・データを可能な限り入れる（例：「〇〇dBの騒音が体感で半分以下になった」）
-- メーカー公称値ではなく「実測値」「体感値」を強調
-
-**Trustworthiness（信頼性）**:
-- デメリットや限界も正直に書く
-- 「〇〇の場合はおすすめしない」という明確な線引き
+- 「専門家のおすすめ」ではなく「徹底的な比較の結果」として権威性を出す。
+- 「AとBを比較すると、Aの方が〜に向いている」という論理的な比較を行う。
 
 ### 書くべき内容:
 「${ctx.comparison_axis}」を基に、3-5個の検証ポイントを**各ポイント5-8段落**で詳しく解説。
@@ -245,7 +252,7 @@ ${productListString}
 各ポイントについて:
 1. **このポイントが重要な理由**（なぜチェックすべきか）
 2. **専門用語の解説**（初心者でもわかるように）
-3. **実際に検証してわかったこと**（体験談風に）
+3. **口コミ分析でわかったこと**（分析結果として）
 4. **合格ラインの目安**（具体的な数値や基準）
 5. **よくある勘違い・落とし穴**
 
@@ -273,7 +280,7 @@ ${productListString}
    - 「〇〇だと思って買ったら△△だった」形式で具体的に
    - それぞれの回避法を明記
 
-3. **プロからのアドバイス**（2-3段落）
+3. **選び方のワンポイント**（2-3段落）
    - 「迷ったらこう選べ」という明確な指針
    - スペック比較だけでは見えない選び方のコツ
 
@@ -315,7 +322,46 @@ ${productListString}
 />
 \`\`\`
 
-(2位〜5位も同様に作成)
+### 【重要】ランキング直後の「360°徹底分析パート」
+**RankingCardの直後に、以下の3つの視点から詳細な分析を必ず書いてください。**
+ここでは「単なるスペック紹介」ではなく、「ターゲットにとってどう役立つか」と「膨大なデータのメタ分析」を提供します。
+
+**視点1: 🌅 生活変革アングル (Situation Fit)**
+- **見出し**: \`#### 🌅 【生活が変わる】${ctx.target_reader_situation}での使い心地\`
+- **内容**: ターゲット読者の具体的なシチュエーション（例：満員電車、カフェ作業）において、この製品がどう役立つかを具体的に描写する。
+- **書き方**: 「物理ボタンだから手袋をしたまま操作できる」など、スペックが生活に与えるメリットを書く。
+
+**視点2: 🆚 ライバル比較アングル (Competitor Checkmate)**
+- **見出し**: \`#### 🆚 【ライバル比較】同価格帯の定番機と比べて\`
+- **内容**: なぜ競合製品（同価格帯の有名モデル）ではなく、これを選ぶべきか？
+- **書き方**: 「定番のモデルYは低音重視だが、こちらはボーカルがクリア。${ctx.target_reader}の用途（例：語学学習）にはこちらが正解」と断言する。
+
+**視点3: 📊 データ分析アングル (Data-Driven Deep Knowledge)**
+- **見出し**: \`#### 📊 【データ分析】1,000件のレビューから判明した事実\`
+- **内容**: 「一人の感想」ではなく、「AIによる網羅的なデータ分析結果」を提示する。
+- **書き方（厳守）**:
+    - ❌ 「私が使ってみたら〜」（個人の体験談を捏造しない）
+    - ⭕️ 「専門家は音質を絶賛しているが、**長期使用者のレビューの約3割**が『ヒンジの緩み』を指摘している。耐久性重視なら注意が必要」
+    - ⭕️ 「この価格帯でこのドライバー素材を採用しているのは、過去5年の市場データを見ても異例」
+    - ※スペックや価格から論理的に導き出せる事実、または一般的なレビュー傾向の分析のみを書く。嘘は書かない。
+
+**視点4: 🗣️ ユーザーの本音 (Review Synthesis)**
+- **見出し**: \`#### 🗣️ ユーザーの「本音」を分析\`
+- **内容**: データ分析アングルで触れた以外の、具体的な口コミパターンを紹介。
+
+**視点5: ⚠️ 致命的な欠点 (Deal Breaker)**
+- **見出し**: \`⚠️ ここは注意が必要\`
+- **書き出し**: 必ず「以下の条件に当てはまる人は注意が必要です。」から始めてください。
+- **内容**: **この記事のテーマ（${ctx.sales_hook}）や比較軸（${ctx.comparison_axis}）と照らし合わせて**、「こういう人は注意が必要」という条件を明確にする。
+- **書き方（厳守）**: 
+    - 編集部としての「良心」を示す最重要パート。メーカーへの忖度は禁止。
+    - 編集部としての「良心」を示す最重要パート。メーカーへの忖度は禁止。
+    - ❌ 「少し高いかも」
+    - ⭕️ 「『最強ノイキャン』を探しているなら、この機種の強度は中程度なので**満足できない**可能性が高い」
+    - ⭕️ 「耳の穴が小さい人には**物理的に入らない**可能性がある」「遅延が0.2秒あるため、**FPSゲーマーは絶対に勝てない**」
+    - ⭕️ 「iPhoneユーザーは機能の半分が使えない。AirPodsを買うべき」
+
+(2位〜5位も同様に、この詳細な分析ブロックを作成してください)
 
 ### ランキング直後の比較表
 ランキングの直後に、以下の比較表コンポーネントを配置してください。
@@ -360,7 +406,7 @@ ${productListString}
 1. **タイプ別のおすすめ**（3-5パターン）
 
    **【マーカー強調のルール（絶対厳守）】**:
-   - **単語ではなく、読者に伝えたい「文章・フレーズ」** 全体を <mark>...</mark> タグで囲ってください。
+   - **読者に伝えたい「文章・フレーズ」** 全体を <mark>...</mark> タグで囲ってください。
    - ❌ 悪い例：<mark>ノイズキャンセリング</mark>が優秀です
    - ⭕️ 良い例：<mark>電車の走行音がほぼ聞こえなくなる</mark>ほど強力、<mark>iPhoneとの連携を最重視するなら</mark>これがベスト
 
@@ -404,7 +450,8 @@ ${productListString}
 - 箇条書きと文章を適度に混ぜる
 
 # トーン
-- **権威性**: 実際に検証した専門家として語る
+- **権威性**: 「専門家」としてではなく、「徹底的に調べたオタク/リサーチャー」として語る
+- **正直さ**: 持っていないものは持っていない前提で、スペックと口コミから推測する
 - **共感**: 読者の悩みを否定せず受け止める
 - **具体性**: 数字や具体例を多用する
 
@@ -656,14 +703,18 @@ ${amazonNegative || kakakuNegative || '（情報なし）'}`;
 
     const prompt = `
 # Role
-**ガジェットのプロ検証人**
-この製品を「${reviewContext}」という観点で、プロの視点から正直にレビューしてください。
-決してメーカーの提灯記事にはならず、読者の利益（失敗したくない）を最優先してください。
+**徹底的な製品リサーチャー・分析官**
+この製品を「${reviewContext}」という観点で、**膨大なユーザー口コミとスペックに基づき**分析・評価してください。
+重要な事実: **あなたは製品を所有していません。** 「実際に使った」「手触りは〜だった」という嘘は絶対につかないでください。
+「口コミでは〜という声が多い」「スペック上は〜」という客観的な事実に基づき、論理的に解説してください。
+「プロも認める」「専門家推奨」といった権威付けの嘘も禁止です。読者の利益（失敗したくない）を最優先してください。
 
 # Product Information
 - Name: ${product.name}
 - Amazon Link: ${amazonLink} (本記事の収益化用リンク)
 - Official Specs: ${specsText}
+- [Verified] Spec Analysis (Reality Check): ${product.specVerification || "Analyzing..."}
+- [Verified] Best User Scenarios: ${product.userScenario || "Analyzing..."}
 - Real Scraped Features(Amazon):
 ${realFeaturesText}
 - Scraped Technical Specs:
@@ -672,6 +723,8 @@ ${realSpecsText}
 ${product.externalContext || "No external context available. Rely on specs and general knowledge."}
 - Comparison Target: ${competitorName} (主な比較ベンチマークとして使用。ただし、同価格帯の他の競合製品との比較も歓迎します)
 ${reviewsContext}
+- AI Evaluated Grades (CONSISTENCY REQUIRED):
+${product.specs && product.specs.length > 0 ? product.specs.map(s => `  - ${s.label}: ${s.value}`).join('\n') : "  - (No pre-evaluations available)"}
 
 # 想定読者
 ${targetReader}
@@ -689,13 +742,19 @@ ${targetReader}
     - ❌ 禁止: 「人生が変わる」「幸せになれる」「最高の一台」といった過剰で抽象的なAI特有の表現。
     - ⭕️ 推奨: 「${reviewContext}の観点でスペックとユーザー評価を徹底分析しました。」「結論から言うと、○○が優秀です。」
 - **文体の指定**:
-    - 「です・ます」調で、淡々と事実を述べる「専門誌のレビュー」のようなトーン。
+    - 「です・ます」調で、淡々と事実を述べる「調査レポート」のようなトーン。
     - 小粋なジョークや詩的な表現は**一切禁止**です。
+    - 「専門家の私が保証します」のような表現は禁止。「データが示しています」としてください。
     - 「〜の方が幸せになれます」といった表現は避け、「〜の方が満足度が高いでしょう」「〜のニーズに適しています」のように客観的に記述してください。
 - **鍵かっこ「」の多用禁止**: 
     - 「〜」形式の引用を多用しない。AIっぽくなるため最小限に。
     - 代わりに、ストレートに述べる。
 - **正直なデメリット**: 「すべてが最高」とは言わず、正直に伝えてください。
+- **評価との整合性（最重要）**:
+    - 上記「AI Evaluated Grades」と矛盾する記述は禁止です。
+    - Grade Sなら「最高クラス」「文句なし」と絶賛してください。
+    - Grade B/Cなら「価格相応」「ここが惜しい」と正直に指摘してください。
+    - 「評価はSだが、実際は微妙」といった記述は論理破綻するため禁止です。
 - **多角的な視点で分析（重要）**:
     - この記事は「筆者の意見だけ」ではなく、**実際の購入者の声も交えた多角的な分析**であることを示してください。
     - 具体的には、自分の評価を述べた後に「実際に使用しているユーザーからも同様の声が多い」「一方でこんな意見もある」という形で引用を挿入します。
@@ -727,10 +786,13 @@ ${targetReader}
 ⭕️ 「iPhoneからMacに切り替えるとき一瞬。地味に助かる」
 
 ❌ 「ノイズキャンセリングが極めて自然で、快適な静寂空間を提供します」
-⭕️ 「電車のガタンゴトンがスッと消える。これだけで買う価値ある」
+⭕️ 「電車のガタンゴトンがスッと消える。これだけで買う価値ある（Audio）」
+⭕️ 「3時間座ってても腰が痛くならない。在宅ワークの救世主（Furniture）」
+⭕️ 「猫の毛がカーペットから一発で取れる（Appliance）」
 
 ❌ 「人によっては長時間の使用で〜と感じる場合があるかもしれません」
-⭕️ 「2時間超えると耳痛い人もいる」
+⭕️ 「2時間超えると耳痛い人もいる（Audio）」
+⭕️ 「組み立てのネジが硬すぎて電動ドライバー必須（Furniture）」
 
 ❌ 「〜のため注意が必要です」「〜は要検討です」
 ⭕️ 「〜なのは正直マイナス」「〜は好み分かれる」
@@ -741,7 +803,7 @@ ${targetReader}
 # 追加ルール
 - 1文は30文字以内。長くなったら切れ。同じ語尾を3回続けるな
 - 体言止め「〜だ」OK。全部「〜です」で終わらせるな
-- **マーカー**: 単語ではなくフレーズに<mark>。1段落に1箇所まで
+- **マーカー**: 単語ではなくフレーズに<mark>。1段落に1〜2箇所（重要なポイントは逃さず引く）
 
 # Review Structure(Markdown)
 （導入文：${reviewContext}の観点でスペックとユーザー評価を徹底分析しました。結論から言うと…で始める）
@@ -754,6 +816,17 @@ ${targetReader}
    - この製品の立ち位置は？どういうニーズに応えるか？
    - 同価格帯の他製品と比べて何が優れているか/劣っているか？
    - **特定の1製品との比較にこだわらず**、読者のニーズ別に柔軟に言及。
+
+## ⚠️ 致命的な欠点 (Deal Breaker)
+   - **見出し**: \`### ⚠️ ここは注意が必要\`
+   - **書き出し**: 必ず「以下の条件に当てはまる人は注意が必要です。」から始めてください。
+   - **内容**: **この記事のテーマ（${reviewContext}）やターゲット（${targetReader}）と照らし合わせて**、「こういう人は注意が必要」という条件を明確にする。
+   - **書き方（厳守）**: 
+     - 編集部としての「良心」を示す最重要パート。メーカーへの忖度は禁止。
+     - ❌ 「少し高いかも」
+     - ⭕️ 「『最強ノイキャン』を探しているなら、この機種の強度は中程度なので**満足できない**可能性が高い」
+     - ⭕️ 「耳の穴が小さい人には**物理的に入らない**可能性がある」「遅延が0.2秒あるため、**FPSゲーマーは絶対に勝てない**」
+     - ⭕️ 「iPhoneユーザーは機能の半分が使えない。AirPodsを買うべき」
 
 ## まとめ
    読者のタイプ別におすすめを提案してください。
@@ -936,11 +1009,12 @@ async function generateBlogThumbnail(keyword) {
  * Generate Structured Specs & Pros/Cons for a Product
  * NOW: First tries to scrape real specs from Amazon, then uses AI to analyze them
  * @param {string} productName - Product name
- * @param {string} contextData - Additional context
  * @param {string} asin - Optional Amazon ASIN for direct spec lookup
  * @param {string} externalSpecContext - Optional fallback specs from web search
+ * @param {Array} targetLabels - Labels for spec comparison
+ * @param {Object} rawReviews - Real scraped reviews (Amazon/Kakaku)
  */
-async function generateProductSpecsAndProsCons(productInput, contextData, asin = null, externalSpecContext = null, targetLabels = null) {
+async function generateProductSpecsAndProsCons(productInput, contextData, asin = null, externalSpecContext = null, targetLabels = null, rawReviews = null) {
     if (!client) throw new Error("Gemini Client not initialized");
 
     const productName = typeof productInput === 'string' ? productInput : productInput.name;
@@ -982,6 +1056,31 @@ async function generateProductSpecsAndProsCons(productInput, contextData, asin =
         ? `\n【Web検索等の外部スペック情報（Official Fallback）】:\n${externalSpecContext}`
         : '';
 
+    // --- REAL REVIEW INTEGRATION ---
+    let reviewContext = "";
+    if (rawReviews) {
+        const azPos = rawReviews.positive?.slice(0, 4).map(r => `[Amazon Good] ${r.text.slice(0, 100)}`).join('\n') || "";
+        const azNeg = rawReviews.negative?.slice(0, 3).map(r => `[Amazon Bad] ${r.text.slice(0, 100)}`).join('\n') || "";
+
+        let kkPos = "", kkNeg = "";
+        if (rawReviews.kakaku) {
+            kkPos = rawReviews.kakaku.positive?.slice(0, 4).map(r => `[Kakaku Good] ${r.text.slice(0, 100)}`).join('\n') || "";
+            kkNeg = rawReviews.kakaku.negative?.slice(0, 3).map(r => `[Kakaku Bad] ${r.text.slice(0, 100)}`).join('\n') || "";
+        }
+
+        if (azPos || azNeg || kkPos || kkNeg) {
+            reviewContext = `
+# Real Scraped Reviews (CRITICAL SOURCE FOR PROS/CONS)
+The following are ACTUAL USER REVIEWS. Use these specific phrases and pain points for your "Pros" and "Cons".
+DO NOT HALLUCINATE. If a specific complaint exists here (e.g. "slippery case"), YOU MUST USE IT.
+
+${azPos}
+${kkPos}
+${azNeg}
+${kkNeg}
+`;
+        }
+    }
 
     // Combine contexts for the prompt
     const specContext = [realDataContext, realSpecContext, fallbackContext].filter(Boolean).join('\n');
@@ -996,6 +1095,7 @@ Analyze the product "${productName}" and the provided context to extract structu
 ${realDataContext}
 ${realSpecContext}
 ${fallbackContext}
+${reviewContext}
 
 追加コンテキスト: ${contextData}
 
@@ -1003,27 +1103,33 @@ ${fallbackContext}
 Generate a JSON object containing:
 
 ## 1. Pros (メリット3つ)
-友達にLINEで勧める口調で書く。レビュー記事っぽさを消せ。
+**SOURCE RULE**: You MUST generate these based on the "# Real Scraped Reviews" provided above. If reviews mention specific benefits, use them.
+簡潔かつ具体的なメリットとして書く。友達口調や「〜だよ」は禁止。「〜できる」「〜なので快適」など、機能的価値を端的に伝える。レビュー記事っぽさは消すが、馴れ馴れしくはしない。
 
 ❌ AIっぽい（書くな）→ ⭕️ 人間っぽい（書け）
 
 ❌ 「ノイズキャンセリングが極めて自然で、快適な静寂空間を提供」
-⭕️ 「電車のガタンゴトンがスッと消える」
+⭕️ 「電車の揺れの音が消える（Audio）」
+
+❌ 「人間工学に基づいたデザインで快適な座り心地」
+⭕️ 「3時間座ってても腰が痛くならない（Furniture）」
+
+❌ 「強力な吸引力で微細なゴミも逃さない」
+⭕️ 「猫の毛がカーペットから一発で取れる（Appliance）」
 
 ❌ 「接続がスムーズで快適」
-⭕️ 「ケースから出した瞬間につながる。毎朝ラク」
-
-❌ 「バッテリー持続時間が長く安心」
-⭕️ 「8時間持つから出張でも充電不要」
+⭕️ 「ケースから出した瞬間につながるので、ストレスフリー」
 
 ## 2. Cons (デメリット2つ)
+**SOURCE RULE**: You MUST generate these based on the "# Real Scraped Reviews" provided above. If users complain about "heavy case" or "bad fit", USE THAT.
 フォロー禁止。「〜だが問題ない」は絶対ダメ。
 
 ❌ AIっぽい: 「人によっては長時間の使用で圧迫感を感じる場合があるかもしれません」
-⭕️ 人間っぽい: 「2時間超えると耳痛い人もいる」
+⭕️ 人間っぽい: 「2時間超えると耳に痛みを感じる人もいるので注意が必要（Audio）」
 
-❌ AIっぽい: 「〜のため注意が必要です」
-⭕️ 人間っぽい: 「〜なのは正直マイナス」
+❌ AIっぽい: 「組み立てには多少の力が必要な場合があります」
+⭕️ 「ネジが硬すぎて電動ドライバー必須（Furniture）」
+
 
 禁止項目: 初期不良、サポート、保証、配送、価格、リセール
 
@@ -1136,7 +1242,7 @@ ${specContext}
     console.log(`  🤖 generating Specs/Pros/Cons for "${productName}"...`);
     try {
         const response = await client.models.generateContent({
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-3-pro-preview',
             contents: [{ role: 'user', parts: [{ text: prompt }] }],
             generationConfig: { responseMimeType: "application/json" }
         });
@@ -1200,69 +1306,49 @@ async function analyzeReviewsForInsights(productName, reviews, comparisonAxis = 
 
     const prompt = `
 # Role
-あなたは「レビュー分析の専門家」です。実際のレビューデータを解析し、メリット/デメリットを生成してください。
+あなたは「製品検証のアナリスト」です。ユーザーレビューの生データを分析し、スペック表には載らない「実態」を暴き出してください。
+「書いてあることをまとめる」のではなく、「行間を読み解き、真実を判定する」のがあなたの仕事です。
 
 # 商品名
 ${productName}
 
-# 評価軸
-${comparisonAxis || '基本スペック'}
+# 評価軸（分析の重点）
+${comparisonAxis || '基本性能・実際の使い勝手'}
 
-# 高評価レビュー（4-5星）
-${positiveText || '(なし)'}
+# 高評価レビュー（検証の証拠：Positive）
+${positiveText || '(データなし)'}
 
-# 低評価レビュー（1-3星）
-${negativeText || '(なし)'}
+# 低評価レビュー（検証の証拠：Negative）
+${negativeText || '(データなし)'}
 
-# 生成内容
+# 分析タスク
+以下の4つの視点でレビューを徹底的に分析し、JSONで出力してください。
 
-## 【重要】文体の方針
-あなたは友達にLINEで製品を勧めている口調で書く。「レビュー記事っぽさ」を消せ。
+## 1. specVerification（スペックと実態の乖離検証）
+メーカー公称値（スペック）とユーザーの実感にズレがないか判定してください。
+特に「バッテリー持ち」「静寂性（ノイキャン）」「装着感」について、ユーザーがあえて言及している「本音」を探してください。
+例: 「公称8時間だが、ノイキャンONだと実質5時間程度」
+例: 「『重低音』とあるが、実際はかなりフラットで聞きやすい」
 
-### Before/After例（これを絶対守れ）
+## 2. userScenario（具体的な利用シーンの発見）
+「どんな状況で」「誰が」使った時に真価を発揮しているか、または失敗しているか特定してください。
+例: 「満員電車では途切れるが、カフェで作業する分には完璧」
+例: 「ランニング用としては、タッチノイズがひどくて不向き」
 
-❌ AIっぽい（書くな）: 「接続の切り替えが魔法のようにスムーズです」
-⭕️ 人間っぽい（書け）: 「iPhoneからMacに切り替えるとき一瞬。地味に助かる」
+## 3. editorComment（プロの推奨・結論）
+上記分析を踏まえた、あなた自身の「結論」を50文字以内で。
+単なる要約ではなく、「買いかどうか」「誰にすすめるか」をズバリ言い切る。
+文体: 専門家が友人にアドバイスするような、信頼感がありつつもフランクな口調（〜だ、〜だろう）。
 
-❌ AIっぽい: 「ノイズキャンセリングが極めて自然で、快適な静寂空間を提供します」
-⭕️ 人間っぽい: 「電車のガタンゴトンがスッと消える。これだけで買う価値ある」
+## 4. enhancedPros / enhancedCons（深掘りメリット・デメリット）
+- 具体的な「体験」に基づく記述にする（抽象的な形容詞は禁止）。
+- メリット: 「〜できる」「〜が変わる」という生活の変化。
+- デメリット: 「〜なのは痛い」「〜には向かない」という具体的な制約。
 
-❌ AIっぽい: 「人によっては長時間の使用で圧迫感を感じる場合があるかもしれません」
-⭕️ 人間っぽい: 「2時間くらいで耳が痛くなる人もいる。自分は平気だったけど」
-
-❌ AIっぽい: 「移動時間が集中できる静寂空間に早変わりします」
-⭕️ 人間っぽい: 「通勤中に本読めるようになった。これがでかい」
-
-❌ AIっぽい: 「〜のため注意が必要です」
-⭕️ 人間っぽい: 「〜なのは正直マイナス」「〜は好み分かれる」
-
-## 1. editorComment（編集部コメント）
-- 体言止めか、カジュアルな「〜だ」で終わる
-- 50文字以内
-
-例: 「電車の騒音カットが評判。通勤メインならこれ一択かも」
-
-## 2. enhancedPros（強化されたメリット）3つ
-- 具体的な場面（電車で、カフェで、会議中）を必ず入れる
-- 形容詞（すごい、快適、自然）ではなく動詞で書く（消える、つながる、持つ）
-- 体言止めOK
-
-例:
-- 「電車のガタンゴトンがスッと消える」
-- 「ケースから出した瞬間にiPhoneとつながる。毎朝ラク」
-- 「8時間持つから出張でも充電不要」
-
-## 3. enhancedCons（強化されたデメリット）2つ
-- フォロー禁止（「〜だが問題ない」は絶対ダメ）
-- 「正直」「ぶっちゃけ」などカジュアルワードOK
-- 文末は「〜なのはマイナス」「〜は人を選ぶ」
-
-例:
-- 「2時間超えると耳が痛くなる人もいる」
-- 「ケースがデカくてポケットに入らないのは正直マイナス」
-
-# 出力JSON
+# 出力JSON形式
 {
+  "specVerification": "...",
+  "userScenario": "...",
   "editorComment": "...",
   "enhancedPros": ["...", "...", "..."],
   "enhancedCons": ["...", "..."]
@@ -1354,7 +1440,7 @@ ${rawNames}
     try {
         console.log(`   🤖 Normalizing ${products.length} product names with AI...`);
         const response = await client.models.generateContent({
-            model: 'gemini-2.0-flash',
+            model: 'gemini-3-pro-preview',
             contents: prompt
         });
 

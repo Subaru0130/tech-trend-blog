@@ -29,7 +29,7 @@ const Hero: React.FC = () => {
                         </h2>
                         <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium">
                             後悔しない家電選びのために。<br className="md:hidden" />
-                            専門家の徹底比較とユーザーの本音レビューで、<br className="hidden md:inline" />あなたにぴったりの製品が見つかります。
+                            詳細なスペック比較とユーザーの本音レビューで、<br className="hidden md:inline" />あなたにぴったりの製品が見つかります。
                         </p>
                         <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
                             <a className="group bg-primary hover:bg-primary-hover text-white font-bold py-4 px-10 rounded-full shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3" href="#ranking">

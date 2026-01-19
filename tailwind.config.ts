@@ -33,7 +33,7 @@ const config: Config = {
                 "cons-text": "#C62828",
             },
             fontFamily: {
-                "sans": ["Manrope", "Noto Sans JP", "sans-serif"], // Fixed order
+                "sans": ["var(--font-manrope)", "var(--font-noto-sans-jp)", "sans-serif"], // Fixed order
             },
             boxShadow: {
                 "soft": "0 4px 20px -2px rgba(62, 59, 56, 0.04), 0 0 0 1px rgba(0,0,0,0.02)",

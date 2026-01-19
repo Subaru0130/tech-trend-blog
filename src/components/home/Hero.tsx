@@ -37,11 +37,11 @@ export default function Hero() {
                         <div className="mt-12 pt-8 border-t border-border-color flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
                             <div className="flex items-center gap-2">
                                 <span className="material-symbols-outlined text-[20px] text-accent">check_circle</span>
-                                <span className="text-sm font-bold text-text-sub">徹底した実機検証</span>
+                                <span className="text-sm font-bold text-text-sub">徹底したスペック分析</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <span className="material-symbols-outlined text-[20px] text-accent">check_circle</span>
-                                <span className="text-sm font-bold text-text-sub">専門家による執筆</span>
+                                <span className="text-sm font-bold text-text-sub">専門的なデータ分析</span>
                             </div>
                             {/* Daily Updated Removed */}
                         </div>
@@ -51,7 +51,7 @@ export default function Hero() {
                             <div className="bg-white rounded-[2rem] p-3 md:p-4 shadow-float border border-white ring-1 ring-stone-100 transform transition-transform duration-500 hover:rotate-1">
                                 <Link href="/rankings/wireless-earphones-noise-cancelling" className="block aspect-[5/4] rounded-[1.5rem] overflow-hidden relative group bg-surface-subtle">
                                     {/* Use Earphone image as Hero for existing content */}
-                                    <img alt="Best Buy Wireless Earphones" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="/images/articles/ワイヤレスイヤホン_おすすめ_ノイズキャンセリング.jpg" />
+                                    <img alt="Best Buy Wireless Earphones" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="/images/articles/wireless-earphones-ranking-nc.jpg" />
                                     <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6">
                                         <div className="bg-white/95 backdrop-blur-md shadow-lg rounded-2xl p-5 border border-white/50 ring-1 ring-black/5">
                                             <div className="flex items-start justify-between mb-3">

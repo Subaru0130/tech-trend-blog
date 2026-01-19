@@ -220,16 +220,48 @@ export default async function RankingPage({ params }: Props) {
                     <script
                         type="application/ld+json"
                         dangerouslySetInnerHTML={{
-                            __html: JSON.stringify({
-                                "@context": "https://schema.org",
-                                "@type": "ItemList",
-                                "itemListElement": rankingItems.map((item, index) => ({
-                                    "@type": "ListItem",
-                                    "position": index + 1,
-                                    "url": `https://choiceguide.jp/reviews/${item.productId}`,
-                                    "name": getProductById(item.productId)?.name || item.productId
-                                }))
-                            })
+                            __html: JSON.stringify([
+                                {
+                                    "@context": "https://schema.org",
+                                    "@type": "ItemList",
+                                    "itemListElement": rankingItems.map((item, index) => ({
+                                        "@type": "ListItem",
+                                        "position": index + 1,
+                                        "url": `https://choiceguide.jp/reviews/${item.productId}`,
+                                        "name": getProductById(item.productId)?.name || item.productId
+                                    }))
+                                },
+                                {
+                                    "@context": "https://schema.org",
+                                    "@type": "BreadcrumbList",
+                                    "itemListElement": [
+                                        {
+                                            "@type": "ListItem",
+                                            "position": 1,
+                                            "name": "ホーム",
+                                            "item": "https://choiceguide.jp"
+                                        },
+                                        {
+                                            "@type": "ListItem",
+                                            "position": 2,
+                                            "name": "カテゴリ",
+                                            "item": "https://choiceguide.jp/categories"
+                                        },
+                                        {
+                                            "@type": "ListItem",
+                                            "position": 3,
+                                            "name": article.categoryId === 'audio' ? 'オーディオ' : (article.categoryId === 'gadget' ? 'ガジェット' : (article.categoryId === 'home-appliances' ? '生活家電' : 'その他')),
+                                            "item": `https://choiceguide.jp/categories/${article.categoryId}`
+                                        },
+                                        {
+                                            "@type": "ListItem",
+                                            "position": 4,
+                                            "name": article.title,
+                                            "item": `https://choiceguide.jp/rankings/${slug}`
+                                        }
+                                    ]
+                                }
+                            ])
                         }}
                     />
                     <div className="max-w-4xl mx-auto px-4 md:px-6 mb-6">
@@ -414,8 +446,8 @@ export default async function RankingPage({ params }: Props) {
                                                             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                                         </a>
                                                         <div className="grid grid-cols-2 gap-3">
-                                                            {getAmazonLink(item.product.asin, item.product.affiliateLinks?.amazon) && (
-                                                                <a href={getAmazonLink(item.product.asin, item.product.affiliateLinks?.amazon) as string} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1 py-3 rounded-lg bg-[#FF9900] hover:bg-[#FF9900]/90 text-white text-sm font-bold shadow-sm transition-colors">
+                                                            {getAmazonLink(item.product.asin, item.product.affiliateLinks?.amazon, item.productId) && (
+                                                                <a href={getAmazonLink(item.product.asin, item.product.affiliateLinks?.amazon, item.productId) as string} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1 py-3 rounded-lg bg-[#FF9900] hover:bg-[#FF9900]/90 text-white text-sm font-bold shadow-sm transition-colors">
                                                                     Amazon
                                                                     <span className="material-symbols-outlined text-[16px]">open_in_new</span>
                                                                 </a>

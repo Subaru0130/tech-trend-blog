@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
                             <span className="text-xl font-black text-gray-800 dark:text-white tracking-tight">ChoiceGuide</span>
                         </a>
                         <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-8">
-                            賢い買い物のための比較メディア。<br />専門家の検証データと独自の評価基準で、あなたに最適な製品選びをサポートします。
+                            賢い買い物のための比較メディア。<br />客観的な分析データと独自の評価基準で、あなたに最適な製品選びをサポートします。
                         </p>
                     </div>
                     {/* Removed dead links sections */}

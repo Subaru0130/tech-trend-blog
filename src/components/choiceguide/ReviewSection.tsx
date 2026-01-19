@@ -9,7 +9,7 @@ const ReviewSection: React.FC = () => {
                 <div className="flex items-center justify-between mb-10">
                     <div>
                         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">最新のレビュー記事</h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">専門家が実際に使って検証した最新レポート</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">膨大なデータを徹底分析した最新レポート</p>
                     </div>
                     <a className="group text-sm font-bold text-primary hover:text-primary-hover flex items-center gap-1" href="#">記事一覧へ <span className="material-symbols-outlined text-sm group-hover:translate-x-0.5 transition-transform">chevron_right</span></a>
                 </div>

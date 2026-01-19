@@ -24,7 +24,7 @@ const Hero: React.FC = () => {
                         徹底比較ランキング
                     </h1>
                     <p className="text-text-sub text-base md:text-lg leading-relaxed max-w-3xl mb-8">
-                        通勤・通学の騒音カットから、カフェでの集中作業まで。今や生活必需品となったノイズキャンセリングヘッドホン。音質、装着感、そして静寂性能を専門家が厳しくジャッジ。あなたに最適な一台が見つかります。
+                        通勤・通学の騒音カットから、カフェでの集中作業まで。今や生活必需品となったノイズキャンセリングヘッドホン。音質、装着感、そして静寂性能をデータに基づいて徹底分析。あなたに最適な一台が見つかります。
                     </p>
                     <div className="flex items-center gap-4 pt-6 border-t border-gray-100">
                         <div
@@ -32,8 +32,8 @@ const Hero: React.FC = () => {
                             style={{ backgroundImage: "url('https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=200')" }}
                         ></div>
                         <div className="flex flex-col">
-                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">記事監修</span>
-                            <span className="font-bold text-gray-900">アレックス・モーガン <span className="text-xs font-normal text-gray-500 ml-1">| オーディオ評論家</span></span>
+                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">記事制作・分析</span>
+                            <span className="font-bold text-gray-900">ChoiceGuide <span className="text-xs font-normal text-gray-500 ml-1">| 編集部</span></span>
                         </div>
                     </div>
                 </div>

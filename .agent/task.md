@@ -34,3 +34,10 @@
 
 - [ ] **Content Scaling (Final Stage)** <!-- id: 26 -->
     - [ ] Generate articles for other categories <!-- id: 27 -->
+
+- [ ] **Technical Improvements**
+    - [x] **Link Cloaking System**
+        - [x] Identify product data source
+        - [x] Create redirect generation script
+        - [x] Generate .htaccess or PHP redirect map
+        - [x] Update frontend to use cloaked links

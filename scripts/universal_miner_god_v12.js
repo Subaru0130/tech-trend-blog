@@ -178,20 +178,21 @@ function evaluateCompetitors(keyword, serpData) {
 // ==========================================
 async function generateUltimateBlueprint(keyword, serpData) {
     const prompt = `
-    あなたはプロのWebエディターであり、アフィリエイトマーケティングの専門家です。
-    ユーザーの「購入を迷っている」心理を理解し、背中を押す記事を設計します。
+    あなたはプロのWebエディターであり、記事の「有用性」を設計するアーキテクトです。
+    Googleの"Helpful Content System"に基づき、**「特定のユーザー」**の**「特定の悩み」**を解決する**「情報の充足度が高い」**記事を設計してください。
     
     ターゲットキーワード: "${keyword}"
     競合記事タイトル: ${serpData.map(d => d.title).join(", ")}
     
     ## タスク
-    このキーワードに対して、**高コンバージョンのアフィリエイト記事**を設計してください。
+    このキーワードに対して、ユーザーが「これだけ読めば十分」と感じる高密度の記事を設計してください。
     
     ## 🚫 却下基準 (status: REJECT)
     1. **実店舗購入意図**: ダイソー、100均、コストコ、コンビニで買いたい
     2. **トラブルシューティング**: 修理方法、設定方法、使い方を知りたい
     3. **中古/フリマ意図**: メルカリ、ヤフオクで買いたい
     4. **単純な事実確認**: 発売日、意味、スペックを知りたいだけ
+    5. **対象が曖昧**: 「誰にでもおすすめ」のようなターゲット不在の記事
     
     ## ✅ 承認基準 (status: APPROVED)
     1. **オンライン購入意図**: Amazonで販売される商品を探している
@@ -202,75 +203,66 @@ async function generateUltimateBlueprint(keyword, serpData) {
     ### 1. 検索意図の深掘り (search_intent_analysis)
     - このキーワードで検索するユーザーの「隠れた悩み」「本当のペイン」は何か？
     - 表面的な検索ワードの裏にある「解決したい問題」を言語化してください
-    - 例: 「1万円台 イヤホン」→「3万円のハイエンドは予算オーバーだが、安すぎると品質が心配」
+    - 例: 「1万円台 イヤホン」→「3万円のハイエンドは予算オーバーだが、安物買いで失敗して『音がスカスカ』なのは絶対に嫌」
     
     ### 2. タイトル設計 (title)
-    - SEO最適化された日本語タイトル（32〜40文字）
-    - 「【2025年】」「おすすめ」「ランキング」「徹底比較」などの要素を含める
-    - ユーザーの悩みに直接応える表現を使う
+    - **「誰の」「どんな悩みを」「どう解決するか」**が一目でわかるタイトル
+    - 抽象的な「おすすめランキング」は禁止。具体的なベネフィットを入れる
+    - 例: 
+      - ❌ 「ワイヤレスイヤホンおすすめランキング」
+      - ⭕️ 「【2025年】通勤ストレスが消える！ノイキャンイヤホンおすすめ5選｜口コミ徹底分析」
     
     ### 3. ターゲット読者 (target_reader)
-    - 具体的なペルソナを2〜3文で詳細に記述
-    - 「〇〇だけど△△したい人」という形式で、悩みと願望を明確に
-    - 例: 「AirPodsは高すぎて手が出ないが、5000円以下で音質や機能に妥協したくない学生や、通勤・通学用のサブ機を探している人」
-    
+    - **「キーワードから論理的に導かれる最も深いユーザー層（マイクロペルソナ）」**を定義してください。
+    - ❌ 「30代男性」のような属性定義は無意味なので禁止。
+    - ❌ 「全員におすすめ」も禁止。
+    - ⭕️ **徹底的に具体的かつニッチな状況**を描写する:
+      - NG: 「通勤中に音楽を聴く人」
+      - OK: 「往復2時間の満員電車通勤で、騒音に邪魔されずに『Audible』で自己研鑽したいと考えているビジネスパーソン」
+      - OK: 「カフェでリモートワークをするが、周囲の会話が気になって集中できず、耳栓代わりの強力なノイキャンを求めているフリーランス」
+
     ### 4. 比較軸 (comparison_axis) ★重要★
-    キーワードの性質に応じて、評価軸の設定方法を変えてください：
-    
-    **A. 特化キーワード（「最強」「特化」「重視」などを含む場合）**
-    - 例: 「ノイキャン最強」「コスパ最強」「高音質」「通話重視」
-    - → **単一の主軸**を設定（例: 「ノイズキャンセリング性能」のみ）
-    - この主軸が評価の70%を占めることを念頭に置く
-    
-    **B. 総合キーワード（価格帯指定・一般的な「おすすめ」など）**
-    - 例: 「1万円以下」「おすすめ」「ランキング」「比較」
-    - → **複数の評価軸を並列で列挙**（例: 「音質、ノイズキャンセリング、機能性、装着感」）
-    - 各軸を均等に評価することを意図
-    
-    **C. 出力形式**
-    - is_specialized_theme: true/false（特化キーワードかどうか）
-    - primary_evaluation_focus: 特化キーワードの場合は主軸を1つだけ記載、総合キーワードの場合は「総合性能」と記載
-    - comparison_axis: 詳細な評価ポイントの説明（従来通り）
-    
+    - そのターゲット層が**「共通して最も重視するポイント」**を主軸にする。
+    - 例: 「電車の走行音を消すノイズキャンセリング性能」と「長時間つけても疲れない装着感」
+
     ### 5. セールスフック (sales_hook)
-    - この記事を読むメリット、なぜ今すぐ行動すべきかを熱く語る
-    - 読者の不安（失敗したくない、損したくない）を解消する文章
-    - 「この記事を読めば解決する」という確信を与える（3〜4文）
-    - 注意: 特定ショップ名（Amazon、楽天など）は使わないこと。記事の中立性を保つ
-    - 例: 「『安かろう悪かろう』を回避するため、iPhoneユーザーに必須の『AAC対応』かつ『高評価』なモデルだけを厳選。5000円以下でもノイキャン付きや長時間再生が可能な、価格破壊級の神コスパイヤホンが見つかります。この記事を読めば、あなたにピッタリの一台が必ず見つかります。」
-    
+    - その悩みを持つ層全体に対し、「この記事が最適解である」と約束する。
+    - 例: 「『静寂』を手に入れるための最短ルート。通勤ストレスを過去のものにする最強の選択肢。」
+
     ### 6. 導入部設計 (intro_structure)
-    - hook: 読者の共感を呼ぶ導入文（悩みに寄り添う）
-    - background_explanation: 問題の根本原因や背景を説明（なぜこの問題が起こるのか）
-    
+    - hook: 多くの読者が「自分のことだ」と感じる、**最大公約数的な深い共感**
+    - background_explanation: 従来品では満足できない本質的な理由
+
     ### 7. ランキング基準 (ranking_criteria)
-    - 商品を評価するための具体的な基準を3〜5個
-    
+    - 具体的な基準を3〜5個。
+
     ### 8. フィルタリング情報
-    - price_min / price_max: キーワードから価格制約を抽出（「1万円台」= 10000〜19999、「5000円以下」= 0〜5000、制約なし = null）
-    - required_features: 商品が必須で持つべき機能の配列（例: ["ノイズキャンセリング", "防水"]、なければ空配列）
-    - ranking_count: ランキング商品数（狭いニッチ=5、標準=10、広いカテゴリ=15-20）
-    
+    - price_min / price_max: キーワードから価格制約を抽出
+    - required_features: 商品が必須で持つべき機能の配列
+    - ranking_count: 5, 10, 15 (狭いテーマほど少なく、濃く)
+
     ## 出力JSON (承認時)
     {
       "status": "APPROVED",
       "keyword": "${keyword}",
-      "title": "【2025年】〇〇おすすめランキング10選！△△を徹底比較",
-      "search_intent_analysis": "このキーワードで検索するユーザーは...という隠れた悩みを抱えている",
-      "intro_structure": {
-        "hook": "「□□で困っていませんか？」という共感を呼ぶ導入",
-        "background_explanation": "なぜこの問題が起こるのか、背景を説明"
+      "title": "...",
+      "search_intent_analysis": "...",
+      "intro_structure": { "hook": "...", "background_explanation": "..." },
+      "ranking_criteria": ["..."],
+      "target_reader": "...", // 戦略的ターゲット記述
+      "user_demographics": { // ターゲット構成要素
+        "situation": "...", // 共通の状況（例: 電車通勤）
+        "pain_point": "...", // 共通の悩み（例: 騒音ストレス）
+        "desire": "..." // 共通の願望（例: 静寂が欲しい）
       },
-      "ranking_criteria": ["基準1（具体的に）", "基準2（具体的に）", "基準3（具体的に）"],
-      "target_reader": "〇〇だけど△△したい人。具体的なペルソナを詳細に記述。",
-      "is_specialized_theme": true,
-      "primary_evaluation_focus": "ノイズキャンセリング性能",
-      "comparison_axis": "ノイズキャンセリング性能（低音から高音までの遮音性、圧迫感の有無）",
-      "sales_hook": "なぜこの記事を読むべきか、読者の不安を解消し今すぐ行動を促す熱い文章。特定ショップ名は使わない。",
+      "is_specialized_theme": true/false,
+      "primary_evaluation_focus": "...",
+      "comparison_axis": "...",
+      "sales_hook": "...",
       "ranking_count": 10,
-      "price_min": 10000,
-      "price_max": 19999,
-      "required_features": ["必須機能1", "必須機能2"]
+      "price_min": 0,
+      "price_max": 0,
+      "required_features": ["..."]
     }
     
     ## 出力JSON (却下時)
@@ -328,10 +320,34 @@ async function main() {
     console.log(`\n🧠 Phase 2: Logic Scouting (${targets.length} keywords)`);
     console.log(`   NOTE: Stealth Mode ON. Filter: [Non-Ranking] + [Non-Amazon]`);
 
-    const browser = await puppeteer.launch({
-        headless: false,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1280,800']
-    });
+    // Connect to existing Chrome (user profile) to avoid CAPTCHA
+    let browser;
+    try {
+        const http = require('http');
+        const wsUrl = await new Promise((resolve, reject) => {
+            const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        resolve(json.webSocketDebuggerUrl);
+                    } catch (e) { reject(e); }
+                });
+            });
+            req.on('error', reject);
+            req.setTimeout(2000, () => { req.destroy(); reject(new Error('timeout')); });
+        });
+        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+        console.log("      ✅ Connected to Chrome Remote Debugging (User Profile)");
+    } catch (e) {
+        console.log("      ⚠️ Could not connect to remote Chrome. Launching fresh instance (CAPTCHA risk high)...");
+        browser = await puppeteer.launch({
+            headless: false,
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1280,800']
+        });
+    }
+
     const page = await browser.newPage();
 
     const candidates = [];

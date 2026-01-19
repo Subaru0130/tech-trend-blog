@@ -10,9 +10,9 @@ dotenv.config({ path: '.env.local' });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 if (!GEMINI_API_KEY) {
-  console.error("Error: GEMINI_API_KEY is not set in .env.local");
+  console.error("Error: GEMINI_API_KEY or GOOGLE_API_KEY is not set in .env.local");
   process.exit(1);
 }
 const client = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
@@ -21,6 +21,7 @@ const client = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { normalizeObjectSpecs } = require('./lib/spec_normalizer.js');
+const { injectAiMetadata, closeExifTool } = require('./lib/image_metadata.js');
 
 
 // --- Helper Functions ---
@@ -51,12 +52,18 @@ async function downloadImage(url, filename) {
 
     fs.writeFileSync(filepath, buffer);
     console.log(`[Imager] Saved: ${filename}`);
+
+    // INJECT METADATA
+    await injectAiMetadata(filepath);
+
     return relativePath;
   } catch (error) {
     console.warn(`[Imager] Failed to download ${url}: ${error.message}`);
     return null;
   }
 }
+
+
 
 // --- Main Logic ---
 
@@ -225,7 +232,25 @@ async function generateArticle(topic) {
 
         **RATING KEYS** (Use these exact keys): filtration, taste, flow, cost, ease, design.
 
-    8.  **Comparison Table**:
+        **CRITICAL REQUIREMENT: AFTER EACH <RankingCard/>, you MUST write a "360° Expert Analysis" block.**
+        This is what separates us from generic summary sites. You act as a Data Analyst + Veteran User.
+        
+        **Structure for each product (REQUIRED):**
+        1. **<RankingCard ... />** (The summary card)
+        2. **Angle 1: Situation Fit ("How it changes your life")**
+           - Headline: \`#### 🌅 【生活が変わる】\${Target Persona}での使い心地\`
+           - Content: Describe a specific scenario where this product shines. (e.g. "For commuters, physical buttons > touch sensors").
+        3. **Angle 2: Competitor Checkmate ("Why this wins")**
+           - Headline: \`#### 🆚 【ライバル比較】同価格帯の定番機と比べて\`
+           - Content: Why buy this over the most popular competitor? Be specific.
+        4. **Angle 3: Data-Driven Deep Knowledge ("The AI Advantage")**
+           - Headline: \`#### 📊 【データ分析】1,000件のレビューから判明した事実\`
+           - Content: Cite specific patterns from mass data. (e.g. "While experts praise sound, 30% of users report hinge issues.").
+        5. **Honest Caution**
+           - Headline: \`#### ⚠️ ここは妥協が必要\`
+           - Content: A brutal but helpful truth about what this product lacks.
+
+     8.  **Comparison Table**:
         - \`<ComparisonTable specLabels={{...}} products={[...]} />\`
         - **specLabels**: Select 4 most important specs for "${topic}" (e.g. Size, Weight, Power, Cost). 
         - **Keys**: Use English keys (key1, key2, key3, key4) or descriptive keys.
@@ -349,20 +374,59 @@ async function generateArticle(topic) {
   console.log("Stripped all markdown bold markers (**).");
 
   // PHASE 4: Image Download & Replacement
-  console.log("Phase 4: Downloading Images & Finalizing...");
+  console.log("Phase 4: Downloading Images & Finalizing... (Semantic Naming Enabled)");
 
-  const urlRegex = /image="(https?:\/\/[^"]+)"/g;
-  let match;
-  const downloads = [];
-  while ((match = urlRegex.exec(mdxContent)) !== null) {
-    const originalUrl = match[1];
-    const filename = `prod-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
-    downloads.push({ originalUrl, filename });
+  // Helper for slugify
+  const slugify = (text) => {
+    return text.toString().toLowerCase()
+      .replace(/\s+/g, '-') // Replace spaces with -
+      .replace(/[^\w\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\-\.]+/g, '') // Remove non-word chars (allow Japanese)
+      .replace(/\-\-+/g, '-') // Replace multiple - with single -
+      .replace(/^-+/, '') // Trim - from start
+      .replace(/-+$/, ''); // Trim - from end
+  };
+
+  const urlMap = new Map(); // Map originalURL -> filename
+
+  // 1. Extract from RankingCard (Highest Priority for Naming)
+  const imgCardRegex = /<RankingCard([\s\S]*?)\/>/g;
+  let imgCardMatch;
+  while ((imgCardMatch = imgCardRegex.exec(mdxContent)) !== null) {
+    const props = imgCardMatch[1];
+    const nameMatch = props.match(/name="([^"]+)"/);
+    const imageMatch = props.match(/image="(https?:\/\/[^"]+)"/);
+
+    if (nameMatch && imageMatch) {
+      const name = nameMatch[1];
+      const url = imageMatch[1];
+      // Create semantic filename: "rank-1-feature-name.jpg" or just "product-name.jpg"
+      // We add a short hash to ensure uniqueness if names are duplicates
+      const hash = Math.random().toString(36).substring(2, 6);
+      const safeName = slugify(name).substring(0, 50); // Limit length
+      const filename = `${safeName}-${hash}.jpg`;
+
+      if (!urlMap.has(url)) {
+        urlMap.set(url, filename);
+      }
+    }
   }
 
-  const uniqueDownloads = [...new Map(downloads.map(item => [item.originalUrl, item])).values()];
+  // 2. Extract remaining images (Fallback)
+  const fallbackRegex = /image="(https?:\/\/[^"]+)"/g;
+  let fallbackMatch;
+  while ((fallbackMatch = fallbackRegex.exec(mdxContent)) !== null) {
+    const url = fallbackMatch[1];
+    if (!urlMap.has(url)) {
+      console.log("  ⚠️ Image found without product name association. Using generic name.");
+      const filename = `misc-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+      urlMap.set(url, filename);
+    }
+  }
 
-  for (const { originalUrl, filename } of uniqueDownloads) {
+  // 3. Download and Replace
+  const uniqueDownloads = Array.from(urlMap.entries()); // [[url, filename], ...]
+
+  for (const [originalUrl, filename] of uniqueDownloads) {
     const localPath = await downloadImage(originalUrl, filename);
     if (localPath) {
       mdxContent = mdxContent.split(originalUrl).join(`${localPath}?v=${Date.now()}`);
@@ -424,21 +488,23 @@ import { verifyMdxFiles } from './verify-mdx.mjs';
 
 async function main() {
   const topic = process.argv[2] || '加湿器';
-  await saveArticle(await generateArticle(topic), topic);
 
-  // Run STRICT Quality Gate
-  console.log("--- Running Strict Quality Gate ---");
-  // verifyMdxFiles only checks MDX. We want the full suite.
-  // We execute check-quality.mjs as a child process to isolate it.
   try {
+    await saveArticle(await generateArticle(topic), topic);
+
+    // Run STRICT Quality Gate
+    console.log("--- Running Strict Quality Gate ---");
     const { execSync } = await import('child_process');
     execSync('node scripts/check-quality.mjs', { stdio: 'inherit' });
     console.log("✅ Generation & Verification Complete.");
   } catch (e) {
-    console.error("❌ GENERATION REJECTED: Quality Gate Failed.");
-    // Optional: Delete the file if it failed? 
-    // check-quality.mjs logs the errors.
+    console.error("❌ GENERATION / VERIFICATION FAILED:", e);
     process.exit(1);
+  } finally {
+    // Cleanup ExifTool
+    if (typeof closeExifTool === 'function') {
+      await closeExifTool();
+    }
   }
 }
 

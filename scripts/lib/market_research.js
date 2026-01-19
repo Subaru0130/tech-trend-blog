@@ -1018,14 +1018,19 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
         isRemote = true;
         console.log('   🌐 Connected to remote Chrome for better Amazon compatibility');
     } catch (e) {
+        console.log(`   ❌ Failed to connect to Remote Chrome in Market Research: ${e.message}`);
+        console.log(`   ⚠️ Please ensure Chrome is open (produce_from_blueprint should have started it).`);
+        throw e; // Fail rather than using unconnected headless
+        /*
         browser = await puppeteer.launch({
             headless: "new",
             args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
+        */
     }
 
     try {
-        const page = await browser.newPage();
+        let page = await browser.newPage();
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
 
         // Recursive pagination: keep fetching until we have enough products
@@ -1033,6 +1038,9 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
         const maxPagesLimit = options.maxPages || 20;  // Hard limit to prevent infinite loops
         let pageNum = options.startPage ? options.startPage - 1 : 0; // Initialize with startPage (0-indexed internally)
         let filteredCount = 0;
+
+        // DEBUG BACKDOOR REMOVED
+
 
         console.log(`   🎯 Target: ${targetCount} products (max ${maxPagesLimit} pages)`);
 
@@ -1203,6 +1211,10 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                     return items;
                 }, pageNum);
 
+                // DEBUG BACKDOOR
+                // DEBUG BACKDOOR REMOVED
+
+
                 console.log(`      ✅ Page ${pageNum}: Found ${products.length} raw products. Fetching Amazon links...`);
 
                 // Visit Detail Pages to get Amazon Link (User Request)
@@ -1219,22 +1231,73 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                     try {
                         console.log(`         🔎 [${i + 1}/${products.length}] Checking: ${p.name.slice(0, 15)}... (${p.kakakuUrl})`);
 
-                        // Navigate with retry on timeout
-                        let navSuccess = false;
-                        for (let attempt = 1; attempt <= 2 && !navSuccess; attempt++) {
+
+                        // Helper: Smart Wait Navigation
+                        // Proceeds as soon as selector is found OR navigation completes
+                        const smartGoto = async (targetUrl, selector, timeout = 90000) => {
+                            // 1. Check if already on page (normalization required)
+                            const current = page.url().split('#')[0].split('?')[0];
+                            const target = targetUrl.split('#')[0].split('?')[0];
+                            if (current === target || (current + '/') === target || current === (target + '/')) {
+                                console.log('            ⚡ Smart Wait: Already on page, skipping navigation');
+                                return true;
+                            }
+
+                            // 2. Race Condition: Goto vs WaitForSelector
                             try {
-                                await page.goto(p.kakakuUrl + '#tab', { waitUntil: 'domcontentloaded', timeout: 45000 });
-                                navSuccess = true;
-                            } catch (navErr) {
-                                if (attempt === 1 && navErr.message?.includes('timeout')) {
-                                    console.log(`         🔄 Retry ${attempt}/2 for timeout...`);
-                                    await new Promise(r => setTimeout(r, 2000));
-                                } else {
-                                    throw navErr;
+                                const gotoPromise = page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: timeout });
+                                const waitPromise = page.waitForSelector(selector, { timeout: timeout });
+
+                                // Race them!
+                                await Promise.race([
+                                    gotoPromise.catch(e => { /* mute nav errors in race */ }),
+                                    waitPromise
+                                ]);
+
+                                // Double check: Did we actually find the content?
+                                const exists = await page.$(selector).catch(() => null);
+                                if (exists) {
+                                    console.log('            ⚡ Smart Wait: Content found early!');
+                                    return true;
                                 }
+
+                                // If no content, await goto (it might have finished without content?)
+                                await gotoPromise;
+                                return true;
+
+                            } catch (e) {
+                                console.log(`            ⚠️ Navigation/Wait failed: ${e.message}`);
+                                // Last ditch check
+                                const exists = await page.$(selector).catch(() => null);
+                                if (exists) {
+                                    console.log('            ⚡ Content exists despite error, proceeding.');
+                                    return true;
+                                }
+                                throw e; // Real failure
+                            }
+                        };
+
+                        // Navigate with Smart Wait (Target: Tab content or Shop List)
+                        let navSuccess = false;
+                        try {
+                            // Retry logic implicit in logic if we wanted, but SmartWait is robust enough
+                            // We use .p-PTShopList_item (Shop List) OR .c-productCard_name (Product Page fallback)
+                            // If we rely on #tab, we expect shop list 
+                            await smartGoto(p.kakakuUrl + '#tab', '.p-PTShopList_item, table[class*="shopTable"], .p-PTShopList_body', 60000);
+                            navSuccess = true;
+                        } catch (navErr) {
+                            console.log(`         🔄 Smart Navigation failed, retrying once...`);
+                            try {
+                                await new Promise(r => setTimeout(r, 2000));
+                                await smartGoto(p.kakakuUrl + '#tab', '.p-PTShopList_item, table[class*="shopTable"]', 60000);
+                                navSuccess = true;
+                            } catch (retryErr) {
+                                console.log(`         ❌ Navigation failed: ${retryErr.message}`);
+                                continue; // Skip product
                             }
                         }
-                        await new Promise(r => setTimeout(r, 2000)); // Wait for dynamic shop list
+
+                        await new Promise(r => setTimeout(r, 1000)); // Brief settle time
 
                         // Try to find Amazon on multiple pages if needed
                         let amazonInfo = null;
@@ -1243,9 +1306,17 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                                 ? p.kakakuUrl + '#tab'
                                 : p.kakakuUrl + '?page=' + shopPage + '#tab';
 
-                            await page.goto(shopUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
-                            await new Promise(r => setTimeout(r, 2000));
+                            try {
+                                // Smart Wait for Shop List Items
+                                if (shopPage > 1) { // Only navigate if not already handled by initial nav
+                                    await smartGoto(shopUrl, '.p-PTShopList_item, table[class*="shopTable"]', 60000);
+                                }
+                            } catch (e) {
+                                console.log(`            ⚠️ Shop page ${shopPage} load failed, stopping pager.`);
+                                break;
+                            }
 
+                            // Scan for Amazon
                             amazonInfo = await page.evaluate(() => {
                                 // Search ALL links on the page for Amazon
                                 const allLinks = Array.from(document.querySelectorAll('a'));
@@ -1277,17 +1348,24 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                                         if (price === 0) {
                                             const parent = link.parentElement?.parentElement;
                                             if (parent) {
-                                                const allText = parent.innerText;
-                                                const priceMatch = allText.match(/¥([\d,]+)/);
-                                                if (priceMatch) price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+                                                const txt = parent.innerText;
+                                                const match = txt.match(/[¥￥]([\d,]+)/);
+                                                if (match) price = parseInt(match[1].replace(/,/g, ''), 10);
                                             }
                                         }
 
-                                        return { url: href, price };
+                                        // ★ EARLY PRICE FILTER ★
+                                        // If we know the price now, reject it immediately if out of range to save time
+                                        if (price > 0 && options && (options.minPrice || options.maxPrice)) {
+                                            if (options.minPrice && price < options.minPrice) return null; // Too cheap
+                                            if (options.maxPrice && price > options.maxPrice) return null; // Too expensive
+                                        }
+
+                                        return { url: href, price: price };
                                     }
                                 }
                                 return null;
-                            });
+                            }, { minPrice: options.minPrice, maxPrice: options.maxPrice }); // Pass options to browser context
 
                             if (amazonInfo) {
                                 console.log(`            ✅ Amazon Shop Found (Page ${shopPage}): ¥${amazonInfo.price || '?'}`);
@@ -1313,26 +1391,112 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                                 });
 
                                 if (forwarderUrl) {
-                                    // === STEP 3: Follow forwarder to Amazon (MULTI-HOP REDIRECT) ===
+                                    // === STEP 3: Follow forwarder to Amazon (Smart Redirect) ===
                                     // Kakaku uses: c.kakaku.com/forwarder → kakaku.com/pt/ard.asp → amazon.co.jp
                                     let finalUrl = '';
                                     try {
-                                        // Navigate and wait for all redirects to complete
-                                        await page.goto(forwarderUrl, {
-                                            waitUntil: 'networkidle0', // Wait for all network activity to stop
-                                            timeout: 30000
-                                        }).catch(() => { });
+                                        console.log(`            ⚡ Smart Redirect: Accessing ${forwarderUrl.slice(0, 40)}...`);
 
-                                        // Check URL multiple times with delays (for slow redirects)
-                                        for (let check = 0; check < 5; check++) {
-                                            finalUrl = page.url();
-                                            if (finalUrl.includes('amazon.co.jp')) break;
-                                            await new Promise(r => setTimeout(r, 1000));
+                                        // Start navigation - Relaxed wait condition
+                                        page.goto(forwarderUrl, { waitUntil: 'domcontentloaded', timeout: 45000 }).catch(() => { });
+
+                                        // Polling Loop: Check URL every 500ms
+                                        // This allows us to "see" the redirect happen and exit IMMEDIATELY when Amazon is reached
+                                        const maxWait = 45000;
+                                        const startTime = Date.now();
+                                        let lastLoggedUrl = '';
+
+                                        while (Date.now() - startTime < maxWait) {
+                                            const currentUrl = page.url();
+
+                                            // Log URL changes for visibility
+                                            if (currentUrl !== lastLoggedUrl) {
+                                                // Ignore minor hash changes if needed, but showing everything is safer for debug
+                                                if (currentUrl !== 'about:blank') {
+                                                    console.log(`            🔄 Redirecting... ${currentUrl.slice(0, 80)}`);
+                                                }
+                                                lastLoggedUrl = currentUrl;
+                                            }
+
+                                            // Success condition: Reached Amazon
+                                            if (currentUrl.includes('amazon.co.jp') && !currentUrl.includes('kakaku.com')) {
+                                                console.log(`            ✨ Amazon reachable! Stopping wait.`);
+                                                break;
+                                            }
+
+                                            // Manual Click Handling (Fallback for "Click here" pages)
+                                            // Check every ~2 seconds
+                                            if ((Date.now() - startTime) % 2000 < 500) {
+                                                try {
+                                                    const hasManualLink = await page.evaluate(() => {
+                                                        const a = document.querySelector('a');
+                                                        return a && (a.innerText.includes('こちら') || a.innerText.includes('Click') || a.innerText.includes('Amazon'));
+                                                    });
+                                                    if (hasManualLink) {
+                                                        console.log(`            👆 Found manual redirect link, clicking...`);
+                                                        await page.click('a');
+                                                    }
+                                                } catch (evalErr) {
+                                                    // Ignore evaluation errors (timeouts, etc.) during navigation
+                                                    // console.log(`            ⚠️ Manual link check skipped: ${evalErr.message}`);
+                                                }
+                                            }
+
+                                            await new Promise(r => setTimeout(r, 500));
                                         }
 
+
+                                        // === SMART WAIT: Wait for actual product content ===
+                                        console.log(`            ⚡ Smart Wait: Waiting for Amazon product content to load...`);
+
+                                        // Helper checks for "loaded" state - defined inside evaluate typically, but here we pass function body if using page.waitForFunction(fn)
+                                        // Actually waitForFunction takes a function to run in page context.
+                                        try {
+                                            // Wait for ANY of these good indicators that the page is useful
+                                            await page.waitForFunction(() => {
+                                                const body = document.body;
+                                                if (!body) return false;
+
+                                                // 1. Specific key elements for product page
+                                                const hasTitle = !!document.querySelector('#productTitle') || !!document.querySelector('#title');
+                                                const hasPrice = !!document.querySelector('.a-price') || !!document.querySelector('#priceblock_ourprice');
+                                                const hasAvailability = !!document.querySelector('#availability') || !!document.querySelector('#add-to-cart-button');
+
+                                                // 2. Fallback: Body length check
+                                                const bodyLength = body.innerText.length;
+                                                const readyState = document.readyState;
+
+                                                // Must be interactive/complete AND have some content
+                                                if (readyState === 'loading') return false;
+
+                                                return (hasTitle && bodyLength > 800) || hasAvailability || (hasPrice && bodyLength > 1000) || bodyLength > 3000;
+                                            }, { timeout: 20000 }); // Increased to 20s
+                                            console.log(`            ✅ Content Loaded (Smart Wait passed)`);
+                                        } catch (waitErr) {
+                                            console.log(`            ⚠️ Smart Wait 1 timeout. Page might be hung. ReadyState: ${await page.evaluate(() => document.readyState)}`);
+
+                                            // Attempt 2: Reload and Wait
+                                            try {
+                                                console.log(`            🔄 Retrying with page reload...`);
+                                                await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 });
+                                                await new Promise(r => setTimeout(r, 2000)); // Settle
+
+                                                await page.waitForFunction(() => {
+                                                    const body = document.body;
+                                                    if (!body) return false;
+                                                    const bodyLength = body.innerText.length;
+                                                    const hasTitle = !!document.querySelector('#productTitle');
+                                                    return (hasTitle && bodyLength > 800) || bodyLength > 3000;
+                                                }, { timeout: 20000 });
+                                                console.log(`            ✅ Content Loaded after reload!`);
+                                            } catch (reloadErr) {
+                                                console.log(`            ⚠️ Smart Wait failed after reload: ${reloadErr.message}`);
+                                            }
+                                        }
+
+
                                     } catch (navErr) {
-                                        console.log(`            ⚠️ Navigation warning: ${navErr.message?.slice(0, 40)}`);
-                                        finalUrl = page.url();
+                                        console.log(`            ⚠️ Navigation flow error: ${navErr.message?.slice(0, 40)}`);
                                     }
 
                                     finalUrl = page.url(); // Final URL check
@@ -1342,7 +1506,17 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
 
                                         // === STEP 4: Check stock availability AND price on Amazon ===
                                         const stockInfo = await page.evaluate(() => {
-                                            if (!document.body) return null;
+                                            // Enhanced Debug Info
+                                            const debug = {
+                                                hasBody: !!document.body,
+                                                bodyLength: document.body ? document.body.innerText.length : 0,
+                                                readyState: document.readyState,
+                                                title: document.title,
+                                                url: window.location.href
+                                            };
+
+                                            if (!document.body) return { inStock: false, hasAddToCart: false, hasOutOfStockText: false, amazonPrice: 0, debug };
+
                                             const bodyText = document.body.innerText || '';
 
                                             // Check for in-stock indicators
@@ -1355,17 +1529,45 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                                             ];
                                             const hasInStock = inStockIndicators.some(t => bodyText.includes(t));
 
+
+
                                             // Check for out-of-stock indicators  
                                             const outOfStockIndicators = [
                                                 '現在在庫切れです',
                                                 '在庫切れ',
                                                 'Currently unavailable',
-                                                'この商品は現在お取り扱いできません'
+                                                'この商品は現在お取り扱いできません',
+                                                '一時的に在庫切れ',
+                                                '入荷時期は未定です',
+                                                '出品者からお求めいただけます',
+                                                '要件を満たす出品はありません'
                                             ];
-                                            const hasOutOfStock = outOfStockIndicators.some(t => bodyText.includes(t));
+                                            let hasOutOfStock = outOfStockIndicators.some(t => bodyText.includes(t));
+
+                                            // Explicit Availability Status Check (Detailed)
+                                            const availabilityEl = document.querySelector('#availability');
+                                            if (availabilityEl) {
+                                                const availText = availabilityEl.innerText.trim();
+                                                if (availText.includes('在庫切れ') || availText.includes('unavailable') || availText.includes('Not available')) {
+                                                    hasOutOfStock = true;
+                                                }
+                                            }
 
                                             // Check for add-to-cart button
                                             const addToCartBtn = document.querySelector('#add-to-cart-button, #buy-now-button, [name="submit.add-to-cart"]');
+
+                                            // Check for "See All Buying Options" (implies no main cart, often effectively OOS for primary price)
+                                            const seeAllBuyingChoices = document.querySelector('#buybox-see-all-buying-choices, a[href*="offer-listing"]');
+
+                                            // If we have "See All Buying Options" but no "Add to Cart", it's effectively OOS for the main price
+                                            // But for our purpose (tracking availability), it technically IS available from reliable sellers?
+                                            // Kakaku usually lists the cheapest. If Amazon lists it, it counts. 
+                                            // But if "Amazon" is the seller, it usually has a cart button.
+                                            // If only 3rd party, it might show "See All". 
+                                            // Let's rely on hasOutOfStock text primarily. 
+                                            // If we have NO cart button AND NO "See All", it's definitely OOS.
+                                            // If we have "See All" but no cart, it's "Marketplace".
+                                            const hasBuyingOptions = !!addToCartBtn || !!seeAllBuyingChoices;
 
                                             // === EXTRACT PRICE FROM AMAZON ===
                                             let amazonPrice = 0;
@@ -1394,10 +1596,11 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                                             }
 
                                             return {
-                                                inStock: hasInStock && !hasOutOfStock && !!addToCartBtn,
-                                                hasAddToCart: !!addToCartBtn,
+                                                inStock: hasInStock && !hasOutOfStock && hasBuyingOptions, // Require some buying option
+                                                hasAddToCart: hasBuyingOptions,
                                                 hasOutOfStockText: hasOutOfStock,
-                                                amazonPrice: amazonPrice
+                                                amazonPrice: amazonPrice,
+                                                debug: debug
                                             };
                                         });
 
@@ -1410,18 +1613,33 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                                             } else {
                                                 console.log(`            ✅ In Stock (Amazon URL obtained)`);
                                             }
-                                        } else if (stockInfo && stockInfo.hasOutOfStockText) {
-                                            console.log(`            ❌ Out of Stock on Amazon`);
+                                        } else if (stockInfo && (stockInfo.hasOutOfStockText || (!stockInfo.inStock && stockInfo.debug?.bodyLength > 800))) {
+                                            console.log(`            ❌ Out of Stock on Amazon (Explicit or No Buy Button)`);
                                             p.amazonUrl = null; // Clear so it gets skipped
                                             p.inStock = false;
                                         } else {
                                             // Ambiguous or failed extraction - might be available
-                                            // If stockInfo is null, it means we couldn't parse the page => assume failure or retry?
-                                            // For now, if we have URL, let's keep it but mark uncertain.
+                                            // Log debug info and take screenshot
+                                            console.log(`            ⚠️ Stock uncertain. Debug: ${JSON.stringify(stockInfo?.debug)}`);
+
+                                            // Screenshot for debugging
+                                            try {
+                                                const fs = require('fs');
+                                                const path = require('path');
+                                                // Save to artifacts directory or project root
+                                                const debugDir = path.resolve(__dirname, '../../debug_screenshots');
+                                                if (!fs.existsSync(debugDir)) fs.mkdirSync(debugDir, { recursive: true });
+
+                                                const screenshotPath = path.join(debugDir, `stock_uncertain_${p.asin || 'unknown'}_${Date.now()}.png`);
+                                                await page.screenshot({ path: screenshotPath, fullPage: false });
+                                                console.log(`            📸 Saved debug screenshot: ${screenshotPath}`);
+                                            } catch (err) {
+                                                console.log(`            ⚠️ Screenshot failed: ${err.message}`);
+                                            }
+
                                             p.amazonUrl = finalUrl;
                                             p.inStock = stockInfo ? stockInfo.hasAddToCart : false;
                                             if (asinMatch) p.asin = asinMatch[1];
-                                            console.log(`            ⚠️ Stock uncertain (Info: ${!!stockInfo}), keeping URL`);
                                         }
                                     } else {
                                         console.log(`            ⚠️ Redirect did not reach Amazon: ${finalUrl.slice(0, 50)}...`);
@@ -1517,6 +1735,13 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
 
                     } catch (e) {
                         console.log(`         ⚠️ Detail check failed: ${e.message}`);
+                        // Critical recovery: If page crashed (detached/closed), recreate it
+                        if (e.message.includes('detached Frame') || e.message.includes('Target closed') || e.message.includes('Session closed')) {
+                            console.log(`         🔄 Browser tab crashed. Recreating page to continue...`);
+                            try { await page.close(); } catch (clErr) { }
+                            page = await browser.newPage();
+                            await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+                        }
                     }
                 }
 
@@ -1606,47 +1831,74 @@ async function scrapeMyBestRanking(keyword) {
 
     let browser;
     try {
-        browser = await puppeteer.launch({
-            headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-        });
-
-        const page = await browser.newPage();
-        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
-
-        // Search MyBest for the keyword
-        const searchUrl = `https://my-best.com/search?q=${encodeURIComponent(keyword)}`;
-        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
-
-        // Extract product rankings from search results
-        const products = await page.evaluate(() => {
-            const items = [];
-
-            // MyBest ranking items
-            document.querySelectorAll('.p-search-result-item, .p-ranking-item').forEach((item, index) => {
-                const nameEl = item.querySelector('h2, h3, .c-product-name, .title');
-                const scoreEl = item.querySelector('.score, .c-rating-score');
-
-                if (nameEl) {
-                    items.push({
-                        name: nameEl.textContent.trim(),
-                        mybestRank: index + 1,
-                        mybestScore: scoreEl ? parseFloat(scoreEl.textContent) : null,
-                        source: 'MyBest'
+        try {
+            // Try connecting to existing Chrome (port 9222) first
+            const http = require('http');
+            try {
+                const wsUrl = await new Promise((resolve, reject) => {
+                    const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                        let data = '';
+                        res.on('data', chunk => data += chunk);
+                        res.on('end', () => {
+                            try {
+                                const json = JSON.parse(data);
+                                resolve(json.webSocketDebuggerUrl);
+                            } catch (e) { reject(e); }
+                        });
                     });
-                }
+                    req.on('error', reject);
+                    req.setTimeout(2000, () => { req.destroy(); reject(new Error('timeout')); });
+                });
+                browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+            } catch (connectErr) {
+                console.log(`   ⚠️ Could not connect to shared Chrome, falling back to new instance: ${connectErr.message}`);
+                // Fallback: Launch new (headless) - might fail if profile is locked, but standard behavior
+                browser = await puppeteer.launch({
+                    headless: 'new',
+                    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+                });
+            }
+
+            const page = await browser.newPage();
+            await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+
+            // Search MyBest for the keyword
+            const searchUrl = `https://my-best.com/search?q=${encodeURIComponent(keyword)}`;
+            await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+            // Extract product rankings from search results
+            const products = await page.evaluate(() => {
+                const items = [];
+
+                // MyBest ranking items
+                document.querySelectorAll('.p-search-result-item, .p-ranking-item').forEach((item, index) => {
+                    const nameEl = item.querySelector('h2, h3, .c-product-name, .title');
+                    const scoreEl = item.querySelector('.score, .c-rating-score');
+
+                    if (nameEl) {
+                        items.push({
+                            name: nameEl.textContent.trim(),
+                            mybestRank: index + 1,
+                            mybestScore: scoreEl ? parseFloat(scoreEl.textContent) : null,
+                            source: 'MyBest'
+                        });
+                    }
+                });
+
+                return items.slice(0, 20);
             });
 
-            return items.slice(0, 20);
-        });
+            await browser.close();
+            console.log(`   ✅ Found ${products.length} products from MyBest.jp`);
+            return products;
 
-        await browser.close();
-        console.log(`   ✅ Found ${products.length} products from MyBest.jp`);
-        return products;
-
-    } catch (e) {
-        console.log(`   ⚠️ MyBest scraping failed: ${e.message}`);
-        if (browser) await browser.close();
+        } catch (e) {
+            console.log(`   ⚠️ MyBest scraping failed: ${e.message}`);
+            if (browser) await browser.close();
+            return [];
+        }
+    } catch (finalErr) {
+        console.log(`   ⚠️ MyBest outer error: ${finalErr.message}`);
         return [];
     }
 }
@@ -1673,7 +1925,7 @@ async function scrapeMONOQLO(keyword) {
                 // Try to extract product names from snippet
                 const model = require('@google/generative-ai');
                 const genAI = new model.GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-                const client = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+                const client = genAI.getGenerativeModel({ model: 'gemini-3-pro-preview' });
 
                 const prompt = `Extract product names from this MONOQLO article snippet:\n"${snippet.fullText}"\n\nOutput only product names, one per line. If no clear product names, output NONE.`;
 
@@ -1719,10 +1971,30 @@ async function scrapeAmazonBestseller(category = '3477981', options = {}) {
 
     let browser;
     try {
-        browser = await puppeteer.launch({
-            headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
+        // Try connecting to existing Chrome (port 9222) first
+        const http = require('http');
+        try {
+            const wsUrl = await new Promise((resolve, reject) => {
+                const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                    let data = '';
+                    res.on('data', chunk => data += chunk);
+                    res.on('end', () => {
+                        try {
+                            const json = JSON.parse(data);
+                            resolve(json.webSocketDebuggerUrl);
+                        } catch (e) { reject(e); }
+                    });
+                });
+                req.on('error', reject);
+                req.setTimeout(2000, () => { req.destroy(); reject(new Error('timeout')); });
+            });
+            browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+        } catch (connectErr) {
+            browser = await puppeteer.launch({
+                headless: 'new',
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
+            });
+        }
 
         const page = await browser.newPage();
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');

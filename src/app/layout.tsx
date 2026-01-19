@@ -1,6 +1,21 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import React from "react";
+import { Manrope, Noto_Sans_JP } from "next/font/google";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const notoSansJP = Noto_Sans_JP({
+  subsets: ["latin"], // Noto Sans JP automatically handles Japanese subset via Google Fonts API behavior but 'latin' is usually required argument or preload: false
+  preload: false, // Preloading JP fonts can be heavy, usually recommended false or 'latin' only if mixed. Next.js docs say preload: false for subsets not available. Noto Sans JP has subsets. 
+  // Let's try standard config:
+  variable: "--font-noto-sans-jp",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -25,11 +40,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" suppressHydrationWarning>
+    <html lang="ja" suppressHydrationWarning className={`${manrope.variable} ${notoSansJP.variable}`}>
       <head>
-        {/* Fonts */}
-        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>

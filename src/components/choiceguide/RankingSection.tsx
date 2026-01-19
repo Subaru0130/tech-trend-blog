@@ -47,7 +47,7 @@ const RankingSection: React.FC = () => {
                                 <img alt="Rank 1 Product" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src={rank1.image} />
                             </div>
                             <div className="bg-yellow-50/50 dark:bg-yellow-900/10 rounded-xl p-4 mb-6 flex items-center justify-between border border-yellow-100 dark:border-yellow-900/30">
-                                <div className="text-xs font-bold text-yellow-700 dark:text-yellow-400">専門家スコア</div>
+                                <div className="text-xs font-bold text-yellow-700 dark:text-yellow-400">データ分析スコア</div>
                                 <div className="flex items-end gap-2 text-yellow-500">
                                     <span className="text-3xl font-black leading-none tracking-tighter">{rank1.score.toFixed(1)}</span>
                                     <div className="flex pb-1.5 gap-0.5">
@@ -92,7 +92,7 @@ const RankingSection: React.FC = () => {
                                 <img alt="Rank 2 Product" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src={rank2.image} />
                             </div>
                             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 mb-5 flex items-center justify-between">
-                                <div className="text-xs font-bold text-gray-500">専門家スコア</div>
+                                <div className="text-xs font-bold text-gray-500">データ分析スコア</div>
                                 <div className="flex items-end gap-1.5 text-yellow-500">
                                     <span className="text-2xl font-bold leading-none">{rank2.score.toFixed(1)}</span>
                                     <div className="flex pb-1 gap-0.5">
@@ -135,7 +135,7 @@ const RankingSection: React.FC = () => {
                                 <img alt="Rank 3 Product" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src={rank3.image} />
                             </div>
                             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 mb-5 flex items-center justify-between">
-                                <div className="text-xs font-bold text-gray-500">専門家スコア</div>
+                                <div className="text-xs font-bold text-gray-500">データ分析スコア</div>
                                 <div className="flex items-end gap-1.5 text-yellow-500">
                                     <span className="text-2xl font-bold leading-none">{rank3.score.toFixed(1)}</span>
                                     <div className="flex pb-1 gap-0.5">

@@ -2,7 +2,13 @@
  * Centralized logic for generating affiliate links.
  * Ensures that the Amazon Associate Tag is ALWAYS present.
  */
-export function getAmazonLink(asin?: string, affiliateLink?: string): string | null {
+export function getAmazonLink(asin?: string, affiliateLink?: string, productId?: string): string | null {
+    // 0. Priority: Cloaked Link (if productId provided)
+    // 0. Priority: Cloaked Link (if productId provided)
+    if (productId) {
+        return `/link/${productId}`;
+    }
+
     // 1. Get Tag from Env or use strict fallback
     // Note: The fallback 'demo-22' is for development. 
     // The user MUST set NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG in production.

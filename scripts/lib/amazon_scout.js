@@ -77,7 +77,9 @@ async function scoutAmazonProducts(keyword, maxCount = 5, pageNumber = 1) {
 
                     // --- FILTER: Junk Removal (Cases, Cables, Accessories) ---
                     const lowerTitle = title.toLowerCase();
-                    const junkKeywords = ["ケース", "カバー", "保護", "case", "cover", "cable", "ケーブル", "フィルム", "イヤーピース"];
+                    const lowerKeyword = keyword.toLowerCase();
+                    const junkKeywords = ["ケース", "カバー", "保護", "case", "cover", "cable", "ケーブル", "フィルム", "イヤーピース", "skin", "sticker", "ear hooks", "replacement"];
+
                     if (junkKeywords.some(kw => lowerTitle.includes(kw))) {
                         // Double check: does it explicitly say "Earphone" AND "Case"?
                         // If it says "Wireless Earphones Charging Case", that's junk.
@@ -85,10 +87,30 @@ async function scoutAmazonProducts(keyword, maxCount = 5, pageNumber = 1) {
                         // Simple heuristic: If "Case" is present, it's 90% risk. 
                         // But "Waterproof Case" might be a feature. 
                         // Safest: If "for AirPods" or "用" (for) is present with Case/Cover.
-                        if (lowerTitle.includes("用") || lowerTitle.includes("for")) return;
+                        if (lowerTitle.includes("用") || lowerTitle.includes("for") || lowerTitle.includes("compatible with")) return;
 
                         // If title starts with "Case", it's junk.
                         if (lowerTitle.startsWith("case") || lowerTitle.startsWith("ケース")) return;
+
+                        // If title contains "sticker" or "skin", it's junk
+                        if (lowerTitle.includes("sticker") || lowerTitle.includes("skin")) return;
+                    }
+
+                    // --- STRICT MATCH VALIDATION ---
+                    // If we are searching for a specific model (e.g. "WF-C510"), the result MUST contain that model string.
+                    const modelMatch = keyword.match(/[A-Za-z0-9-]{4,}/); // Find model-like string (e.g. WF-C510)
+                    if (modelMatch) {
+                        const modelId = modelMatch[0].toLowerCase();
+                        if (!lowerTitle.includes(modelId)) {
+                            // console.log(`   ⚠️ Skipping "${title}" - Does not contain model ID "${modelId}"`);
+                            return;
+                        }
+                    } else {
+                        // General strictness: The result must contain at least one part of the keyword
+                        const keywordParts = lowerKeyword.split(' ').filter(p => p.length > 2);
+                        if (keywordParts.length > 0 && !keywordParts.some(p => lowerTitle.includes(p))) {
+                            return;
+                        }
                     }
 
                     results.push({
@@ -97,7 +119,7 @@ async function scoutAmazonProducts(keyword, maxCount = 5, pageNumber = 1) {
                         brand: "Unknown",
                         price: `¥${priceRaw}`,
                         priceVal: priceVal,
-                        image: imgEl.src,
+                        image: imgEl.src.replace(/\._AC_.*(\.[^\.]+)$/, '$1').replace(/\._SX.*(\.[^\.]+)$/, '$1').replace(/\._SY.*(\.[^\.]+)$/, '$1'),
                         itemUrl: linkEl ? linkEl.href : `https://www.amazon.co.jp/dp/${asin}`,
                         asin: asin,
                         rating: ratingEl ? parseFloat(ratingEl.getAttribute('aria-label').split('5つ星のうち')[1]) : 4.0,
@@ -168,18 +190,40 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
             // Try to auto-start Chrome with remote debugging port
             let chromeStarted = false;
             try {
-                const { exec } = require('child_process');
+                const { spawn, execSync } = require('child_process');
                 const os = require('os');
+                const path = require('path');
+                const fs = require('fs');
 
-                // Windows command to start Chrome with remote debugging (using default profile for login sessions)
-                const userDataDir = process.env.LOCALAPPDATA ? `${process.env.LOCALAPPDATA}\\\\Google\\\\Chrome\\\\User Data` : '';
-                const chromeCmd = os.platform() === 'win32'
-                    ? `start chrome --remote-debugging-port=9222 --no-first-run --no-default-browser-check${userDataDir ? ` --user-data-dir="${userDataDir}"` : ''}`
-                    : 'google-chrome --remote-debugging-port=9222 --no-first-run --no-default-browser-check &';
+                const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 
-                exec(chromeCmd, (err) => {
-                    if (err) console.log(`      ⚠️ Chrome start command error: ${err.message}`);
-                });
+                // Check if Chrome is running
+                let isChromeRunning = false;
+                try {
+                    const stdout = execSync('tasklist /FI "IMAGENAME eq chrome.exe" /NH').toString();
+                    if (stdout.includes('chrome.exe')) isChromeRunning = true;
+                } catch (e) { /* ignore */ }
+
+                if (isChromeRunning) {
+                    console.log('      ⚠️ Standard Chrome is running but not debuggable. Restarting in Debug Mode...');
+                    console.log('      🔪 Closing existing Chrome processes...');
+                    try { execSync('taskkill /F /IM chrome.exe'); } catch (e) { }
+                    await new Promise(r => setTimeout(r, 2000));
+                }
+
+                // Launch with Default Profile via PowerShell (Robust method)
+                const userDataPath = process.env.LOCALAPPDATA + "\\Google\\Chrome\\User Data";
+                const psCommand = `Start-Process 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' -ArgumentList '--remote-debugging-port=9222', '--user-data-dir=${userDataPath}', '--profile-directory=Default'`;
+
+                try {
+                    execSync(`powershell -Command "${psCommand}"`, { stdio: 'inherit' });
+                } catch (e) {
+                    console.error('      ❌ Failed to auto-launch Chrome:', e.message);
+                    throw e;
+                }
+
+                // No process ref needed for execSync
+                chromeStarted = true;
 
                 // Wait for Chrome to be ready (poll for up to 10 seconds)
                 console.log("   ⏳ Waiting for Chrome to start...");
@@ -217,8 +261,12 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
                 console.log(`   ⚠️ Chrome auto-start failed: ${startErr.message}`);
             }
 
-            // Final fallback: headless browser
+            // Final fallback: headless browser -> REMOVED to avoid Login Wall
             if (!chromeStarted) {
+                console.log("   ❌ Failed to connect to Remote Chrome. Aborting review scrape to avoid Login Wall.");
+                console.log("   ⚠️ Please ensure Chrome is running with: --remote-debugging-port=9222");
+                throw new Error("Remote debugging connection failed");
+                /* 
                 console.log("   🔄 Falling back to internal headless browser...");
                 try {
                     browser = await puppeteer.launch({
@@ -229,6 +277,7 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
                     console.error("   ❌ Failed to launch fallback browser:", launchError.message);
                     throw new Error("Browser unavailable");
                 }
+                */
             }
         }
 

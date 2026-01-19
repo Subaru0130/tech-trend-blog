@@ -13,7 +13,7 @@ export default function Footer() {
                             <span className="text-xl font-black tracking-tight font-sans">ChoiceGuide</span>
                         </a>
                         <p className="text-stone-400 text-sm leading-relaxed mb-8 max-w-sm">
-                            ChoiceGuideは、あなたの「失敗しない買い物」をサポートする製品比較メディアです。専門家の知見と検証データを元に、公平なランキング情報をお届けします。
+                            ChoiceGuideは、あなたの「失敗しない買い物」をサポートする製品比較メディアです。膨大なデータ分析と独自の評価基準を元に、公平なランキング情報をお届けします。
                         </p>
                         <div className="flex gap-4">
                             <a className="text-stone-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full" href="#"><span className="material-symbols-outlined">public</span></a>

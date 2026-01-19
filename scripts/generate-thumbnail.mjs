@@ -11,9 +11,9 @@ const __dirname = path.dirname(__filename);
 
 // Initialize Gemini (Imagen 3 is accessed via the same SDK now, or we simulate the flow)
 // Note: As of early 2025, Imagen 3 access might be via specific endpoint or model name 'imagen-3.0-generate-001'
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 if (!GEMINI_API_KEY) {
-    console.error("Error: GEMINI_API_KEY is not set in .env.local");
+    console.error("Error: GEMINI_API_KEY or GOOGLE_API_KEY is not set in .env.local");
     process.exit(1);
 }
 

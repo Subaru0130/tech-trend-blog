@@ -15,7 +15,7 @@ require('dotenv').config({ path: '.env.local' });
 const { execSync, spawn } = require('child_process');
 const ai_writer = require('./lib/ai_writer');
 const { scoutAmazonProducts } = require('./lib/amazon_scout'); // ★ The "Missing Link"
-const { generateRankingArticle, generateReviewPage, updateDatabase } = require('./lib/generator');
+const { generateRankingArticle, generateReviewPage, updateDatabase, keywordToEnglishSlug } = require('./lib/generator');
 const { processAffiliateLinks, processAmazonLink } = require('./lib/affiliate_processor'); // ★ Affiliate tag processor
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { normalizeSpecs } = require('./lib/spec_normalizer.js');
@@ -40,16 +40,35 @@ async function ensureChromeDebugMode() {
         return true;
     }
 
-    // Not available - try to start Chrome with user profile
+    // Not available - try to start Chrome with smart profile selection
     console.log('🚀 Starting Chrome with remote debugging...');
     const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-    const userDataDir = process.env.LOCALAPPDATA + '\\Google\\Chrome\\User Data';
 
-    chromeProcess = spawn(chromePath, [
-        '--remote-debugging-port=9222',
-        `--user-data-dir=${userDataDir}`,
-        '--profile-directory=Default'
-    ], {
+    // Check if Chrome is already running to avoid profile lock issues
+    let isChromeRunning = false;
+    try {
+        const stdout = execSync('tasklist /FI "IMAGENAME eq chrome.exe" /NH').toString();
+        if (stdout.includes('chrome.exe')) isChromeRunning = true;
+    } catch (e) { /* ignore */ }
+
+    let launchArgs = ['--remote-debugging-port=9222'];
+    let userDataDir;
+
+    // Use a unique temporary profile to avoid locking the main user profile
+    // This allows the bot to run alongside the user's normal browsing
+    const tempProfileDir = path.join(process.env.TEMP || '/tmp', 'chrome-bot-profile-' + Date.now());
+    if (!fs.existsSync(tempProfileDir)) fs.mkdirSync(tempProfileDir, { recursive: true });
+
+    userDataDir = tempProfileDir;
+    launchArgs.push(`--user-data-dir=${userDataDir}`);
+    // launchArgs.push('--profile-directory=Default'); // Not needed for temp profile
+
+    if (isChromeRunning) {
+        console.log(`   ⚠️ WARNING: Standard Chrome is running. This script needs to use your main profile.`);
+        console.log(`      Please CLOSE CHROME completely to avoid profile lock errors.`);
+    }
+
+    chromeProcess = spawn(chromePath, launchArgs, {
         detached: true,
         stdio: 'ignore'
     });
@@ -87,7 +106,7 @@ async function ensureChromeDebugMode() {
 // Gemini AI for product filtering
 const GEMINI_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const filterModel = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" }); // Fast model for filtering
+const filterModel = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" }); // High accuracy model for filtering
 
 // 1. Configuration
 const JSON_FILE = process.argv[2];
@@ -123,6 +142,27 @@ console.log(`   Hook: ${BLUEPRINT.sales_hook}`);
 const { generateDefaultLabels, generateSitemap } = require('./lib/generator');
 const targetLabels = generateDefaultLabels(TARGET_KEYWORD, BLUEPRINT);
 console.log(`🎯 Target Spec Labels: ${JSON.stringify(targetLabels)}`);
+
+// ★ CRITICAL: Override Blueprint Title to ensure honesty
+// Remove "Pro approved", "Expert", "Definitive Edition" if they are not true
+// Enforce the specific situation in the title
+if (BLUEPRINT.title) {
+    let safeTitle = BLUEPRINT.title;
+    const bannedPhrases = ['プロも認めた', '専門家が選ぶ', '徹底取材', '決定版'];
+    bannedPhrases.forEach(phrase => {
+        if (safeTitle.includes(phrase)) {
+            console.log(`   ⚠️ Removing fake authority claim: "${phrase}"`);
+            safeTitle = safeTitle.replace(phrase, '【必見】');
+        }
+    });
+    // Ensure situation is in title
+    if (BLUEPRINT.situation_category && !safeTitle.includes(BLUEPRINT.situation_category)) {
+        console.log(`   ⚠️ Injecting situation into title: "${BLUEPRINT.situation_category}"`);
+        safeTitle = `【${BLUEPRINT.situation_category}】${safeTitle}`;
+    }
+    BLUEPRINT.title = safeTitle;
+    console.log(`   📝 Final Title: ${BLUEPRINT.title}`);
+}
 
 /**
  * Auto-detect product category from keyword for universal category support
@@ -209,8 +249,11 @@ function filterProductsByPrice(products, keyword) {
  * Works for ANY category: earphones, headphones, refrigerators, etc.
  * No hardcoded rules - AI decides based on keyword, title, and specs.
  */
-async function filterProductsWithAI(products, keyword, blueprint) {
+async function filterProductsWithAI(products, keyword, blueprint, requiredFeatures = []) {
     console.log(`   🤖 AI Filtering ${products.length} products for "${keyword}"...`);
+    if (requiredFeatures.length > 0) {
+        console.log(`      Criteria: Must have [${requiredFeatures.join(', ')}]`);
+    }
 
     if (products.length === 0) return [];
 
@@ -231,18 +274,21 @@ ${batch.map((p, idx) => `
 ---
 商品${idx + 1}:
 名前: ${p.name || 'Unknown'}
-タイプ: ${p.kakakuSpecs?.['タイプ'] || p.kakakuSpecs?.['装着方式'] || '不明'}
-接続: ${p.kakakuSpecs?.['接続タイプ'] || p.kakakuSpecs?.['Bluetooth'] || '不明'}
+スペック情報: ${JSON.stringify(p.kakakuSpecs || {}, null, 0).slice(0, 1000)}
 ---
 `).join('')}
 
-判定基準（カテゴリ一致のみ）:
-1. 「イヤホン」記事 → ヘッドホン/ヘッドセットは不可、イヤホンのみ可
-2. 「ワイヤレス」記事 → 有線のみの商品は不可
-3. 「完全ワイヤレス」記事 → 左右一体型や有線は不可
+判定基準:
+1. **カテゴリ一致**: 記事テーマ「${keyword}」にふさわしいカテゴリか？
+   - 「イヤホン」ならヘッドホンは不可。
+   - 「ワイヤレス」なら有線は不可。
+2. **必須機能の有無**: 以下の機能を持っているか？
+   【必須機能リスト】: ${requiredFeatures.length > 0 ? requiredFeatures.join(', ') : '特になし'}
+   - スペック情報から推測してください（例: "IPX4" → "防水あり"と判断してOK）。
+   - 家具や家電の場合も、スペック値から判断してください。
 
-注意: ノイズキャンセリングの有無などの「機能」は判定しないでください。
-機能フィルタは別途行われます。カテゴリ（商品タイプ）のみで判定してください。
+回答形式 (JSON配列のみ):
+[true, false, true, true, false]
 
 回答形式 (JSON配列のみ):
 [true, false, true, true, false]
@@ -453,7 +499,8 @@ function cleanProductName(rawName, knownBrand = null) {
 
         // 1.5 AI Filter: Remove products that don't match article theme
         // (e.g., headphones from earphone search, wired from wireless search)
-        const filteredBatch = await filterProductsWithAI(amazonLinkedBatch, TARGET_KEYWORD, BLUEPRINT);
+        // 1.5 AI Filter: Remove products that don't match article theme OR missing features
+        const filteredBatch = await filterProductsWithAI(amazonLinkedBatch, TARGET_KEYWORD, BLUEPRINT, BLUEPRINT.required_features);
         console.log(`   🤖 AI Filter: ${filteredBatch.length}/${amazonLinkedBatch.length} passed`);
 
         // 2. Process Candidates (Amazon Verification & Enrichment)
@@ -507,44 +554,9 @@ function cleanProductName(rawName, knownBrand = null) {
                 const enrichedData = await genSpecs(verifiedItem.name, { target_reader: BLUEPRINT.target_reader, comparison_axis: BLUEPRINT.comparison_axis }, verifiedItem.asin, externalSpecs, Object.values(targetLabels));
                 Object.assign(verifiedItem, enrichedData);
 
-                // --- E. Feature Filter (Generic for any category) ---
-                const requiredFeatures = BLUEPRINT.required_features || [];
-                let featureMissing = false;
-                if (requiredFeatures.length > 0) {
-                    for (const feature of requiredFeatures) {
-                        const featureLower = feature.toLowerCase();
-                        // Create alternative search terms (e.g., ノイズキャンセリング -> NC, ノイキャン)
-                        const searchTerms = [featureLower];
-                        if (featureLower.includes('ノイズ')) searchTerms.push('nc', 'ノイキャン', 'anc');
-                        if (featureLower.includes('防水')) searchTerms.push('ipx', 'ip6', 'ip7', 'ip8');
-                        if (featureLower.includes('省エネ')) searchTerms.push('省電力', 'エコ');
+                // --- E. Feature Filter (REMOVED - Merged into AI Filter) ---
+                // AI now handles "Required Features" check universaly.
 
-                        // Check kakakuSpecs for the feature (key OR value contains keywords)
-                        const hasInKakakuSpecs = verifiedItem.kakakuSpecs && Object.entries(verifiedItem.kakakuSpecs).some(([k, v]) => {
-                            const keyLower = k.toLowerCase();
-                            const valLower = typeof v === 'string' ? v.toLowerCase() : '';
-                            // Check if any search term is in key or value
-                            const keyMatch = searchTerms.some(term => keyLower.includes(term));
-                            const valMatch = searchTerms.some(term => valLower.includes(term));
-                            // For key match, still require value to indicate presence (○, 対応, etc)
-                            const valueIndicatesPresence = typeof v === 'string' && (v === '○' || v.includes('対応') || v.includes('あり') || v.includes('搭載'));
-                            return (keyMatch && valueIndicatesPresence) || valMatch;
-                        });
-
-                        // Check name and description
-                        const textToSearch = (verifiedItem.name + ' ' + (verifiedItem.description || '')).toLowerCase();
-                        const hasInText = searchTerms.some(term => textToSearch.includes(term));
-
-                        const hasFeature = hasInKakakuSpecs || hasInText;
-
-                        if (!hasFeature) {
-                            console.log(`   ❌ Missing feature [${feature}]: ${verifiedItem.name}`);
-                            featureMissing = true;
-                            break;
-                        }
-                    }
-                }
-                if (featureMissing) continue;
 
                 // --- F. Duplicate Check ---
                 const isDuplicate = validatedLineup.some(p => p.id === verifiedItem.id || p.asin === verifiedItem.asin);
@@ -552,6 +564,42 @@ function cleanProductName(rawName, knownBrand = null) {
                     console.log(`   🔄 Duplicate ASIN: ${verifiedItem.name}`);
                     continue;
                 }
+
+                // --- F.5 Review Collection (MOVED BEFORE AI) ---
+                // We collect reviews NOW so the AI can use them for Pros/Cons/Grade generation
+                if (verifiedItem.asin) {
+                    console.log(`   📖 Collecting reviews for: ${verifiedItem.name.slice(0, 25)}...`);
+                    try {
+                        // 1. Amazon Reviews
+                        const reviewData = await scrapeProductReviews(verifiedItem.asin, 10);
+
+                        // 2. Kakaku Reviews
+                        console.log(`   📝 Collecting 価格.com口コミ...`);
+                        const kakakuUrl = verifiedItem.kakakuUrl || null;
+                        const kakakuReviews = await scrapeKakakuReviews(verifiedItem.name, kakakuUrl, 50);
+
+                        // Store Raw Data
+                        verifiedItem.reviewInsights = reviewData?.summary;
+                        verifiedItem.rawReviews = {
+                            positive: reviewData?.positive?.slice(0, 5) || [],
+                            negative: reviewData?.negative?.slice(0, 3) || [],
+                            situational: reviewData?.situational?.slice(0, 5) || [],
+                            kakaku: kakakuReviews && kakakuReviews.summary.totalFound > 0 ? {
+                                positive: kakakuReviews.positive || [],
+                                negative: kakakuReviews.negative || [],
+                                all: kakakuReviews.all || []
+                            } : null
+                        };
+
+                        const azCount = reviewData?.summary?.totalFound || 0;
+                        const kkCount = kakakuReviews?.summary?.totalFound || 0;
+                        console.log(`      ✅ Got reviews: Amazon(${azCount}) + Kakaku(${kkCount})`);
+
+                    } catch (reviewErr) {
+                        console.log(`      ⚠️ Review collection failed: ${reviewErr.message}`);
+                    }
+                }
+
                 // --- G. Enrichment: Collect specs from Amazon + Kakaku ---
                 console.log(`   🔍 Enriching Specs: ${verifiedItem.name}...`);
                 try {
@@ -604,15 +652,18 @@ function cleanProductName(rawName, knownBrand = null) {
                             const rawSpecContext = verifiedItem.specs.map(s => `${s.label}: ${s.value}`).join('\n');
 
                             // Call AI with targetLabels to enforce S/A/B/C grades
+                            // NOW PASSING RAW REVIEWS as the 6th argument!
                             const aiSpecsData = await ai_writer.generateProductSpecsAndProsCons(
                                 { name: verifiedItem.name, realSpecs: { specs: verifiedItem.specs } },
                                 { comparison_axis: BLUEPRINT.comparison_axis },
                                 verifiedItem.asin,
                                 rawSpecContext,
-                                targetLabels ? Object.values(targetLabels) : null // <--- The Key Fix
+                                targetLabels ? Object.values(targetLabels) : null,
+                                verifiedItem.rawReviews // <--- NEW ARGUMENT: Real Scraped Reviews
                             );
 
                             if (aiSpecsData && aiSpecsData.specs && aiSpecsData.specs.length > 0) {
+
                                 // Prepend AI specs (Grades) to the spec list so they are picked up first by generator.js
                                 // Or better: Replace specs that match the target labels?
                                 // generator.js maps spec1 -> specs[0], spec2 -> specs[1]... logic is a bit weak there.
@@ -629,6 +680,13 @@ function cleanProductName(rawName, knownBrand = null) {
                                     ...aiSpecsData.specs,
                                     ...verifiedItem.specs.filter(s => !aiSpecsData.specs.some(ai => ai.label === s.label))
                                 ];
+
+                                // ASSIGN PROS/CONS (Review-based)
+                                if (aiSpecsData.pros && aiSpecsData.pros.length > 0) {
+                                    verifiedItem.pros = aiSpecsData.pros;
+                                    verifiedItem.cons = aiSpecsData.cons;
+                                    console.log(`      ✨ Applied Review-Based Pros/Cons from AI`);
+                                }
                             }
                         } catch (aiSpecErr) {
                             console.log(`      ⚠️ AI Grade Gen failed: ${aiSpecErr.message}`);
@@ -639,71 +697,8 @@ function cleanProductName(rawName, knownBrand = null) {
                     console.log(`      ⚠️ Spec enrichment failed: ${specErr.message?.slice(0, 30)}`);
                 }
 
-                // --- H. Review Collection: Get Amazon & Kakaku Reviews for Insights ---
-                // FORCE: Always collect reviews to ensure quality, even if pros/cons exist
-                if (verifiedItem.asin) {
-                    console.log(`   📖 Collecting reviews for: ${verifiedItem.name.slice(0, 25)}...`);
-                    try {
-                        // 1. Amazon Reviews
-                        const reviewData = await scrapeProductReviews(verifiedItem.asin, 10); // Amazon: 10件（ページネーション不安定のため）
+                // (Old Step H/I Removed - Logic moved to F.5)
 
-                        // 2. Kakaku Reviews
-                        console.log(`   📝 Collecting 価格.com口コミ...`);
-                        const kakakuUrl = verifiedItem.kakakuUrl || null;
-                        const kakakuReviews = await scrapeKakakuReviews(verifiedItem.name, kakakuUrl, 50); // 価格.com: 50件
-
-                        // Store Raw Data
-                        verifiedItem.reviewInsights = reviewData?.summary;
-                        verifiedItem.rawReviews = {
-                            positive: reviewData?.positive?.slice(0, 5) || [],
-                            negative: reviewData?.negative?.slice(0, 3) || [],
-                            situational: reviewData?.situational?.slice(0, 5) || []
-                        };
-
-                        if (kakakuReviews && kakakuReviews.summary.totalFound > 0) {
-                            verifiedItem.rawReviews.kakaku = {
-                                positive: kakakuReviews.positive || [],
-                                negative: kakakuReviews.negative || [],
-                                all: kakakuReviews.all || []
-                            };
-                        }
-
-                        const azCount = reviewData?.summary?.totalFound || 0;
-                        const kkCount = kakakuReviews?.summary?.totalFound || 0;
-                        console.log(`      ✅ Got reviews: Amazon(${azCount}) + Kakaku(${kkCount})`);
-
-                        if (azCount > 0 || kkCount > 0) {
-                            // --- I. AI Analysis: Generate pros/cons from REAL reviews (SEO value!) ---
-                            try {
-                                // Merge data for AI (positive/negative only)
-                                const combinedData = {
-                                    positive: [...(reviewData?.positive || []), ...(kakakuReviews?.positive || [])],
-                                    negative: [...(reviewData?.negative || []), ...(kakakuReviews?.negative || [])]
-                                };
-
-
-
-                                console.log(`      ⚡️ PASSING REVIEWS TO AI: Pos(${combinedData.positive.length}), Neg(${combinedData.negative.length})`);
-
-                                const insights = await analyzeReviewsForInsights(
-                                    verifiedItem.name,
-                                    combinedData,
-                                    BLUEPRINT.comparison_axis || ''
-                                );
-                                if (insights) {
-                                    verifiedItem.pros = insights.enhancedPros || verifiedItem.pros;
-                                    verifiedItem.cons = insights.enhancedCons || verifiedItem.cons;
-                                    verifiedItem.editorComment = insights.editorComment;
-                                    console.log(`      ✅ AI generated review-based pros/cons (Dual Source)`);
-                                }
-                            } catch (aiErr) {
-                                console.log(`      ⚠️ AI review analysis failed: ${aiErr.message?.slice(0, 30)}`);
-                            }
-                        }
-                    } catch (reviewErr) {
-                        console.log(`      ⚠️ Review collection failed: ${reviewErr.message?.slice(0, 30)}`);
-                    }
-                }
 
                 // Apply our affiliate tags before saving
                 const processedItem = processAffiliateLinks(verifiedItem);
@@ -726,11 +721,24 @@ function cleanProductName(rawName, knownBrand = null) {
                 let resultJson = execSync(`node scripts/verify_amazon_product.js "${candidate.amazonUrl}"`, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
                 let result = JSON.parse(resultJson);
 
-                // Fallback: If direct link fails, search by product name
+                // CRITICAL: If blocked by Amazon (Captcha/503), DO NOT SEARCH BY NAME.
+                // Searching by name when we are already blocked will likely fail or yield garbage.
+                if (result.error === 'BLOCKED') {
+                    console.log(`      🛑 BLOCKED by Amazon (${result.reason}). Skipping fallback search to prevent errors.`);
+                    continue; // Skip this product safely
+                }
+
+                // Fallback: If direct link fails (and NOT blocked), search by product name
                 if (!result.found) {
                     console.log(`      🔄 Direct link failed, searching by name...`);
                     resultJson = execSync(`node scripts/verify_amazon_product.js "${candidate.name.replace(/"/g, '\\"')}"`, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
                     result = JSON.parse(resultJson);
+
+                    // Check block again after search
+                    if (result.error === 'BLOCKED') {
+                        console.log(`      🛑 BLOCKED during name search. Skipping.`);
+                        continue;
+                    }
                 }
 
                 if (result.found && result.asin) { // Just need ASIN, don't check hasPrice
@@ -878,6 +886,8 @@ function cleanProductName(rawName, knownBrand = null) {
                                 verifiedItem.pros = insights.enhancedPros || verifiedItem.pros;
                                 verifiedItem.cons = insights.enhancedCons || verifiedItem.cons;
                                 verifiedItem.editorComment = insights.editorComment;
+                                verifiedItem.specVerification = insights.specVerification;
+                                verifiedItem.userScenario = insights.userScenario;
                                 console.log(`      ✅ AI generated review-based pros/cons (Dual Source)`);
                             }
                         } catch (aiErr) {
@@ -972,7 +982,9 @@ function cleanProductName(rawName, knownBrand = null) {
             costReason: product.costReason || '',
             rawReviews: product.rawReviews || null,
             reviewInsights: product.reviewInsights || null,
-            editorComment: product.editorComment || ''
+            editorComment: product.editorComment || '',
+            specVerification: product.specVerification || '',
+            userScenario: product.userScenario || ''
         };
 
         if (existingIndex >= 0) {
@@ -1017,18 +1029,52 @@ function cleanProductName(rawName, knownBrand = null) {
         const thumbPrompt = seoMetadata.title || `Best ${TARGET_KEYWORD} Selection`;
         const b64 = await ai_writer.generateBlogThumbnail(thumbPrompt);
         if (b64) {
+            // Use our new Helper for consistency if needed, but here we have base64.
+            // Manually save for now as it returns b64, not URL.
             const p = path.resolve(__dirname, '../public/images/articles');
             if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
-            const f = `${TARGET_KEYWORD.replace(/\s/g, '_')}.jpg`;
-            fs.writeFileSync(path.join(p, f), Buffer.from(b64, 'base64'));
+            const slug = keywordToEnglishSlug(TARGET_KEYWORD);
+            const f = `${slug}.jpg`;
+            const fullPath = path.join(p, f);
+            fs.writeFileSync(fullPath, Buffer.from(b64, 'base64'));
+
+            // Inject Metadata into Thumbnail too!
+            const { injectAiMetadata } = require('./lib/image_metadata');
+            await injectAiMetadata(fullPath);
+
             thumbPath = `/images/articles/${f}`;
-            console.log(`   ✅ Thumbnail saved: ${thumbPath}`);
+            console.log(`   ✅ Thumbnail saved & tagged: ${thumbPath}`);
         } else {
             console.log(`   ⚠️ Thumbnail generation returned null, using product image as fallback`);
         }
     } catch (e) {
         console.log(`   ⚠️ Thumbnail generation failed: ${e.message}`);
     }
+
+    // --- NEW: Process Product Images (Download & Inject Metadata) ---
+    console.log(`\n   📸 Processing Product Images (SEO & Metadata)...`);
+    const { downloadImage, generateSemanticFilename } = require('./lib/image_downloader');
+
+    for (const product of validatedLineup) {
+        if (!product.image || !product.image.startsWith('http')) continue;
+
+        try {
+            // Generate SEO filename: "sony-wf-1000xm5-beef.jpg"
+            const filename = generateSemanticFilename(product.name, product.id || product.asin);
+
+            // Download and Inject Metadata
+            const localPath = await downloadImage(product.image, filename);
+
+            if (localPath) {
+                product.image = localPath; // Update object with local path
+                // console.log(`      ✅ Saved: ${product.name.slice(0, 20)}... -> ${filename}`);
+            }
+        } catch (imgErr) {
+            console.log(`      ⚠️ Image download failed for ${product.name}: ${imgErr.message}`);
+            // Keep original URL as fallback
+        }
+    }
+    console.log(`   ✅ All product images processed.`);
 
     // 4. Generate Ranking Page
     generateRankingArticle(TARGET_KEYWORD, validatedLineup, productsData, buyingGuideBody, seoMetadata, thumbPath);
@@ -1068,6 +1114,17 @@ function cleanProductName(rawName, knownBrand = null) {
     // 8. Save Enriched Data to Master JSON
     fs.writeFileSync(PRODUCTS_JSON_PATH, JSON.stringify(productsData, null, 4));
     console.log(`\n🎉 Article Generated: src/content/articles/${TARGET_KEYWORD}.md`);
+
+    // --- NEW: Strict Quality Gate ---
+    console.log('\n🛡️ Running Strict Quality Gate...');
+    try {
+        execSync('node scripts/check-quality.mjs', { stdio: 'inherit' });
+        console.log('✅ Quality Gate Passed.');
+    } catch (e) {
+        console.warn('⚠️ Quality Gate flagged issues. Please review components manually.');
+        // We don't exit(1) here to allow the process to finish "successfully" as the file is saved,
+        // but we warn the user.
+    }
 
     // Ensure clean exit
     process.exit(0);

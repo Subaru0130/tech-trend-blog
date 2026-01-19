@@ -127,6 +127,16 @@ export default async function ReviewPage({ params }: Props) {
 
 
     const parentArticle = getArticleByProductId(product.id);
+
+    // Create a display product with the correct rank from the parent article context
+    const displayProduct = { ...product };
+    if (parentArticle?.rankingItems) {
+        const rankingItem = parentArticle.rankingItems.find(item => item.productId === product.id);
+        if (rankingItem) {
+            displayProduct.rank = rankingItem.rank;
+        }
+    }
+
     const relatedProducts = parentArticle?.rankingItems
         ? (parentArticle.rankingItems
             .sort((a, b) => a.rank - b.rank) // Ensure correct order
@@ -165,7 +175,7 @@ export default async function ReviewPage({ params }: Props) {
 
                         {/* Use the new dynamic component with review content injected */}
                         <ProductContent
-                            product={product}
+                            product={displayProduct}
                             parentArticle={parentArticle}
                             relatedProducts={topRelatedProducts}
                             relatedArticles={relatedArticles}

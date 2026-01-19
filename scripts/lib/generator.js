@@ -419,4 +419,4 @@ function generateSitemap() {
     console.log(`  🗺️  Sitemap Updated: sitemap.xml (${urls.size} URLs)`);
 }
 
-module.exports = { generateRankingArticle, generateReviewPage, updateDatabase, generateDefaultLabels, generateSitemap };
+module.exports = { generateRankingArticle, generateReviewPage, updateDatabase, generateDefaultLabels, generateSitemap, keywordToEnglishSlug };

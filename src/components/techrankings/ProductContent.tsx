@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import { useRef, useState } from 'react';
+import { getAmazonLink } from '@/lib/affiliate';
 import { Product, Article } from '@/types';
 
 interface ProductContentProps {
@@ -76,9 +77,11 @@ const ProductContent: React.FC<ProductContentProps> = ({
                                         2025年ベストバイ
                                     </span>
                                 )}
-                                <span className="bg-surface-subtle text-text-sub text-[11px] font-bold px-3 py-1 rounded-full border border-border-color">
-                                    おすすめランキング {product.rank}位
-                                </span>
+                                {product.rank && product.rank > 0 && (
+                                    <span className="bg-surface-subtle text-text-sub text-[11px] font-bold px-3 py-1 rounded-full border border-border-color">
+                                        おすすめランキング {product.rank}位
+                                    </span>
+                                )}
                             </div>
                             <h1 className="text-3xl md:text-5xl font-black text-primary leading-tight mb-6">
                                 {product.name}
@@ -128,7 +131,7 @@ const ProductContent: React.FC<ProductContentProps> = ({
             {/* Sticky Navigation */}
             <div className="sticky top-16 md:top-20 z-40 bg-white/95 backdrop-blur shadow-sm border-b border-border-color mb-16">
                 <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center gap-10 h-14">
-                    <a className="text-sm font-bold text-accent border-b-2 border-accent h-full flex items-center px-1" href="#overview">専門家による検証</a>
+                    <a className="text-sm font-bold text-accent border-b-2 border-accent h-full flex items-center px-1" href="#overview">スペック徹底検証</a>
                     <a className="text-sm font-bold text-text-sub hover:text-primary transition-colors h-full flex items-center px-1" href="#specs">詳細スペック</a>
                     <div className="ml-auto hidden sm:flex items-center gap-4">
                         <span className="text-sm font-bold text-primary">{product.price}</span>
@@ -151,7 +154,7 @@ const ProductContent: React.FC<ProductContentProps> = ({
                             <div className="size-12 rounded-2xl bg-accent-light flex items-center justify-center text-accent">
                                 <span className="material-symbols-outlined text-3xl">verified</span>
                             </div>
-                            <h2 className="!m-0 !border-0 text-3xl">専門家による徹底検証<br className="hidden md:block" />{product.name}の実力とは？</h2>
+                            <h2 className="!m-0 !border-0 text-3xl">スペック徹底分析<br className="hidden md:block" />{product.name}の実力とは？</h2>
                         </div>
                         <p className="text-xl font-medium text-primary mb-10 leading-relaxed border-l-4 border-accent-light pl-6">
                             {product.description}
@@ -306,7 +309,7 @@ const ProductContent: React.FC<ProductContentProps> = ({
                         {product.affiliateLinks.amazon && (
                             <a
                                 className="relative group flex items-center justify-center gap-3 w-full py-5 px-8 bg-[#FF9900] hover:bg-[#E68A00] text-white rounded-2xl shadow-lg transition-all hover:-translate-y-1"
-                                href={product.affiliateLinks.amazon}
+                                href={getAmazonLink(product.asin, product.affiliateLinks.amazon, product.id) || '#'}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >

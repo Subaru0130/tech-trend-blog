@@ -101,7 +101,7 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
                                     });
 
                                     // Generate Links
-                                    const amzLink = getAmazonLink(product.asin, product.affiliateLinks?.amazon);
+                                    const amzLink = getAmazonLink(product.asin, product.affiliateLinks?.amazon, product.id);
                                     const rakLink = getRakutenLink(product.name, product.affiliateLinks?.rakuten);
 
                                     // Determine rank from index (0-based) since product.rank might be undefined
@@ -169,7 +169,7 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
                                                 <div className="flex flex-col items-center">
                                                     <span className="text-rank-gold font-black text-lg flex items-center gap-1">
                                                         <span className="material-symbols-outlined filled text-[18px]">star</span>
-                                                        {((product as any).calculatedRating || product.rating).toFixed(2)}
+                                                        {((product as any).calculatedRating || product.rating).toFixed(1)}
                                                     </span>
                                                 </div>
                                             </td>

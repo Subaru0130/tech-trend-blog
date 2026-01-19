@@ -3,6 +3,7 @@ import { Star, Check, X, Crown, ShoppingCart, ExternalLink, Award, ThumbsUp, Thu
 
 interface RankingCardProps {
     rank: number;
+    id?: string;
     title?: string;
     productName?: string;
     makerName?: string;
@@ -26,6 +27,7 @@ interface RankingCardProps {
 
 export function RankingCard({
     rank,
+    id,
     title,
     name,
     productName,
@@ -53,6 +55,11 @@ export function RankingCard({
 
     const getAffiliateUrl = (url: string | undefined, asin: string | undefined, type: 'amazon' | 'rakuten') => {
         const tag = process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG || 'demo-22';
+
+        // Link Cloaking Logic
+        // if (type === 'amazon' && id) {
+        //     return `/link/${id}`;
+        // }
 
         if (type === 'amazon' && asin) {
             return `https://www.amazon.co.jp/dp/${asin}?tag=${tag}&linkCode=ogi&th=1&psc=1`;
@@ -98,6 +105,7 @@ export function RankingCard({
                     <img
                         src={displayImage}
                         alt={displayTitle}
+                        loading="lazy"
                         className="w-full h-full object-contain mx-auto transition-transform duration-500 hover:scale-105"
                     />
                 </div>
@@ -162,7 +170,7 @@ export function RankingCard({
                     <div className="flex flex-wrap items-center gap-5 text-base mb-7">
                         <div className="flex items-center gap-2 bg-yellow-50 text-yellow-800 px-4 py-2 rounded-lg border border-yellow-200 font-bold shadow-sm">
                             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                            <span className="text-2xl leading-none pt-0.5">{rating.toFixed(2)}</span>
+                            <span className="text-xl font-black text-primary">{rating.toFixed(1)}</span>
                         </div>
                         <span className="text-slate-300">|</span>
                         <span className="font-bold text-slate-700 text-xl">{price}</span>

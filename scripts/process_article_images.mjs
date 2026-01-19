@@ -11,9 +11,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Initialize Gemini
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 if (!GEMINI_API_KEY) {
-    console.error("Error: GEMINI_API_KEY is not set in .env.local");
+    console.error("Error: GEMINI_API_KEY or GOOGLE_API_KEY is not set in .env.local");
     process.exit(1);
 }
 const client = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
