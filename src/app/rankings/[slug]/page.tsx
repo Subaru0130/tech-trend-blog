@@ -321,6 +321,9 @@ export default async function RankingPage({ params }: Props) {
                                     height={675}
                                 />
                             </div>
+                            <p className="text-xs text-muted-foreground text-center mt-2">
+                                ※この画像は生成AIによって作成されたイメージ画像です
+                            </p>
                         </div>
                     )}
 

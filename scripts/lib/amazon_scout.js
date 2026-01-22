@@ -46,7 +46,7 @@ async function scoutAmazonProducts(keyword, maxCount = 5, pageNumber = 1) {
                 console.log("   🚨 DETECTED CAPTCHA! Amazon is blocking us.");
             }
 
-            await browser.close();
+            await browser.disconnect();
             return [];
         }
 
@@ -135,12 +135,12 @@ async function scoutAmazonProducts(keyword, maxCount = 5, pageNumber = 1) {
         });
 
         console.log(`   ✅ Scout found ${items.length} candidates.`);
-        await browser.close();
+        await browser.disconnect();
         return items.slice(0, maxCount);
 
     } catch (e) {
         console.error(`   ❌ Scout Error: ${e.message}`);
-        await browser.close();
+        await browser.disconnect();
         return [];
     }
 }
@@ -206,28 +206,35 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
 
                 if (isChromeRunning) {
                     console.log('      ⚠️ Standard Chrome is running but not debuggable. Restarting in Debug Mode...');
-                    console.log('      🔪 Closing existing Chrome processes...');
-                    try { execSync('taskkill /F /IM chrome.exe'); } catch (e) { }
-                    await new Promise(r => setTimeout(r, 2000));
+                    console.log('      🔪 Closing existing Chrome processes (with retries)...');
+                    // Try multiple times with /T flag (kills child processes too)
+                    for (let retry = 0; retry < 3; retry++) {
+                        try {
+                            execSync('taskkill /F /T /IM chrome.exe', { stdio: 'ignore' });
+                        } catch (e) { /* ignore */ }
+                        await new Promise(r => setTimeout(r, 1500));
+                    }
+                    console.log('      ✅ Chrome processes terminated.');
                 }
 
                 // Launch with Default Profile via PowerShell (Robust method)
                 const userDataPath = process.env.LOCALAPPDATA + "\\Google\\Chrome\\User Data";
-                const psCommand = `Start-Process 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' -ArgumentList '--remote-debugging-port=9222', '--user-data-dir=${userDataPath}', '--profile-directory=Default'`;
-
+                // Launch with Default Profile via Batch File (Robust method)
+                console.log("   🚀 Launching Chrome via scripts\\start_chrome_quiet.bat...");
+                const batPath = path.join(__dirname, '..', 'start_chrome_quiet.bat'); // Note: ../ relative path
                 try {
-                    execSync(`powershell -Command "${psCommand}"`, { stdio: 'inherit' });
+                    execSync(`"${batPath}"`, { stdio: 'inherit' });
                 } catch (e) {
-                    console.error('      ❌ Failed to auto-launch Chrome:', e.message);
-                    throw e;
+                    console.log(`   ⚠️ Startup script warning: ${e.message}`);
                 }
 
-                // No process ref needed for execSync
-                chromeStarted = true;
 
-                // Wait for Chrome to be ready (poll for up to 10 seconds)
-                console.log("   ⏳ Waiting for Chrome to start...");
-                for (let i = 0; i < 20; i++) {
+                // No process ref needed for execSync
+                // chromeStarted = true; // REMOVED: Only set true AFTER connection succeeds
+
+                // Wait for Chrome to be ready (poll for up to 60 seconds)
+                console.log("   ⏳ Waiting for Chrome to start (timeout: 60s)...");
+                for (let i = 0; i < 120; i++) {
                     await new Promise(r => setTimeout(r, 500));
                     try {
                         const wsUrl = await new Promise((resolve, reject) => {
@@ -294,8 +301,18 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
             const warmupWait = isRetry ? 5000 : 2000;
             console.log(`   🏠 Warmup: Visiting Amazon Home Page (wait ${warmupWait}ms)...`);
             try {
+                // FORCE DESKTOP UA: Even with remote debugging, explicit UA helps avoid mobile layout or bot flags
+                await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+
                 await page.goto('https://www.amazon.co.jp/', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => { });
                 await new Promise(r => setTimeout(r, warmupWait + Math.random() * 1000));
+
+                // SCROLL TRIGGER: Some pages lazy load content
+                try {
+                    await page.evaluate(() => window.scrollBy(0, 500));
+                    await new Promise(r => setTimeout(r, 1000));
+                } catch (e) { }
+
 
                 // On retry, scroll a bit to look human
                 if (isRetry) {
@@ -373,27 +390,41 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
                     await new Promise(r => setTimeout(r, 1500));
                     const pageReviews = await page.evaluate((keywords) => {
                         const results = [];
-                        const reviewEls = document.querySelectorAll('[data-hook="review"]');
+                        // Robust Selector Strategy: Try data-hook first, then classes/IDs
+                        let reviewEls = document.querySelectorAll('[data-hook="review"]');
+                        if (reviewEls.length === 0) reviewEls = document.querySelectorAll('.review');
+                        if (reviewEls.length === 0) reviewEls = document.querySelectorAll('div[id^="customer_review-"]');
+
                         reviewEls.forEach(reviewEl => {
-                            const ratingEl = reviewEl.querySelector('[data-hook="review-star-rating"]');
-                            const bodyEl = reviewEl.querySelector('[data-hook="review-body"]');
-                            const titleEl = reviewEl.querySelector('[data-hook="review-title"]');
+                            // Robust Child Selectors
+                            const ratingEl = reviewEl.querySelector('[data-hook="review-star-rating"]') ||
+                                reviewEl.querySelector('.a-icon-star') ||
+                                reviewEl.querySelector('.a-icon-alt'); // Often hidden text
+
+                            const bodyEl = reviewEl.querySelector('[data-hook="review-body"]') ||
+                                reviewEl.querySelector('.review-text-content') ||
+                                reviewEl.querySelector('.review-text');
+
+                            const titleEl = reviewEl.querySelector('[data-hook="review-title"]') ||
+                                reviewEl.querySelector('.review-title-content') ||
+                                reviewEl.querySelector('.review-title');
+
                             if (!bodyEl) return;
 
-                            const ratingText = ratingEl?.innerText || ratingEl?.getAttribute('class') || '';
-                            let rating = 3;
-                            if (ratingText.includes('5')) rating = 5;
-                            else if (ratingText.includes('4')) rating = 4;
-                            else if (ratingText.includes('3')) rating = 3;
-                            else if (ratingText.includes('2')) rating = 2;
-                            else if (ratingText.includes('1')) rating = 1;
+                            // Extract Rating
+                            let rating = 3; // Default
+                            const ratingText = (ratingEl?.innerText || ratingEl?.getAttribute('class') || '').toLowerCase();
+                            if (ratingText.includes('5') || ratingText.includes('five')) rating = 5;
+                            else if (ratingText.includes('4') || ratingText.includes('four')) rating = 4;
+                            else if (ratingText.includes('3') || ratingText.includes('three')) rating = 3;
+                            else if (ratingText.includes('2') || ratingText.includes('two')) rating = 2;
+                            else if (ratingText.includes('1') || ratingText.includes('one')) rating = 1;
 
-                            results.push({
-                                rating,
-                                title: titleEl?.innerText.trim().replace(/^\d\.0\s+/, '') || '',
-                                text: bodyEl.innerText.trim(),
-                                body: bodyEl.innerText.trim()
-                            });
+                            // Extract Text
+                            const title = titleEl?.innerText.trim().replace(/^\d\.0\s+/, '') || '';
+                            const text = bodyEl.innerText.trim();
+
+                            results.push({ rating, title, text, body: text });
                         });
                         return results;
                     }, situationKeywords);
@@ -483,7 +514,9 @@ async function scrapeProductReviews(asin, maxReviews = 10) {
             // WAIT - if we disconnect remote, we might lose the instance for next calls? 
             // No, scrapeProductReviews calls doScrape which creates a fresh connection each time.
             // So closing is safe and correct for both.
-            await browser.close();
+            // For remote debugging, we MUST use disconnect() to keep Chrome alive for next task
+            // If we closed it, the next product would fail to connect (ECONNREFUSED)
+            await browser.disconnect();
 
             // Return results AND block status
             return { reviews: allReviews, blocked };
@@ -752,7 +785,7 @@ async function verifyProductOnAmazon(productName, category = 'wireless-earphones
                     if (p.url().includes('amazon')) await p.close().catch(() => { });
                 }
             } else {
-                await browser.close();
+                await browser.disconnect();
             }
         }
     }
@@ -908,7 +941,7 @@ async function scrapeAmazonProductSpecs(asin) {
             return { specs, features, description, url: window.location.href, structured, image };
         });
 
-        await browser.close();
+        await browser.disconnect();
 
         if (data.specs.length > 0 || data.features.length > 0 || data.image) {
             console.log(`      ✅ Found ${data.specs.length} specs, ${data.features.length} features from Amazon`);
@@ -935,7 +968,7 @@ async function scrapeAmazonProductSpecs(asin) {
 
     } catch (e) {
         console.log(`      ⚠️ Amazon spec scrape failed: ${e.message}`);
-        if (browser) await browser.close();
+        if (browser) await browser.disconnect();
         return null;
     }
 }

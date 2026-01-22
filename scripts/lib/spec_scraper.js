@@ -336,10 +336,34 @@ async function scrapeOfficialSite(productName) {
  * Fallback: Search web for specs
  */
 async function scrapeFromWebSearch(productName) {
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
-    });
+    // Try remote debugging first, fallback to launch
+    let browser;
+    let isRemote = false;
+    try {
+        const http = require('http');
+        const wsUrl = await new Promise((resolve, reject) => {
+            const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        resolve(json.webSocketDebuggerUrl);
+                    } catch (e) { reject(e); }
+                });
+            });
+            req.on('error', reject);
+            req.setTimeout(3000, () => { req.destroy(); reject(new Error('timeout')); });
+        });
+
+        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+        isRemote = true;
+    } catch (e) {
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
+        });
+    }
 
     try {
         const page = await browser.newPage();
@@ -363,13 +387,17 @@ async function scrapeFromWebSearch(productName) {
             return results.slice(0, 5).join('\n');
         });
 
-        await browser.close();
+        if (isRemote) await browser.disconnect();
+        else await browser.close();
 
         // Use AI to extract specs from snippets
         return await extractSpecsWithAI(snippets, productName, 'web search');
 
     } catch (e) {
-        if (browser) await browser.close();
+        if (browser) {
+            if (isRemote) await browser.disconnect();
+            else await browser.close();
+        }
         return null;
     }
 }
@@ -435,10 +463,34 @@ async function extractSpecsWithAI(content, productName, source) {
  * @returns {Promise<object>} - { reviews: [], summary: {} }
  */
 async function scrapeKakakuReviews(productName, kakakuUrl = null, maxReviews = 10) {
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
-    });
+    // Try remote debugging first, fallback to launch
+    let browser;
+    let isRemote = false;
+    try {
+        const http = require('http');
+        const wsUrl = await new Promise((resolve, reject) => {
+            const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        resolve(json.webSocketDebuggerUrl);
+                    } catch (e) { reject(e); }
+                });
+            });
+            req.on('error', reject);
+            req.setTimeout(5000, () => { req.destroy(); reject(new Error('timeout')); });
+        });
+
+        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+        isRemote = true;
+    } catch (e) {
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080']
+        });
+    }
 
     try {
         const page = await browser.newPage();
@@ -679,7 +731,8 @@ async function scrapeKakakuReviews(productName, kakakuUrl = null, maxReviews = 1
 
         const reviewData = allReviews.slice(0, maxReviews);
 
-        await browser.close();
+        if (isRemote) await browser.disconnect();
+        else await browser.close();
 
         if (reviewData.length > 0) {
             // Categorize reviews by sentiment
@@ -702,7 +755,10 @@ async function scrapeKakakuReviews(productName, kakakuUrl = null, maxReviews = 1
         return null;
 
     } catch (e) {
-        if (browser) await browser.close();
+        if (browser) {
+            if (isRemote) await browser.disconnect();
+            else await browser.close();
+        }
         console.log(`      ⚠️ 価格.com review scrape failed: ${e.message}`);
         return null;
     }

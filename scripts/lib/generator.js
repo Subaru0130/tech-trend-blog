@@ -232,12 +232,18 @@ function generateReviewPage(product, bodyContent) {
     const dateStr = new Date().toISOString().split('T')[0];
     const image = product.image ? product.image.trim() : "";
 
+    // Sanitize product name for YAML (escape quotes, remove problematic characters)
+    const safeName = product.name
+        .replace(/"/g, "'")  // Replace double quotes with single quotes
+        .replace(/:/g, "")   // Remove colons that could break YAML
+        .slice(0, 80);       // Limit length to avoid overly long titles
+
     // NOTE: Spec table REMOVED - ProductContent.tsx handles structured spec display
     // Writing specs here causes duplicate display (frontend already shows product.specs)
 
     const content = `---
-title: "${product.name} レビュー：プロが教える「買い」の理由"
-description: "${product.name}の実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
+title: "${safeName} レビュー：プロが教える「買い」の理由"
+description: "${safeName}の実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
 date: "${dateStr}"
 category: "Reviews"
 product_id: "${product.id}"
@@ -247,6 +253,7 @@ ranking_url: "/rankings/best-wireless-headphones-2025"
 ---
 
 ${bodyContent || ""}
+
 
 
 `;

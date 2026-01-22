@@ -1,6 +1,15 @@
 import React from 'react';
 import Header from '@/components/shared/Header';
 import Footer from '@/components/shared/Footer';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'お問い合わせ | BestChoice',
+    description: 'BestChoiceに関するお問い合わせはこちらからお願いします。',
+    alternates: {
+        canonical: 'https://choiceguide.jp/contact',
+    },
+};
 
 export default function ContactPage() {
     const email = "subaruu0130@gmail.com";

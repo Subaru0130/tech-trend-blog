@@ -1,6 +1,6 @@
 ---
-title: "VGP 2024 Gold Award: EarFun Air Pro 4 Wireless Earphones, Bluetooth 5.4/50 dB Adaptive, Hybrid ANC, Advanced Chip "QCC3091", AptX Lossless, High Resolution LDAC Compatible, Snapdragon Sound™ レビュー：プロが教える「買い」の理由"
-description: "VGP 2024 Gold Award: EarFun Air Pro 4 Wireless Earphones, Bluetooth 5.4/50 dB Adaptive, Hybrid ANC, Advanced Chip "QCC3091", AptX Lossless, High Resolution LDAC Compatible, Snapdragon Sound™の実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
+title: "EarFun Air Pro 4 レビュー：VGP 2024金賞のコスパ最強ワイヤレスイヤホン"
+description: "EarFun Air Pro 4（VGP 2024金賞受賞）の実機レビュー。50dB ANC、LDAC対応、QCC3091チップ搭載。メリット・デメリットから誰におすすめかまで徹底解説。"
 date: "2026-01-02"
 category: "Reviews"
 product_id: "scout-B0D4Z8KJXY"

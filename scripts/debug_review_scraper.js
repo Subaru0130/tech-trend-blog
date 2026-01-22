@@ -1,7 +1,7 @@
 const { scrapeProductReviews } = require('./lib/amazon_scout');
 
 // ASIN from user's error log (Bose QuietComfort Ultra Earbuds Gen 2)
-const ASIN = "B0FCSGGHLL";
+const ASIN = "B0C61G4X7P"; // DENON PerL Pro (User's failing item)
 
 (async () => {
     console.log(`🚀 Testing Review Scraper for ASIN: ${ASIN}...`);

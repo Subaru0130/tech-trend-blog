@@ -2,10 +2,10 @@
     {
         "id": "wireless-earphones",
         "slug": "wireless-earphones",
-        "title": "【ジム最強】もう汗もズレも怖くない！トレーニー向けワイヤレスイヤホン完全ガイド",
+        "title": "【ジム最強】汗もズレも怖くない！ジム通いのためのワイヤレスイヤホン選び方ガイド",
         "description": "プロが選ぶワイヤレスイヤホン ジムのおすすめ人気ランキング。選び方や比較ポイントも解説。",
-        "publishedAt": "2026-01-19",
-        "updatedDate": "2026-01-19",
+        "publishedAt": "2026-01-21",
+        "updatedDate": "2026-01-21",
         "image": "/images/articles/wireless-earphones.jpg",
         "thumbnail": "/images/articles/wireless-earphones.jpg",
         "author": "ChoiceGuide編集部",
@@ -47,18 +47,1359 @@
         "rankingItems": [
             {
                 "rank": 1,
-                "productId": "scout-B0CP4RHK7X",
+                "productId": "scout-B0DJCZLBFD",
                 "badge": "おすすめ",
                 "rankBadge": "gold",
-                "rating": 4.64,
+                "rating": 4.72,
                 "pros": [
-                    "1回の充電で12時間も持つから、通勤通学で使っても数日は充電しなくていいのが楽だよ",
-                    "ケースのフタを立てるとスマホスタンドになるから、カフェでYouTube見るときにめっちゃ便利だよ",
-                    "マルチポイント対応だから、PCでWeb会議しながらスマホの着信もそのまま受けられて仕事が捗るよ"
+                    "ケースを持ち歩かなくても、イヤホンだけで電源オンオフして使えるのが最高に身軽",
+                    "ノイキャンONでも単体で15時間持つので、日々の充電ストレスがほぼゼロ",
+                    "耳への収まりが良く安定しているので、ジムで動いてもズレにくい"
                 ],
                 "cons": [
-                    "ハイレゾ相当のLDACコーデックに対応していないから、音質に極限までこだわる人には向かない",
-                    "充電ケースがわりと厚めだから、タイトなパンツのポケットに入れるとボコッとして邪魔になる"
+                    "ハイレゾコーデック（LDAC等）には非対応なので、スペック重視の人には物足りない",
+                    "本体が片側約7.2gと少し大ぶりなので、耳が小さい人は圧迫感を感じる可能性がある"
+                ],
+                "specs": [
+                    {
+                        "label": "音質",
+                        "value": "A"
+                    },
+                    {
+                        "label": "ノイキャン",
+                        "value": "A"
+                    },
+                    {
+                        "label": "バッテリー",
+                        "value": "単体15時間"
+                    },
+                    {
+                        "label": "機能",
+                        "value": "マルチポイント/IP55"
+                    },
+                    {
+                        "label": "タイプ*1",
+                        "value": "カナル型"
+                    },
+                    {
+                        "label": "接続タイプ",
+                        "value": "完全ワイヤレス(左右分離型)"
+                    },
+                    {
+                        "label": "駆動方式",
+                        "value": "ダイナミック型"
+                    },
+                    {
+                        "label": "本体操作スイッチ",
+                        "value": "ボタン"
+                    },
+                    {
+                        "label": "インピーダンス",
+                        "value": "20 Ω"
+                    },
+                    {
+                        "label": "音圧感度",
+                        "value": "110 dB"
+                    },
+                    {
+                        "label": "再生周波数帯域",
+                        "value": "5Hz～20kHz"
+                    },
+                    {
+                        "label": "ドライバサイズ",
+                        "value": "9 mm"
+                    },
+                    {
+                        "label": "充電端子",
+                        "value": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)"
+                    },
+                    {
+                        "label": "ワイヤレス",
+                        "value": "Bluetooth"
+                    },
+                    {
+                        "label": "Bluetoothバージョン",
+                        "value": "Ver.5.3"
+                    },
+                    {
+                        "label": "連続再生時間",
+                        "value": "最大約15時間(ノイズキャンセリングON時) 最大約25時間(ノイズキャンセリングOFF時)"
+                    },
+                    {
+                        "label": "充電時間",
+                        "value": "イヤホン：約2.5時間 充電ケース(USB充電時)：約4時間 充電ケース(ワイヤレス充電時)：約7.5時間"
+                    },
+                    {
+                        "label": "対応コーデック",
+                        "value": "SBC AAC"
+                    },
+                    {
+                        "label": "マルチペアリング対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マルチポイント対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ノイズキャンセリング",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マイク",
+                        "value": "○"
+                    },
+                    {
+                        "label": "外音取り込み",
+                        "value": "○"
+                    },
+                    {
+                        "label": "音質調整",
+                        "value": "A"
+                    },
+                    {
+                        "label": "自動電源ON機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "自動電源OFF機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "防水・防塵性能",
+                        "value": "IP55"
+                    },
+                    {
+                        "label": "リモコン",
+                        "value": "○"
+                    },
+                    {
+                        "label": "AIアシスタント呼び出し機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "カラー",
+                        "value": "ブラック ベージュ グリーン"
+                    },
+                    {
+                        "label": "重量",
+                        "value": "7.2 g"
+                    },
+                    {
+                        "label": "特集",
+                        "value": "この発想はなかった！ 「ATH-CKS50TW2」がズボラな人にぴったりな理由"
+                    },
+                    {
+                        "label": "満足度：",
+                        "value": "4.44"
+                    },
+                    {
+                        "label": "接続方式",
+                        "value": "‎Wireless"
+                    },
+                    {
+                        "label": "電源",
+                        "value": "‎Battery"
+                    }
+                ],
+                "spec1": "A",
+                "spec2": "A",
+                "spec3": "単体15時間",
+                "spec4": "マルチポイント/IP55",
+                "spec5": "カナル型",
+                "spec6": "完全ワイヤレス(左右分離型)",
+                "spec7": "ダイナミック型",
+                "spec8": "ボタン",
+                "spec9": "20 Ω",
+                "spec10": "110 dB",
+                "spec11": "5Hz～20kHz",
+                "spec12": "9 mm",
+                "spec13": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)",
+                "spec14": "Bluetooth",
+                "spec15": "Ver.5.3",
+                "spec16": "最大約15時間(ノイズキャンセリングON時) 最大約25時間(ノイズキャンセリングOFF時)",
+                "spec17": "イヤホン：約2.5時間 充電ケース(USB充電時)：約4時間 充電ケース(ワイヤレス充電時)：約7.5時間",
+                "spec18": "SBC AAC",
+                "spec19": "○",
+                "spec20": "○",
+                "spec21": "○",
+                "spec22": "○",
+                "spec23": "○",
+                "spec24": "A",
+                "spec25": "○",
+                "spec26": "○",
+                "spec27": "IP55",
+                "spec28": "○",
+                "spec29": "○",
+                "spec30": "ブラック ベージュ グリーン",
+                "spec31": "7.2 g",
+                "spec32": "この発想はなかった！ 「ATH-CKS50TW2」がズボラな人にぴったりな理由",
+                "spec33": "4.44",
+                "spec34": "‎Wireless",
+                "spec35": "‎Battery"
+            },
+            {
+                "rank": 2,
+                "productId": "scout-B0D1R8X96X",
+                "badge": "おすすめ",
+                "rankBadge": "silver",
+                "rating": 4.64,
+                "pros": [
+                    "「ごっつい」と表現されるほどの低音と、ライブ会場のような臨場感がすごい",
+                    "測定機能で自分の耳に音を合わせると、聞こえなかった音が聞こえて感動する",
+                    "低域から高域まで音がクリアに分離して、空間の広がりを感じられる"
+                ],
+                "cons": [
+                    "アプリで聴覚測定（パーソナライズ）をしないと、音質がスカスカで良くない",
+                    "最高の音を出すには初期設定の手間がかかるので、買ってすぐ適当に使いたい人には不向き"
+                ],
+                "specs": [
+                    {
+                        "label": "音質",
+                        "value": "S"
+                    },
+                    {
+                        "label": "ノイキャン",
+                        "value": "A"
+                    },
+                    {
+                        "label": "バッテリー",
+                        "value": "単体8時間"
+                    },
+                    {
+                        "label": "機能",
+                        "value": "ロスレス/マルチポイント"
+                    },
+                    {
+                        "label": "タイプ*1",
+                        "value": "カナル型"
+                    },
+                    {
+                        "label": "接続タイプ",
+                        "value": "完全ワイヤレス(左右分離型)"
+                    },
+                    {
+                        "label": "駆動方式",
+                        "value": "ダイナミック型"
+                    },
+                    {
+                        "label": "本体操作スイッチ",
+                        "value": "タッチセンサー"
+                    },
+                    {
+                        "label": "再生周波数帯域",
+                        "value": "20Hz～40kHz"
+                    },
+                    {
+                        "label": "ドライバサイズ",
+                        "value": "10 mm"
+                    },
+                    {
+                        "label": "充電端子",
+                        "value": "充電ケース：USB Type-C/ワイヤレス充電(充電器別売)"
+                    },
+                    {
+                        "label": "ワイヤレス",
+                        "value": "Bluetooth"
+                    },
+                    {
+                        "label": "Bluetoothバージョン",
+                        "value": "Ver.5.3"
+                    },
+                    {
+                        "label": "連続再生時間",
+                        "value": "約8時間"
+                    },
+                    {
+                        "label": "充電時間",
+                        "value": "イヤホン：約2時間 充電ケース：約1時間"
+                    },
+                    {
+                        "label": "対応コーデック",
+                        "value": "SBC AAC aptX aptX Adaptive aptX Lossless"
+                    },
+                    {
+                        "label": "マルチペアリング対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マルチポイント対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ノイズキャンセリング",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マイク",
+                        "value": "○"
+                    },
+                    {
+                        "label": "外音取り込み",
+                        "value": "○"
+                    },
+                    {
+                        "label": "音質調整",
+                        "value": "A"
+                    },
+                    {
+                        "label": "自動電源ON機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "自動電源OFF機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "防水・防塵性能",
+                        "value": "IPX4"
+                    },
+                    {
+                        "label": "リモコン",
+                        "value": "○"
+                    },
+                    {
+                        "label": "AIアシスタント呼び出し機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "カラー",
+                        "value": "ブラック ホワイト"
+                    },
+                    {
+                        "label": "重量",
+                        "value": "8 g"
+                    },
+                    {
+                        "label": "特集",
+                        "value": "《2025年》完全ワイヤレスイヤホンの…"
+                    },
+                    {
+                        "label": "満足度：",
+                        "value": "4.52"
+                    },
+                    {
+                        "label": "ドライバー",
+                        "value": "10mm"
+                    },
+                    {
+                        "label": "防水規格",
+                        "value": "IPX4"
+                    }
+                ],
+                "spec1": "S",
+                "spec2": "A",
+                "spec3": "単体8時間",
+                "spec4": "ロスレス/マルチポイント",
+                "spec5": "カナル型",
+                "spec6": "完全ワイヤレス(左右分離型)",
+                "spec7": "ダイナミック型",
+                "spec8": "タッチセンサー",
+                "spec9": "20Hz～40kHz",
+                "spec10": "10 mm",
+                "spec11": "充電ケース：USB Type-C/ワイヤレス充電(充電器別売)",
+                "spec12": "Bluetooth",
+                "spec13": "Ver.5.3",
+                "spec14": "約8時間",
+                "spec15": "イヤホン：約2時間 充電ケース：約1時間",
+                "spec16": "SBC AAC aptX aptX Adaptive aptX Lossless",
+                "spec17": "○",
+                "spec18": "○",
+                "spec19": "○",
+                "spec20": "○",
+                "spec21": "○",
+                "spec22": "A",
+                "spec23": "○",
+                "spec24": "○",
+                "spec25": "IPX4",
+                "spec26": "○",
+                "spec27": "○",
+                "spec28": "ブラック ホワイト",
+                "spec29": "8 g",
+                "spec30": "《2025年》完全ワイヤレスイヤホンの…",
+                "spec31": "4.52",
+                "spec32": "10mm",
+                "spec33": "IPX4"
+            },
+            {
+                "rank": 3,
+                "productId": "scout-B0DRV8HD2D",
+                "badge": "おすすめ",
+                "rankBadge": "bronze",
+                "rating": 4.62,
+                "pros": [
+                    "イヤホン単体で12時間も持つので、長時間の移動でも充電切れの心配がほぼない",
+                    "スマホとPCに同時に繋がるので、仕事中の着信もスムーズに対応できる",
+                    "強力なノイズキャンセリングで、電車の走行音やカフェの話し声が気にならなくなる"
+                ],
+                "cons": [
+                    "ケースの満充電にケーブル使用でも約3時間かかるのは、最近の機種としては遅い",
+                    "防水性能はIP55なので、完全防水（IPX7以上）のように水洗いやお風呂での使用はできない"
+                ],
+                "specs": [
+                    {
+                        "label": "音質",
+                        "value": "S"
+                    },
+                    {
+                        "label": "ノイキャン",
+                        "value": "S"
+                    },
+                    {
+                        "label": "バッテリー",
+                        "value": "単体12時間"
+                    },
+                    {
+                        "label": "機能",
+                        "value": "LDAC/マルチポイント"
+                    },
+                    {
+                        "label": "タイプ*1",
+                        "value": "カナル型"
+                    },
+                    {
+                        "label": "接続タイプ",
+                        "value": "完全ワイヤレス(左右分離型)"
+                    },
+                    {
+                        "label": "駆動方式",
+                        "value": "ダイナミック型"
+                    },
+                    {
+                        "label": "本体操作スイッチ",
+                        "value": "タッチセンサー"
+                    },
+                    {
+                        "label": "インピーダンス",
+                        "value": "17 Ω"
+                    },
+                    {
+                        "label": "再生周波数帯域",
+                        "value": "20Hz～40kHz"
+                    },
+                    {
+                        "label": "ドライバサイズ",
+                        "value": "9.2 mm"
+                    },
+                    {
+                        "label": "充電端子",
+                        "value": "充電ケース：USB Type-C/ワイヤレス充電(充電器別売)"
+                    },
+                    {
+                        "label": "ワイヤレス",
+                        "value": "Bluetooth"
+                    },
+                    {
+                        "label": "Bluetoothバージョン",
+                        "value": "Ver.5.4"
+                    },
+                    {
+                        "label": "連続再生時間",
+                        "value": "通常モード：最大12時間 ノイズキャンセリングモード：最大8時間"
+                    },
+                    {
+                        "label": "充電時間",
+                        "value": "イヤホン：約1時間 充電ケース(USB-Cケーブル)：約3時間 充電ケース(ワイヤレス充電)：約4時間"
+                    },
+                    {
+                        "label": "対応コーデック",
+                        "value": "SBC AAC LDAC"
+                    },
+                    {
+                        "label": "マルチポイント対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ノイズキャンセリング",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ハイレゾ",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マイク",
+                        "value": "○"
+                    },
+                    {
+                        "label": "外音取り込み",
+                        "value": "○"
+                    },
+                    {
+                        "label": "音質調整",
+                        "value": "A"
+                    },
+                    {
+                        "label": "自動電源ON機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "自動電源OFF機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "防水・防塵性能",
+                        "value": "IP55"
+                    },
+                    {
+                        "label": "リモコン",
+                        "value": "○"
+                    },
+                    {
+                        "label": "カラー",
+                        "value": "ミッドナイトブラック パールホワイト シャンパンゴールド ディープブルー アプリコットピンク"
+                    },
+                    {
+                        "label": "重量",
+                        "value": "5.2 g"
+                    },
+                    {
+                        "label": "満足度：",
+                        "value": "4.92"
+                    },
+                    {
+                        "label": "ドライバー",
+                        "value": "10mm"
+                    },
+                    {
+                        "label": "防水規格",
+                        "value": "IPX5"
+                    }
+                ],
+                "spec1": "S",
+                "spec2": "S",
+                "spec3": "単体12時間",
+                "spec4": "LDAC/マルチポイント",
+                "spec5": "カナル型",
+                "spec6": "完全ワイヤレス(左右分離型)",
+                "spec7": "ダイナミック型",
+                "spec8": "タッチセンサー",
+                "spec9": "17 Ω",
+                "spec10": "20Hz～40kHz",
+                "spec11": "9.2 mm",
+                "spec12": "充電ケース：USB Type-C/ワイヤレス充電(充電器別売)",
+                "spec13": "Bluetooth",
+                "spec14": "Ver.5.4",
+                "spec15": "通常モード：最大12時間 ノイズキャンセリングモード：最大8時間",
+                "spec16": "イヤホン：約1時間 充電ケース(USB-Cケーブル)：約3時間 充電ケース(ワイヤレス充電)：約4時間",
+                "spec17": "SBC AAC LDAC",
+                "spec18": "○",
+                "spec19": "○",
+                "spec20": "○",
+                "spec21": "○",
+                "spec22": "○",
+                "spec23": "A",
+                "spec24": "○",
+                "spec25": "○",
+                "spec26": "IP55",
+                "spec27": "○",
+                "spec28": "ミッドナイトブラック パールホワイト シャンパンゴールド ディープブルー アプリコットピンク",
+                "spec29": "5.2 g",
+                "spec30": "4.92",
+                "spec31": "10mm",
+                "spec32": "IPX5"
+            },
+            {
+                "rank": 4,
+                "productId": "scout-B0CTHY1JNJ",
+                "badge": "おすすめ",
+                "rankBadge": "bronze",
+                "rating": 4.62,
+                "pros": [
+                    "楽器の音の滑らかさや低音の質感が異常に良い",
+                    "見た目が非常にかっこよく、取り回しも良好",
+                    "機能も含めてマルチに使える高い完成度"
+                ],
+                "cons": [
+                    "デフォルトの音はかなり暗めなので、アプリでの調整が必要",
+                    "9ヶ月程度の使用で片側が聞こえなくなる耐久性の懸念がある"
+                ],
+                "specs": [
+                    {
+                        "label": "音質",
+                        "value": "S"
+                    },
+                    {
+                        "label": "ノイキャン",
+                        "value": "A"
+                    },
+                    {
+                        "label": "バッテリー",
+                        "value": "単体7.5時間"
+                    },
+                    {
+                        "label": "機能",
+                        "value": "マルチポイント/aptX Lossless/Qi充電"
+                    },
+                    {
+                        "label": "タイプ*1",
+                        "value": "カナル型"
+                    },
+                    {
+                        "label": "接続タイプ",
+                        "value": "完全ワイヤレス(左右分離型)"
+                    },
+                    {
+                        "label": "駆動方式",
+                        "value": "ダイナミック型"
+                    },
+                    {
+                        "label": "本体操作スイッチ",
+                        "value": "タッチセンサー"
+                    },
+                    {
+                        "label": "音圧感度",
+                        "value": "107 dB"
+                    },
+                    {
+                        "label": "再生周波数帯域",
+                        "value": "5Hz～21kHz"
+                    },
+                    {
+                        "label": "ドライバサイズ",
+                        "value": "7 mm"
+                    },
+                    {
+                        "label": "充電端子",
+                        "value": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)"
+                    },
+                    {
+                        "label": "ワイヤレス",
+                        "value": "Bluetooth"
+                    },
+                    {
+                        "label": "Bluetoothバージョン",
+                        "value": "Ver.5.4/Class1"
+                    },
+                    {
+                        "label": "連続再生時間",
+                        "value": "最大7.5時間(ANCオフ) 最大7時間(ANCオン)"
+                    },
+                    {
+                        "label": "充電時間",
+                        "value": "1.5時間"
+                    },
+                    {
+                        "label": "対応コーデック",
+                        "value": "SBC AAC aptX aptX Adaptive aptX Lossless LC3"
+                    },
+                    {
+                        "label": "マルチペアリング対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マルチポイント対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ノイズキャンセリング",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ハイレゾ",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マイク",
+                        "value": "○"
+                    },
+                    {
+                        "label": "外音取り込み",
+                        "value": "○"
+                    },
+                    {
+                        "label": "音質調整",
+                        "value": "A"
+                    },
+                    {
+                        "label": "自動電源ON機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "自動電源OFF機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "防水・防塵性能",
+                        "value": "IP54"
+                    },
+                    {
+                        "label": "リモコン",
+                        "value": "○"
+                    },
+                    {
+                        "label": "AIアシスタント呼び出し機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "カラー",
+                        "value": "Black Copper Denim Gold Black Graphite White Silver"
+                    },
+                    {
+                        "label": "重量",
+                        "value": "6.2 g"
+                    },
+                    {
+                        "label": "特集",
+                        "value": "《2025年》完全ワイヤレスイヤホンの…"
+                    },
+                    {
+                        "label": "満足度：",
+                        "value": "4.21"
+                    },
+                    {
+                        "label": "感度",
+                        "value": "‎107 dB"
+                    },
+                    {
+                        "label": "ヘッドホンジャック",
+                        "value": "‎ジャックなし。"
+                    },
+                    {
+                        "label": "接続方式",
+                        "value": "‎Wireless"
+                    },
+                    {
+                        "label": "ワイヤレス技術",
+                        "value": "‎Bluetooth"
+                    },
+                    {
+                        "label": "防水性能",
+                        "value": "‎Water Resistant"
+                    }
+                ],
+                "spec1": "S",
+                "spec2": "A",
+                "spec3": "単体7.5時間",
+                "spec4": "マルチポイント/aptX Lossless/Qi充電",
+                "spec5": "カナル型",
+                "spec6": "完全ワイヤレス(左右分離型)",
+                "spec7": "ダイナミック型",
+                "spec8": "タッチセンサー",
+                "spec9": "107 dB",
+                "spec10": "5Hz～21kHz",
+                "spec11": "7 mm",
+                "spec12": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)",
+                "spec13": "Bluetooth",
+                "spec14": "Ver.5.4/Class1",
+                "spec15": "最大7.5時間(ANCオフ) 最大7時間(ANCオン)",
+                "spec16": "1.5時間",
+                "spec17": "SBC AAC aptX aptX Adaptive aptX Lossless LC3",
+                "spec18": "○",
+                "spec19": "○",
+                "spec20": "○",
+                "spec21": "○",
+                "spec22": "○",
+                "spec23": "○",
+                "spec24": "A",
+                "spec25": "○",
+                "spec26": "○",
+                "spec27": "IP54",
+                "spec28": "○",
+                "spec29": "○",
+                "spec30": "Black Copper Denim Gold Black Graphite White Silver",
+                "spec31": "6.2 g",
+                "spec32": "《2025年》完全ワイヤレスイヤホンの…",
+                "spec33": "4.21",
+                "spec34": "‎107 dB",
+                "spec35": "‎ジャックなし。",
+                "spec36": "‎Wireless",
+                "spec37": "‎Bluetooth",
+                "spec38": "‎Water Resistant"
+            },
+            {
+                "rank": 5,
+                "productId": "scout-B0C5WZDSDV",
+                "badge": "おすすめ",
+                "rankBadge": "bronze",
+                "rating": 4.62,
+                "pros": [
+                    "PCとスマホなど3台同時接続が可能で、切り替えの手間が完全にゼロ",
+                    "人間工学に基づいた独自形状で、長時間着けても耳が痛くなりにくい",
+                    "10mmドライバーによる高解像度な音質で、楽器の細かなニュアンスまで聞こえる"
+                ],
+                "cons": [
+                    "高音質のLDAC接続時はバッテリー持ちが4.5時間と短く、長時間の移動には心許ない",
+                    "本体サイズがやや大ぶりなため、耳が小さい人には圧迫感がある"
+                ],
+                "specs": [
+                    {
+                        "label": "音質",
+                        "value": "S"
+                    },
+                    {
+                        "label": "ノイキャン",
+                        "value": "S"
+                    },
+                    {
+                        "label": "バッテリー",
+                        "value": "単体7時間"
+                    },
+                    {
+                        "label": "機能",
+                        "value": "3台マルチポイント/LDAC"
+                    },
+                    {
+                        "label": "タイプ*1",
+                        "value": "カナル型"
+                    },
+                    {
+                        "label": "接続タイプ",
+                        "value": "完全ワイヤレス(左右分離型)"
+                    },
+                    {
+                        "label": "構造",
+                        "value": "密閉型(クローズド)"
+                    },
+                    {
+                        "label": "駆動方式",
+                        "value": "ダイナミック型"
+                    },
+                    {
+                        "label": "本体操作スイッチ",
+                        "value": "タッチセンサー"
+                    },
+                    {
+                        "label": "再生周波数帯域",
+                        "value": "20Hz～40kHz"
+                    },
+                    {
+                        "label": "ドライバサイズ",
+                        "value": "10 mm"
+                    },
+                    {
+                        "label": "充電端子",
+                        "value": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)"
+                    },
+                    {
+                        "label": "ワイヤレス",
+                        "value": "Bluetooth"
+                    },
+                    {
+                        "label": "Bluetoothバージョン",
+                        "value": "Ver.5.3/Class1"
+                    },
+                    {
+                        "label": "連続再生時間",
+                        "value": "ノイズキャンセリングON：約7時間(AAC) 約6.5時間(SBC) 約4.5時間(LDAC)"
+                    },
+                    {
+                        "label": "充電時間",
+                        "value": "イヤホン：約2時間 充電ケース：約2.5時間"
+                    },
+                    {
+                        "label": "対応コーデック",
+                        "value": "SBC AAC LDAC"
+                    },
+                    {
+                        "label": "マルチペアリング対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マルチポイント対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ノイズキャンセリング",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ハイレゾ",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マイク",
+                        "value": "○"
+                    },
+                    {
+                        "label": "外音取り込み",
+                        "value": "○"
+                    },
+                    {
+                        "label": "音質調整",
+                        "value": "A"
+                    },
+                    {
+                        "label": "自動電源ON機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "自動電源OFF機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "防水・防塵性能",
+                        "value": "IPX4"
+                    },
+                    {
+                        "label": "リモコン",
+                        "value": "○"
+                    },
+                    {
+                        "label": "AIアシスタント搭載",
+                        "value": "Amazon Alexa"
+                    },
+                    {
+                        "label": "AIアシスタント呼び出し機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "カラー",
+                        "value": "シルバー ブラック"
+                    },
+                    {
+                        "label": "重量",
+                        "value": "7 g"
+                    },
+                    {
+                        "label": "特集",
+                        "value": "ソニー「WF-1000XM5」参戦！ ノイキャ…"
+                    },
+                    {
+                        "label": "満足度：",
+                        "value": "4.36"
+                    },
+                    {
+                        "label": "接続方式",
+                        "value": "‎Wireless"
+                    },
+                    {
+                        "label": "ワイヤレス技術",
+                        "value": "‎Bluetooth"
+                    },
+                    {
+                        "label": "防水性能",
+                        "value": "‎Water Resistant"
+                    },
+                    {
+                        "label": "電源",
+                        "value": "‎Battery-Powered"
+                    }
+                ],
+                "spec1": "S",
+                "spec2": "S",
+                "spec3": "単体7時間",
+                "spec4": "3台マルチポイント/LDAC",
+                "spec5": "カナル型",
+                "spec6": "完全ワイヤレス(左右分離型)",
+                "spec7": "密閉型(クローズド)",
+                "spec8": "ダイナミック型",
+                "spec9": "タッチセンサー",
+                "spec10": "20Hz～40kHz",
+                "spec11": "10 mm",
+                "spec12": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)",
+                "spec13": "Bluetooth",
+                "spec14": "Ver.5.3/Class1",
+                "spec15": "ノイズキャンセリングON：約7時間(AAC) 約6.5時間(SBC) 約4.5時間(LDAC)",
+                "spec16": "イヤホン：約2時間 充電ケース：約2.5時間",
+                "spec17": "SBC AAC LDAC",
+                "spec18": "○",
+                "spec19": "○",
+                "spec20": "○",
+                "spec21": "○",
+                "spec22": "○",
+                "spec23": "○",
+                "spec24": "A",
+                "spec25": "○",
+                "spec26": "○",
+                "spec27": "IPX4",
+                "spec28": "○",
+                "spec29": "Amazon Alexa",
+                "spec30": "○",
+                "spec31": "シルバー ブラック",
+                "spec32": "7 g",
+                "spec33": "ソニー「WF-1000XM5」参戦！ ノイキャ…",
+                "spec34": "4.36",
+                "spec35": "‎Wireless",
+                "spec36": "‎Bluetooth",
+                "spec37": "‎Water Resistant",
+                "spec38": "‎Battery-Powered"
+            },
+            {
+                "rank": 6,
+                "productId": "scout-B0FGPMX93Q",
+                "badge": "おすすめ",
+                "rankBadge": "bronze",
+                "rating": 4.62,
+                "pros": [
+                    "タッチだけでなく物理ボタンも使えるので、確実な操作ができる",
+                    "音質と強力なノイキャンで、騒音の中でも音楽に没頭できる",
+                    "バッテリー持ちが良いので、長時間の移動でも安心して使える"
+                ],
+                "cons": [
+                    "本体が大きめなので、耳が小さい人はフィットしにくい",
+                    "ケースに戻しても接続が切れず、充電されていないことがある"
+                ],
+                "specs": [
+                    {
+                        "label": "音質",
+                        "value": "S"
+                    },
+                    {
+                        "label": "ノイキャン",
+                        "value": "S"
+                    },
+                    {
+                        "label": "バッテリー",
+                        "value": "単体6時間"
+                    },
+                    {
+                        "label": "機能",
+                        "value": "マルチポイント/ワイヤレス充電"
+                    },
+                    {
+                        "label": "タイプ*1",
+                        "value": "カナル型"
+                    },
+                    {
+                        "label": "接続タイプ",
+                        "value": "完全ワイヤレス(左右分離型)"
+                    },
+                    {
+                        "label": "駆動方式",
+                        "value": "ダイナミック型"
+                    },
+                    {
+                        "label": "本体操作スイッチ",
+                        "value": "タッチセンサー/ボタン"
+                    },
+                    {
+                        "label": "インピーダンス",
+                        "value": "16 Ω"
+                    },
+                    {
+                        "label": "音圧感度",
+                        "value": "105 dB"
+                    },
+                    {
+                        "label": "再生周波数帯域",
+                        "value": "10Hz～40kHz"
+                    },
+                    {
+                        "label": "ドライバサイズ",
+                        "value": "5.8 mm"
+                    },
+                    {
+                        "label": "充電端子",
+                        "value": "充電ケース：USB Type-C/ワイヤレス充電(充電器別売)"
+                    },
+                    {
+                        "label": "ワイヤレス",
+                        "value": "Bluetooth"
+                    },
+                    {
+                        "label": "Bluetoothバージョン",
+                        "value": "Ver.5.2"
+                    },
+                    {
+                        "label": "連続再生時間",
+                        "value": "最大約6時間(ノイズキャンセリングON時) 最大約6.5時間(ノイズキャンセリングOFF時)"
+                    },
+                    {
+                        "label": "充電時間",
+                        "value": "イヤホン：約2.5時間 充電ケース(USB充電時)：約3.5時間 充電ケース(ワイヤレス充電時)：約5時間"
+                    },
+                    {
+                        "label": "対応コーデック",
+                        "value": "SBC AAC aptX aptX Adaptive"
+                    },
+                    {
+                        "label": "マルチペアリング対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マルチポイント対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ノイズキャンセリング",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ハイレゾ",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マイク",
+                        "value": "○"
+                    },
+                    {
+                        "label": "外音取り込み",
+                        "value": "○"
+                    },
+                    {
+                        "label": "音質調整",
+                        "value": "A"
+                    },
+                    {
+                        "label": "自動電源ON機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "自動電源OFF機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "防水・防塵性能",
+                        "value": "IPX4"
+                    },
+                    {
+                        "label": "リモコン",
+                        "value": "○"
+                    },
+                    {
+                        "label": "AIアシスタント呼び出し機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "カラー",
+                        "value": "ブラック ホワイト"
+                    },
+                    {
+                        "label": "重量",
+                        "value": "5.5 g"
+                    },
+                    {
+                        "label": "満足度：",
+                        "value": "4.81"
+                    }
+                ],
+                "spec1": "S",
+                "spec2": "S",
+                "spec3": "単体6時間",
+                "spec4": "マルチポイント/ワイヤレス充電",
+                "spec5": "カナル型",
+                "spec6": "完全ワイヤレス(左右分離型)",
+                "spec7": "ダイナミック型",
+                "spec8": "タッチセンサー/ボタン",
+                "spec9": "16 Ω",
+                "spec10": "105 dB",
+                "spec11": "10Hz～40kHz",
+                "spec12": "5.8 mm",
+                "spec13": "充電ケース：USB Type-C/ワイヤレス充電(充電器別売)",
+                "spec14": "Bluetooth",
+                "spec15": "Ver.5.2",
+                "spec16": "最大約6時間(ノイズキャンセリングON時) 最大約6.5時間(ノイズキャンセリングOFF時)",
+                "spec17": "イヤホン：約2.5時間 充電ケース(USB充電時)：約3.5時間 充電ケース(ワイヤレス充電時)：約5時間",
+                "spec18": "SBC AAC aptX aptX Adaptive",
+                "spec19": "○",
+                "spec20": "○",
+                "spec21": "○",
+                "spec22": "○",
+                "spec23": "○",
+                "spec24": "○",
+                "spec25": "A",
+                "spec26": "○",
+                "spec27": "○",
+                "spec28": "IPX4",
+                "spec29": "○",
+                "spec30": "○",
+                "spec31": "ブラック ホワイト",
+                "spec32": "5.5 g",
+                "spec33": "4.81"
+            },
+            {
+                "rank": 7,
+                "productId": "scout-B0BSGYZW4M",
+                "badge": "おすすめ",
+                "rankBadge": "bronze",
+                "rating": 4.48,
+                "pros": [
+                    "電車の走行音などの低音がかなり消える",
+                    "低域から中域に迫力があり、聴いていて楽しい",
+                    "音場に広がりがあり、窮屈さを感じない"
+                ],
+                "cons": [
+                    "高音域の煌びやかな伸びはあまり感じられない",
+                    "高音質コーデック（LDAC等）には非対応"
+                ],
+                "specs": [
+                    {
+                        "label": "音質",
+                        "value": "A"
+                    },
+                    {
+                        "label": "ノイキャン",
+                        "value": "A"
+                    },
+                    {
+                        "label": "バッテリー",
+                        "value": "単体10時間"
+                    },
+                    {
+                        "label": "機能",
+                        "value": "マルチポイント/IPX5/Qi充電"
+                    },
+                    {
+                        "label": "タイプ*1",
+                        "value": "カナル型"
+                    },
+                    {
+                        "label": "接続タイプ",
+                        "value": "完全ワイヤレス(左右分離型)"
+                    },
+                    {
+                        "label": "駆動方式",
+                        "value": "ダイナミック型"
+                    },
+                    {
+                        "label": "本体操作スイッチ",
+                        "value": "タッチセンサー"
+                    },
+                    {
+                        "label": "インピーダンス",
+                        "value": "16 Ω"
+                    },
+                    {
+                        "label": "音圧感度",
+                        "value": "100 dB"
+                    },
+                    {
+                        "label": "再生周波数帯域",
+                        "value": "20Hz～20kHz"
+                    },
+                    {
+                        "label": "ドライバサイズ",
+                        "value": "10 mm"
+                    },
+                    {
+                        "label": "充電端子",
+                        "value": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)"
+                    },
+                    {
+                        "label": "ワイヤレス",
+                        "value": "Bluetooth"
+                    },
+                    {
+                        "label": "Bluetoothバージョン",
+                        "value": "Ver.5.3"
+                    },
+                    {
+                        "label": "連続再生時間",
+                        "value": "約10時間(ANCオフ時) 約8時間(ANCオン時)"
+                    },
+                    {
+                        "label": "充電時間",
+                        "value": "約2時間"
+                    },
+                    {
+                        "label": "対応コーデック",
+                        "value": "SBC AAC"
+                    },
+                    {
+                        "label": "マルチポイント対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ノイズキャンセリング",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マイク",
+                        "value": "○"
+                    },
+                    {
+                        "label": "外音取り込み",
+                        "value": "○"
+                    },
+                    {
+                        "label": "音質調整",
+                        "value": "A"
+                    },
+                    {
+                        "label": "自動電源ON機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "自動電源OFF機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "防水・防塵性能",
+                        "value": "IPX5"
+                    },
+                    {
+                        "label": "リモコン",
+                        "value": "○"
+                    },
+                    {
+                        "label": "AIアシスタント呼び出し機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "カラー",
+                        "value": "ブラック シャンパンゴールド 聴色"
+                    },
+                    {
+                        "label": "重量",
+                        "value": "6.1 g"
+                    },
+                    {
+                        "label": "特集",
+                        "value": "JBL最新ノイキャンヘッドホン「TOUR O…"
+                    },
+                    {
+                        "label": "満足度：",
+                        "value": "4.34"
+                    },
+                    {
+                        "label": "ドライバー",
+                        "value": "10mm"
+                    },
+                    {
+                        "label": "防水規格",
+                        "value": "IPX5"
+                    }
+                ],
+                "spec1": "A",
+                "spec2": "A",
+                "spec3": "単体10時間",
+                "spec4": "マルチポイント/IPX5/Qi充電",
+                "spec5": "カナル型",
+                "spec6": "完全ワイヤレス(左右分離型)",
+                "spec7": "ダイナミック型",
+                "spec8": "タッチセンサー",
+                "spec9": "16 Ω",
+                "spec10": "100 dB",
+                "spec11": "20Hz～20kHz",
+                "spec12": "10 mm",
+                "spec13": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)",
+                "spec14": "Bluetooth",
+                "spec15": "Ver.5.3",
+                "spec16": "約10時間(ANCオフ時) 約8時間(ANCオン時)",
+                "spec17": "約2時間",
+                "spec18": "SBC AAC",
+                "spec19": "○",
+                "spec20": "○",
+                "spec21": "○",
+                "spec22": "○",
+                "spec23": "A",
+                "spec24": "○",
+                "spec25": "○",
+                "spec26": "IPX5",
+                "spec27": "○",
+                "spec28": "○",
+                "spec29": "ブラック シャンパンゴールド 聴色",
+                "spec30": "6.1 g",
+                "spec31": "JBL最新ノイキャンヘッドホン「TOUR O…",
+                "spec32": "4.34",
+                "spec33": "10mm",
+                "spec34": "IPX5"
+            },
+            {
+                "rank": 8,
+                "productId": "scout-B0CP4RHK7X",
+                "badge": "おすすめ",
+                "rankBadge": "bronze",
+                "rating": 4.44,
+                "pros": [
+                    "ケースから耳に入れる時には既に接続されており、待ち時間ゼロで聴ける",
+                    "専用アプリでボタン操作を自分好みにカスタマイズできる",
+                    "色が写真通りに綺麗で、デザインの満足度が高い"
+                ],
+                "cons": [
+                    "対応コーデックはSBCとAACのみで、ハイレゾ(LDAC)には非対応",
+                    "ワイヤレス充電は便利だが、満充電まで約4時間かかる（有線より遅い）"
                 ],
                 "specs": [
                     {
@@ -75,7 +1416,7 @@
                     },
                     {
                         "label": "機能",
-                        "value": "マルチポイント/ワイヤレス充電/IPX5"
+                        "value": "マルチポイント/ワイヤレス充電"
                     },
                     {
                         "label": "タイプ*1",
@@ -201,7 +1542,7 @@
                 "spec1": "A",
                 "spec2": "A",
                 "spec3": "単体12時間",
-                "spec4": "マルチポイント/ワイヤレス充電/IPX5",
+                "spec4": "マルチポイント/ワイヤレス充電",
                 "spec5": "カナル型",
                 "spec6": "完全ワイヤレス(左右分離型)",
                 "spec7": "ダイナミック型",
@@ -234,36 +1575,36 @@
                 "spec34": "‎5.8 x 5.3 x 3 cm; 110 g"
             },
             {
-                "rank": 2,
-                "productId": "scout-B0DGL3XD3D",
+                "rank": 9,
+                "productId": "scout-B0DDKHF9XY",
                 "badge": "おすすめ",
-                "rankBadge": "silver",
-                "rating": 4.56,
+                "rankBadge": "bronze",
+                "rating": 4.44,
                 "pros": [
-                    "地下鉄のゴーッていう轟音がマジで無音になるから、移動中も静かに音楽に没入できるよ。",
-                    "先代よりかなり小さくなったから、寝っ転がりながら使っても耳が痛くならなくて最高。",
-                    "スマホとPCに同時に繋がるから、仕事中に急に電話が来ても切り替えの手間がなくてラクだよ。"
+                    "耳に良くフィットして、外れる気がしない",
+                    "低音から高音までクリアで、バランスが良い",
+                    "アプリでイコライザー調整ができる"
                 ],
                 "cons": [
-                    "付属のイヤーピースが硬めのスポンジ系だから、人によっては耳の穴が圧迫される感じがして苦手かも。",
-                    "本体がツルツル滑りやすいから、ケースから出すときに指が滑って落としそうでヒヤヒヤする。"
+                    "ノイズキャンセリング機能がない",
+                    "別の機器に切り替える時のペアリングが面倒"
                 ],
                 "specs": [
                     {
                         "label": "音質",
-                        "value": "S"
+                        "value": "B"
                     },
                     {
                         "label": "ノイキャン",
-                        "value": "S"
+                        "value": "C"
                     },
                     {
                         "label": "バッテリー",
-                        "value": "単体8時間"
+                        "value": "11時間"
                     },
                     {
                         "label": "機能",
-                        "value": "LDAC/マルチポイント/防水IPX4"
+                        "value": "マルチポイント/外音取り込み"
                     },
                     {
                         "label": "タイプ*1",
@@ -278,20 +1619,16 @@
                         "value": "密閉型(クローズド)"
                     },
                     {
-                        "label": "駆動方式",
-                        "value": "ダイナミック型"
-                    },
-                    {
                         "label": "本体操作スイッチ",
-                        "value": "タッチセンサー"
+                        "value": "ボタン"
                     },
                     {
                         "label": "ドライバサイズ",
-                        "value": "8.4 mm"
+                        "value": "6 mm"
                     },
                     {
                         "label": "充電端子",
-                        "value": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)"
+                        "value": "充電ケース：USB Type-C"
                     },
                     {
                         "label": "ワイヤレス",
@@ -303,15 +1640,15 @@
                     },
                     {
                         "label": "連続再生時間",
-                        "value": "最大8時間(NCオン) 最大12時間(NCオフ)"
+                        "value": "最大8時間(ASMオン) 最大11時間(ASMオフ)"
                     },
                     {
                         "label": "充電時間",
-                        "value": "本体：約1.5時間 充電ケース：約2時間"
+                        "value": "本体：約1.5時間 充電ケース：約3時間"
                     },
                     {
                         "label": "対応コーデック",
-                        "value": "SBC AAC LDAC LC3"
+                        "value": "SBC AAC"
                     },
                     {
                         "label": "マルチペアリング対応",
@@ -319,203 +1656,6 @@
                     },
                     {
                         "label": "マルチポイント対応",
-                        "value": "○"
-                    },
-                    {
-                        "label": "ノイズキャンセリング",
-                        "value": "○"
-                    },
-                    {
-                        "label": "ハイレゾ",
-                        "value": "○"
-                    },
-                    {
-                        "label": "マイク",
-                        "value": "○"
-                    },
-                    {
-                        "label": "外音取り込み",
-                        "value": "○"
-                    },
-                    {
-                        "label": "音質調整",
-                        "value": "A"
-                    },
-                    {
-                        "label": "自動電源ON機能",
-                        "value": "○"
-                    },
-                    {
-                        "label": "自動電源OFF機能",
-                        "value": "○"
-                    },
-                    {
-                        "label": "防水・防塵性能",
-                        "value": "IPX4相当"
-                    },
-                    {
-                        "label": "リモコン",
-                        "value": "○"
-                    },
-                    {
-                        "label": "AIアシスタント搭載",
-                        "value": "Google アシスタント Amazon Alexa"
-                    },
-                    {
-                        "label": "AIアシスタント呼び出し機能",
-                        "value": "○"
-                    },
-                    {
-                        "label": "カラー",
-                        "value": "スモーキーピンク ブラック プラチナシルバー"
-                    },
-                    {
-                        "label": "重量",
-                        "value": "5.9 g"
-                    },
-                    {
-                        "label": "特集",
-                        "value": "Technics「EAH-AZ100」の実力は？ソニ…"
-                    },
-                    {
-                        "label": "満足度：",
-                        "value": "3.86"
-                    },
-                    {
-                        "label": "接続方式",
-                        "value": "‎Wireless"
-                    },
-                    {
-                        "label": "ワイヤレス技術",
-                        "value": "‎Bluetooth"
-                    }
-                ],
-                "spec1": "S",
-                "spec2": "S",
-                "spec3": "単体8時間",
-                "spec4": "LDAC/マルチポイント/防水IPX4",
-                "spec5": "カナル型",
-                "spec6": "完全ワイヤレス(左右分離型)",
-                "spec7": "密閉型(クローズド)",
-                "spec8": "ダイナミック型",
-                "spec9": "タッチセンサー",
-                "spec10": "8.4 mm",
-                "spec11": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)",
-                "spec12": "Bluetooth",
-                "spec13": "Ver.5.3/Class1",
-                "spec14": "最大8時間(NCオン) 最大12時間(NCオフ)",
-                "spec15": "本体：約1.5時間 充電ケース：約2時間",
-                "spec16": "SBC AAC LDAC LC3",
-                "spec17": "○",
-                "spec18": "○",
-                "spec19": "○",
-                "spec20": "○",
-                "spec21": "○",
-                "spec22": "○",
-                "spec23": "A",
-                "spec24": "○",
-                "spec25": "○",
-                "spec26": "IPX4相当",
-                "spec27": "○",
-                "spec28": "Google アシスタント Amazon Alexa",
-                "spec29": "○",
-                "spec30": "スモーキーピンク ブラック プラチナシルバー",
-                "spec31": "5.9 g",
-                "spec32": "Technics「EAH-AZ100」の実力は？ソニ…",
-                "spec33": "3.86",
-                "spec34": "‎Wireless",
-                "spec35": "‎Bluetooth"
-            },
-            {
-                "rank": 3,
-                "productId": "scout-B0C61G4X7P",
-                "badge": "おすすめ",
-                "rankBadge": "bronze",
-                "rating": 4.56,
-                "pros": [
-                    "自分の耳専用に音を自動でカスタムしてくれるから、マジでライブ会場の最前列にいるみたいな生々しい音が聴けるよ。",
-                    "ワイヤレスなのにCDと全く同じ音質で飛ばせるから、お気に入りの曲の聞こえ方が別物レベルに化ける。",
-                    "スマホとPCに同時に繋ぎっぱなしにできるから、音楽を聴きながら急なWeb会議が入っても切り替えの手間がなくて最高。"
-                ],
-                "cons": [
-                    "イヤホン本体がかなりデカくて耳からはみ出すから、つけたまま横になると耳に食い込んで痛い。",
-                    "充電ケースが他のイヤホンより一回りゴツいから、ズボンのポケットに入れると不自然に膨らんで邪魔になる。"
-                ],
-                "specs": [
-                    {
-                        "label": "音質",
-                        "value": "S"
-                    },
-                    {
-                        "label": "ノイキャン",
-                        "value": "A"
-                    },
-                    {
-                        "label": "バッテリー",
-                        "value": "単体8時間"
-                    },
-                    {
-                        "label": "機能",
-                        "value": "aptX Lossless/マルチポイント/ワイヤレス充電"
-                    },
-                    {
-                        "label": "タイプ*1",
-                        "value": "カナル型"
-                    },
-                    {
-                        "label": "接続タイプ",
-                        "value": "完全ワイヤレス(左右分離型)"
-                    },
-                    {
-                        "label": "駆動方式",
-                        "value": "ダイナミック型"
-                    },
-                    {
-                        "label": "本体操作スイッチ",
-                        "value": "タッチセンサー"
-                    },
-                    {
-                        "label": "再生周波数帯域",
-                        "value": "20Hz～40kHz"
-                    },
-                    {
-                        "label": "ドライバサイズ",
-                        "value": "10 mm"
-                    },
-                    {
-                        "label": "充電端子",
-                        "value": "充電ケース：USB Type-C/ワイヤレス充電(充電器別売)"
-                    },
-                    {
-                        "label": "ワイヤレス",
-                        "value": "Bluetooth"
-                    },
-                    {
-                        "label": "Bluetoothバージョン",
-                        "value": "Ver.5.3"
-                    },
-                    {
-                        "label": "連続再生時間",
-                        "value": "約8時間"
-                    },
-                    {
-                        "label": "充電時間",
-                        "value": "イヤホン：約2時間 充電ケース：約1時間"
-                    },
-                    {
-                        "label": "対応コーデック",
-                        "value": "SBC AAC aptX aptX Adaptive aptX Lossless"
-                    },
-                    {
-                        "label": "マルチペアリング対応",
-                        "value": "○"
-                    },
-                    {
-                        "label": "マルチポイント対応",
-                        "value": "○"
-                    },
-                    {
-                        "label": "ノイズキャンセリング",
                         "value": "○"
                     },
                     {
@@ -547,16 +1687,20 @@
                         "value": "○"
                     },
                     {
+                        "label": "AIアシスタント搭載",
+                        "value": "Google アシスタント Amazon Alexa"
+                    },
+                    {
                         "label": "AIアシスタント呼び出し機能",
                         "value": "○"
                     },
                     {
                         "label": "カラー",
-                        "value": "ブラック ホワイト"
+                        "value": "ブラック ブルー イエロー ホワイト"
                     },
                     {
                         "label": "重量",
-                        "value": "8 g"
+                        "value": "4.6 g"
                     },
                     {
                         "label": "特集",
@@ -564,95 +1708,74 @@
                     },
                     {
                         "label": "満足度：",
-                        "value": "4.52"
+                        "value": "4.59"
                     },
                     {
-                        "label": "周波数特性",
-                        "value": "‎20 Hz"
+                        "label": "ドライバー",
+                        "value": "5.8mm"
                     },
                     {
-                        "label": "感度",
-                        "value": "‎56.7 g"
+                        "label": "ノイズキャンセリング",
+                        "value": "×"
                     },
                     {
-                        "label": "ヘッドホンジャック",
-                        "value": "‎ジャックなし。"
-                    },
-                    {
-                        "label": "接続方式",
-                        "value": "‎Wireless"
-                    },
-                    {
-                        "label": "ワイヤレス技術",
-                        "value": "‎Bluetooth"
-                    },
-                    {
-                        "label": "防水性能",
-                        "value": "‎Not Water Resistant"
-                    },
-                    {
-                        "label": "電圧",
-                        "value": "‎0.75 Volts"
+                        "label": "防水規格",
+                        "value": "IPX4"
                     }
                 ],
-                "spec1": "S",
-                "spec2": "A",
-                "spec3": "単体8時間",
-                "spec4": "aptX Lossless/マルチポイント/ワイヤレス充電",
+                "spec1": "B",
+                "spec2": "C",
+                "spec3": "11時間",
+                "spec4": "マルチポイント/外音取り込み",
                 "spec5": "カナル型",
                 "spec6": "完全ワイヤレス(左右分離型)",
-                "spec7": "ダイナミック型",
-                "spec8": "タッチセンサー",
-                "spec9": "20Hz～40kHz",
-                "spec10": "10 mm",
-                "spec11": "充電ケース：USB Type-C/ワイヤレス充電(充電器別売)",
-                "spec12": "Bluetooth",
-                "spec13": "Ver.5.3",
-                "spec14": "約8時間",
-                "spec15": "イヤホン：約2時間 充電ケース：約1時間",
-                "spec16": "SBC AAC aptX aptX Adaptive aptX Lossless",
+                "spec7": "密閉型(クローズド)",
+                "spec8": "ボタン",
+                "spec9": "6 mm",
+                "spec10": "充電ケース：USB Type-C",
+                "spec11": "Bluetooth",
+                "spec12": "Ver.5.3/Class1",
+                "spec13": "最大8時間(ASMオン) 最大11時間(ASMオフ)",
+                "spec14": "本体：約1.5時間 充電ケース：約3時間",
+                "spec15": "SBC AAC",
+                "spec16": "○",
                 "spec17": "○",
                 "spec18": "○",
                 "spec19": "○",
-                "spec20": "○",
+                "spec20": "A",
                 "spec21": "○",
-                "spec22": "A",
-                "spec23": "○",
+                "spec22": "○",
+                "spec23": "IPX4",
                 "spec24": "○",
-                "spec25": "IPX4",
+                "spec25": "Google アシスタント Amazon Alexa",
                 "spec26": "○",
-                "spec27": "○",
-                "spec28": "ブラック ホワイト",
-                "spec29": "8 g",
-                "spec30": "《2025年》完全ワイヤレスイヤホンの…",
-                "spec31": "4.52",
-                "spec32": "‎20 Hz",
-                "spec33": "‎56.7 g",
-                "spec34": "‎ジャックなし。",
-                "spec35": "‎Wireless",
-                "spec36": "‎Bluetooth",
-                "spec37": "‎Not Water Resistant",
-                "spec38": "‎0.75 Volts"
+                "spec27": "ブラック ブルー イエロー ホワイト",
+                "spec28": "4.6 g",
+                "spec29": "《2025年》完全ワイヤレスイヤホンの…",
+                "spec30": "4.59",
+                "spec31": "5.8mm",
+                "spec32": "×",
+                "spec33": "IPX4"
             },
             {
-                "rank": 4,
+                "rank": 10,
                 "productId": "scout-B0C5X122NF",
                 "badge": "おすすめ",
                 "rankBadge": "bronze",
-                "rating": 4.36,
+                "rating": 4.44,
                 "pros": [
-                    "3台同時に繋げるから、スマホとPCの切り替えがマジでスムーズ。仕事とプライベートの行き来が楽すぎる。",
-                    "LDAC対応で音がめちゃくちゃクリア。細かい楽器の音までしっかり聞こえるから音楽に没入できる。",
-                    "ワイヤレス充電対応だから、帰宅してポンと置くだけで充電が終わってるのが本当に快適。"
+                    "3台の機器で同時に待ち受けできるので、スマホとPCの切り替え操作が不要",
+                    "通話時の周囲のノイズを強力にカットするため、外出先からのWeb会議でも声がクリアに届く",
+                    "有線イヤホンのような解像感があり、楽器の細かいニュアンスまで聴こえる"
                 ],
                 "cons": [
-                    "最高音質のLDACモードだと4.5時間しか持たないから、長時間の移動には向かない。",
-                    "本体が1個7gと最近のイヤホンにしては少し重いから、長時間つけてると耳に負担を感じる。"
+                    "高音質(LDAC)モードで使用するとバッテリーが約4.5時間しか持たない",
+                    "タッチセンサーが敏感すぎて、装着位置を直す際に誤操作しやすい"
                 ],
                 "specs": [
                     {
                         "label": "音質",
-                        "value": "A"
+                        "value": "S"
                     },
                     {
                         "label": "ノイキャン",
@@ -660,11 +1783,11 @@
                     },
                     {
                         "label": "バッテリー",
-                        "value": "単体7.0時間"
+                        "value": "7時間"
                     },
                     {
                         "label": "機能",
-                        "value": "3台マルチポイント/LDAC/Qi充電"
+                        "value": "3台マルチポイント/LDAC"
                     },
                     {
                         "label": "タイプ*1",
@@ -784,7 +1907,7 @@
                     },
                     {
                         "label": "満足度：",
-                        "value": "4.57"
+                        "value": "4.47"
                     },
                     {
                         "label": "接続方式",
@@ -803,10 +1926,10 @@
                         "value": "‎Battery-Powered"
                     }
                 ],
-                "spec1": "A",
+                "spec1": "S",
                 "spec2": "A",
-                "spec3": "単体7.0時間",
-                "spec4": "3台マルチポイント/LDAC/Qi充電",
+                "spec3": "7時間",
+                "spec4": "3台マルチポイント/LDAC",
                 "spec5": "カナル型",
                 "spec6": "完全ワイヤレス(左右分離型)",
                 "spec7": "密閉型(クローズド)",
@@ -836,43 +1959,43 @@
                 "spec31": "ブラック シルバー",
                 "spec32": "7 g",
                 "spec33": "Technics最新ノイキャンTWSは「EAH-AZ80」と「EAH-AZ60M2」の2モ…",
-                "spec34": "4.57",
+                "spec34": "4.47",
                 "spec35": "‎Wireless",
                 "spec36": "‎Bluetooth",
                 "spec37": "‎Water Resistant",
                 "spec38": "‎Battery-Powered"
             },
             {
-                "rank": 5,
-                "productId": "scout-B0DDKK9DRV",
+                "rank": 11,
+                "productId": "scout-B0F3XFNHCW",
                 "badge": "おすすめ",
                 "rankBadge": "bronze",
-                "rating": 4.24,
+                "rating": 4.36,
                 "pros": [
-                    "本体がめちゃくちゃ軽いから、長時間着けてても耳が全然疲れなくて快適だよ。",
-                    "この価格帯でマルチポイント対応なのは神。スマホとPCの切り替えがマジでスムーズ。",
-                    "ケースがめちゃくちゃスリムだから、タイトなズボンのポケットに入れても全然かさばらない。"
+                    "ノイキャンONで単体8.5時間再生できるので、長時間のフライトも余裕",
+                    "片耳5.2gの軽量設計で、つけっぱなしでも耳への負担が少ない",
+                    "マルチポイント対応で、スマホとPCの接続切り替えが不要"
                 ],
                 "cons": [
-                    "ノイズキャンセリングが非搭載だから、騒がしいカフェとか電車の走行音は普通に聞こえてくる。",
-                    "ハイレゾ非対応でコーデックも最小限だから、音質にこだわりがある人には物足りない。"
+                    "LDAC非対応のため、ハイレゾ音源を最大限に活かせない",
+                    "ケースの充電に約3.5時間かかり、急な充電切れの際に時間がとられる"
                 ],
                 "specs": [
                     {
                         "label": "音質",
-                        "value": "B"
+                        "value": "A"
                     },
                     {
                         "label": "ノイキャン",
-                        "value": "C"
+                        "value": "A"
                     },
                     {
                         "label": "バッテリー",
-                        "value": "単体11時間"
+                        "value": "単体8.5時間"
                     },
                     {
                         "label": "機能",
-                        "value": "マルチポイント/外音取り込み/IPX4"
+                        "value": "マルチポイント/防滴"
                     },
                     {
                         "label": "タイプ*1",
@@ -888,11 +2011,11 @@
                     },
                     {
                         "label": "本体操作スイッチ",
-                        "value": "ボタン"
+                        "value": "タッチセンサー"
                     },
                     {
                         "label": "ドライバサイズ",
-                        "value": "6 mm"
+                        "value": "5 mm"
                     },
                     {
                         "label": "充電端子",
@@ -908,11 +2031,11 @@
                     },
                     {
                         "label": "連続再生時間",
-                        "value": "最大8時間(ASMオン) 最大11時間(ASMオフ)"
+                        "value": "最大8.5時間(NCオン) 最大12時間(NCオフ)"
                     },
                     {
                         "label": "充電時間",
-                        "value": "本体：約1.5時間 充電ケース：約3時間"
+                        "value": "本体：約1.5時間 充電ケース：約3.5時間"
                     },
                     {
                         "label": "対応コーデック",
@@ -924,6 +2047,10 @@
                     },
                     {
                         "label": "マルチポイント対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ノイズキャンセリング",
                         "value": "○"
                     },
                     {
@@ -955,8 +2082,144 @@
                         "value": "○"
                     },
                     {
-                        "label": "AIアシスタント搭載",
-                        "value": "Google アシスタント Amazon Alexa"
+                        "label": "AIアシスタント呼び出し機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "カラー",
+                        "value": "グラスブルー ホワイト ブラック ピンク"
+                    },
+                    {
+                        "label": "重量",
+                        "value": "5.2 g"
+                    },
+                    {
+                        "label": "満足度：",
+                        "value": "5.00"
+                    },
+                    {
+                        "label": "防水性能",
+                        "value": "‎Waterproof"
+                    }
+                ],
+                "spec1": "A",
+                "spec2": "A",
+                "spec3": "単体8.5時間",
+                "spec4": "マルチポイント/防滴",
+                "spec5": "カナル型",
+                "spec6": "完全ワイヤレス(左右分離型)",
+                "spec7": "密閉型(クローズド)",
+                "spec8": "タッチセンサー",
+                "spec9": "5 mm",
+                "spec10": "充電ケース：USB Type-C",
+                "spec11": "Bluetooth",
+                "spec12": "Ver.5.3/Class1",
+                "spec13": "最大8.5時間(NCオン) 最大12時間(NCオフ)",
+                "spec14": "本体：約1.5時間 充電ケース：約3.5時間",
+                "spec15": "SBC AAC",
+                "spec16": "○",
+                "spec17": "○",
+                "spec18": "○",
+                "spec19": "○",
+                "spec20": "○",
+                "spec21": "A",
+                "spec22": "○",
+                "spec23": "○",
+                "spec24": "IPX4",
+                "spec25": "○",
+                "spec26": "○",
+                "spec27": "グラスブルー ホワイト ブラック ピンク",
+                "spec28": "5.2 g",
+                "spec29": "5.00",
+                "spec30": "‎Waterproof"
+            },
+            {
+                "rank": 12,
+                "productId": "scout-B0DGJBNYVY",
+                "badge": "おすすめ",
+                "rankBadge": "bronze",
+                "rating": 4.26,
+                "pros": [
+                    "耳を塞がない開放型なので、カナル型のような圧迫感がなく長時間でも快適",
+                    "オープンイヤー構造なのに、エアコン音や街の喧騒が驚くほど消える",
+                    "ケースが業界最小クラスで持ち運びやすく、iPhoneとの接続も一瞬"
+                ],
+                "cons": [
+                    "ノイズキャンセリング使用時のバッテリー持ちが単体4時間と短め",
+                    "イヤホン本体で音量調節ができず、iPhoneかSiriでの操作が必要"
+                ],
+                "specs": [
+                    {
+                        "label": "音質",
+                        "value": "A"
+                    },
+                    {
+                        "label": "ノイキャン",
+                        "value": "A"
+                    },
+                    {
+                        "label": "バッテリー",
+                        "value": "単体5時間"
+                    },
+                    {
+                        "label": "機能",
+                        "value": "空間オーディオ/ワイヤレス充電"
+                    },
+                    {
+                        "label": "タイプ*1",
+                        "value": "インナーイヤー"
+                    },
+                    {
+                        "label": "接続タイプ",
+                        "value": "完全ワイヤレス(左右分離型)"
+                    },
+                    {
+                        "label": "構造",
+                        "value": "開放型(オープンエアー)"
+                    },
+                    {
+                        "label": "本体操作スイッチ",
+                        "value": "タッチセンサー"
+                    },
+                    {
+                        "label": "充電端子",
+                        "value": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)"
+                    },
+                    {
+                        "label": "ワイヤレス",
+                        "value": "Bluetooth"
+                    },
+                    {
+                        "label": "Bluetoothバージョン",
+                        "value": "Ver.5.3"
+                    },
+                    {
+                        "label": "連続再生時間",
+                        "value": "最大4時間(アクティブノイズキャンセリング有効) 最大5時間(ノイズコントロールオフ時)"
+                    },
+                    {
+                        "label": "ノイズキャンセリング",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マイク",
+                        "value": "○"
+                    },
+                    {
+                        "label": "外音取り込み",
+                        "value": "○"
+                    },
+                    {
+                        "label": "自動電源ON機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "防水・防塵性能",
+                        "value": "IP54"
+                    },
+                    {
+                        "label": "リモコン",
+                        "value": "○"
                     },
                     {
                         "label": "AIアシスタント呼び出し機能",
@@ -964,19 +2227,172 @@
                     },
                     {
                         "label": "カラー",
-                        "value": "ブラック ブルー ホワイト イエロー"
+                        "value": "ホワイト系"
                     },
                     {
                         "label": "重量",
-                        "value": "4.6 g"
+                        "value": "4.3 g"
                     },
                     {
                         "label": "特集",
-                        "value": "《2025年》完全ワイヤレスイヤホンの…"
+                        "value": "開放型でノイキャン搭載の「AirPods 4…"
                     },
                     {
                         "label": "満足度：",
-                        "value": "4.59"
+                        "value": "4.26"
+                    }
+                ],
+                "spec1": "A",
+                "spec2": "A",
+                "spec3": "単体5時間",
+                "spec4": "空間オーディオ/ワイヤレス充電",
+                "spec5": "インナーイヤー",
+                "spec6": "完全ワイヤレス(左右分離型)",
+                "spec7": "開放型(オープンエアー)",
+                "spec8": "タッチセンサー",
+                "spec9": "充電ケース：USB Type-C/Qi(ワイヤレス充電器別売)",
+                "spec10": "Bluetooth",
+                "spec11": "Ver.5.3",
+                "spec12": "最大4時間(アクティブノイズキャンセリング有効) 最大5時間(ノイズコントロールオフ時)",
+                "spec13": "○",
+                "spec14": "○",
+                "spec15": "○",
+                "spec16": "○",
+                "spec17": "IP54",
+                "spec18": "○",
+                "spec19": "○",
+                "spec20": "ホワイト系",
+                "spec21": "4.3 g",
+                "spec22": "開放型でノイキャン搭載の「AirPods 4…",
+                "spec23": "4.26"
+            },
+            {
+                "rank": 13,
+                "productId": "scout-B0DBQNCZDG",
+                "badge": "おすすめ",
+                "rankBadge": "bronze",
+                "rating": 4.26,
+                "pros": [
+                    "単体で最大8.5時間も再生できるので、長時間の移動でも充電切れの心配がない",
+                    "スマホとPCに同時に繋げるマルチポイント対応で、接続切り替えの手間がゼロ",
+                    "Boseならではの強力なノイズキャンセリングで、周囲の騒音をしっかり消せる"
+                ],
+                "cons": [
+                    "片耳約8.5gとイヤホンとしては重めなので、長時間着けると耳が疲れやすい",
+                    "高音質コーデック（LDAC等）には非対応なので、スペック重視の人には物足りない"
+                ],
+                "specs": [
+                    {
+                        "label": "音質",
+                        "value": "A"
+                    },
+                    {
+                        "label": "ノイキャン",
+                        "value": "A"
+                    },
+                    {
+                        "label": "バッテリー",
+                        "value": "単体8.5時間"
+                    },
+                    {
+                        "label": "機能",
+                        "value": "マルチポイント/ワイヤレス充電"
+                    },
+                    {
+                        "label": "タイプ*1",
+                        "value": "インナーイヤー"
+                    },
+                    {
+                        "label": "接続タイプ",
+                        "value": "完全ワイヤレス(左右分離型)"
+                    },
+                    {
+                        "label": "本体操作スイッチ",
+                        "value": "タッチセンサー"
+                    },
+                    {
+                        "label": "充電端子",
+                        "value": "充電ケース：USB Type-C/ワイヤレス充電(充電器別売)"
+                    },
+                    {
+                        "label": "ワイヤレス",
+                        "value": "Bluetooth"
+                    },
+                    {
+                        "label": "Bluetoothバージョン",
+                        "value": "Ver.5.3"
+                    },
+                    {
+                        "label": "連続再生時間",
+                        "value": "最大8.5時間"
+                    },
+                    {
+                        "label": "充電時間",
+                        "value": "イヤホン：約1.5時間 充電ケース：約2時間"
+                    },
+                    {
+                        "label": "対応コーデック",
+                        "value": "SBC"
+                    },
+                    {
+                        "label": "マルチペアリング対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マルチポイント対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ノイズキャンセリング",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マイク",
+                        "value": "○"
+                    },
+                    {
+                        "label": "外音取り込み",
+                        "value": "○"
+                    },
+                    {
+                        "label": "音質調整",
+                        "value": "A"
+                    },
+                    {
+                        "label": "自動電源ON機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "自動電源OFF機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "防水・防塵性能",
+                        "value": "IPX4"
+                    },
+                    {
+                        "label": "リモコン",
+                        "value": "○"
+                    },
+                    {
+                        "label": "AIアシスタント呼び出し機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "カラー",
+                        "value": "ブラック ホワイトスモーク Chilled Lilac アイスブルー トワイライトブルー ペタルピンク"
+                    },
+                    {
+                        "label": "重量",
+                        "value": "8.5 g"
+                    },
+                    {
+                        "label": "特集",
+                        "value": "BoseからノイキャンTWSのセカンドライン「QuietComfort Earbuds…"
+                    },
+                    {
+                        "label": "満足度：",
+                        "value": "4.21"
                     },
                     {
                         "label": "接続方式",
@@ -985,40 +2401,359 @@
                     {
                         "label": "ワイヤレス技術",
                         "value": "‎Bluetooth"
+                    },
+                    {
+                        "label": "防水性能",
+                        "value": "‎Water Resistant"
+                    }
+                ],
+                "spec1": "A",
+                "spec2": "A",
+                "spec3": "単体8.5時間",
+                "spec4": "マルチポイント/ワイヤレス充電",
+                "spec5": "インナーイヤー",
+                "spec6": "完全ワイヤレス(左右分離型)",
+                "spec7": "タッチセンサー",
+                "spec8": "充電ケース：USB Type-C/ワイヤレス充電(充電器別売)",
+                "spec9": "Bluetooth",
+                "spec10": "Ver.5.3",
+                "spec11": "最大8.5時間",
+                "spec12": "イヤホン：約1.5時間 充電ケース：約2時間",
+                "spec13": "SBC",
+                "spec14": "○",
+                "spec15": "○",
+                "spec16": "○",
+                "spec17": "○",
+                "spec18": "○",
+                "spec19": "A",
+                "spec20": "○",
+                "spec21": "○",
+                "spec22": "IPX4",
+                "spec23": "○",
+                "spec24": "○",
+                "spec25": "ブラック ホワイトスモーク Chilled Lilac アイスブルー トワイライトブルー ペタルピンク",
+                "spec26": "8.5 g",
+                "spec27": "BoseからノイキャンTWSのセカンドライン「QuietComfort Earbuds…",
+                "spec28": "4.21",
+                "spec29": "‎Wireless",
+                "spec30": "‎Bluetooth",
+                "spec31": "‎Water Resistant"
+            },
+            {
+                "rank": 14,
+                "productId": "scout-B0BZGTFF9L",
+                "badge": "おすすめ",
+                "rankBadge": "bronze",
+                "rating": 4.24,
+                "pros": [
+                    "長時間使っても耳が痛くなりにくい",
+                    "電車のノイズも全然気にならない消音性能",
+                    "ボーカルやギターの音がくっきり聞こえる"
+                ],
+                "cons": [
+                    "全体的に音の輪郭がボヤけており、響きが足りない",
+                    "ベース（低音）の迫力が控えめ"
+                ],
+                "specs": [
+                    {
+                        "label": "音質",
+                        "value": "B"
+                    },
+                    {
+                        "label": "ノイキャン",
+                        "value": "A"
+                    },
+                    {
+                        "label": "バッテリー",
+                        "value": "単体7.5時間"
+                    },
+                    {
+                        "label": "機能",
+                        "value": "マルチポイント/防滴"
+                    },
+                    {
+                        "label": "タイプ*1",
+                        "value": "カナル型"
+                    },
+                    {
+                        "label": "接続タイプ",
+                        "value": "完全ワイヤレス(左右分離型)"
+                    },
+                    {
+                        "label": "構造",
+                        "value": "密閉型(クローズド)"
+                    },
+                    {
+                        "label": "本体操作スイッチ",
+                        "value": "ボタン"
+                    },
+                    {
+                        "label": "再生周波数帯域",
+                        "value": "20Hz～20kHz"
+                    },
+                    {
+                        "label": "ドライバサイズ",
+                        "value": "5 mm"
+                    },
+                    {
+                        "label": "充電端子",
+                        "value": "充電ケース：USB Type-C"
+                    },
+                    {
+                        "label": "ワイヤレス",
+                        "value": "Bluetooth"
+                    },
+                    {
+                        "label": "Bluetoothバージョン",
+                        "value": "Ver.5.2/Class1"
+                    },
+                    {
+                        "label": "連続再生時間",
+                        "value": "最大7.5時間(NCオン) 最大10時間(NCオフ)"
+                    },
+                    {
+                        "label": "充電時間",
+                        "value": "本体：約1.5時間 充電ケース：約3時間"
+                    },
+                    {
+                        "label": "対応コーデック",
+                        "value": "SBC AAC"
+                    },
+                    {
+                        "label": "マルチペアリング対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マルチポイント対応",
+                        "value": "○"
+                    },
+                    {
+                        "label": "ノイズキャンセリング",
+                        "value": "○"
+                    },
+                    {
+                        "label": "マイク",
+                        "value": "○"
+                    },
+                    {
+                        "label": "外音取り込み",
+                        "value": "○"
+                    },
+                    {
+                        "label": "音質調整",
+                        "value": "A"
+                    },
+                    {
+                        "label": "自動電源ON機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "自動電源OFF機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "防水・防塵性能",
+                        "value": "IPX4相当"
+                    },
+                    {
+                        "label": "リモコン",
+                        "value": "○"
+                    },
+                    {
+                        "label": "AIアシスタント呼び出し機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "カラー",
+                        "value": "ブラック ホワイト セージグリーン ラベンダー"
+                    },
+                    {
+                        "label": "重量",
+                        "value": "4.6 g"
+                    },
+                    {
+                        "label": "特集",
+                        "value": "完全ワイヤレスイヤホン一気レビュー…"
+                    },
+                    {
+                        "label": "満足度：",
+                        "value": "3.80"
+                    },
+                    {
+                        "label": "ヘッドホンジャック",
+                        "value": "‎3.5 mm Jack"
+                    },
+                    {
+                        "label": "接続方式",
+                        "value": "‎Wireless"
+                    },
+                    {
+                        "label": "ワイヤレス技術",
+                        "value": "‎Bluetooth"
+                    },
+                    {
+                        "label": "防水性能",
+                        "value": "‎Water Resistant"
                     }
                 ],
                 "spec1": "B",
-                "spec2": "C",
-                "spec3": "単体11時間",
-                "spec4": "マルチポイント/外音取り込み/IPX4",
+                "spec2": "A",
+                "spec3": "単体7.5時間",
+                "spec4": "マルチポイント/防滴",
                 "spec5": "カナル型",
                 "spec6": "完全ワイヤレス(左右分離型)",
                 "spec7": "密閉型(クローズド)",
                 "spec8": "ボタン",
-                "spec9": "6 mm",
-                "spec10": "充電ケース：USB Type-C",
-                "spec11": "Bluetooth",
-                "spec12": "Ver.5.3/Class1",
-                "spec13": "最大8時間(ASMオン) 最大11時間(ASMオフ)",
-                "spec14": "本体：約1.5時間 充電ケース：約3時間",
-                "spec15": "SBC AAC",
-                "spec16": "○",
+                "spec9": "20Hz～20kHz",
+                "spec10": "5 mm",
+                "spec11": "充電ケース：USB Type-C",
+                "spec12": "Bluetooth",
+                "spec13": "Ver.5.2/Class1",
+                "spec14": "最大7.5時間(NCオン) 最大10時間(NCオフ)",
+                "spec15": "本体：約1.5時間 充電ケース：約3時間",
+                "spec16": "SBC AAC",
                 "spec17": "○",
                 "spec18": "○",
                 "spec19": "○",
-                "spec20": "A",
+                "spec20": "○",
                 "spec21": "○",
-                "spec22": "○",
-                "spec23": "IPX4",
+                "spec22": "A",
+                "spec23": "○",
                 "spec24": "○",
-                "spec25": "Google アシスタント Amazon Alexa",
+                "spec25": "IPX4相当",
                 "spec26": "○",
-                "spec27": "ブラック ブルー ホワイト イエロー",
-                "spec28": "4.6 g",
-                "spec29": "《2025年》完全ワイヤレスイヤホンの…",
-                "spec30": "4.59",
-                "spec31": "‎Wireless",
-                "spec32": "‎Bluetooth"
+                "spec27": "○",
+                "spec28": "ブラック ホワイト セージグリーン ラベンダー",
+                "spec29": "4.6 g",
+                "spec30": "完全ワイヤレスイヤホン一気レビュー…",
+                "spec31": "3.80",
+                "spec32": "‎3.5 mm Jack",
+                "spec33": "‎Wireless",
+                "spec34": "‎Bluetooth",
+                "spec35": "‎Water Resistant"
+            },
+            {
+                "rank": 15,
+                "productId": "scout-B0DGJ63QY8",
+                "badge": "おすすめ",
+                "rankBadge": "bronze",
+                "rating": 4.2,
+                "pros": [
+                    "耳を塞がない開放型なので、カナル型のような圧迫感がなく長時間でも快適",
+                    "オープンイヤー型でありながら周囲の騒音を自然に低減でき、疲れにくい",
+                    "ケースから出すだけでiPhoneに即座につながり、デバイス間の切り替えもスムーズ"
+                ],
+                "cons": [
+                    "バッテリー持ちが単体5時間と競合機に比べて短く、こまめな充電が必要",
+                    "構造上、静かな場所で大音量を流すと周囲への音漏れが気になる"
+                ],
+                "specs": [
+                    {
+                        "label": "音質",
+                        "value": "A"
+                    },
+                    {
+                        "label": "ノイキャン",
+                        "value": "B"
+                    },
+                    {
+                        "label": "バッテリー",
+                        "value": "単体5時間"
+                    },
+                    {
+                        "label": "機能",
+                        "value": "開放型ANC/空間オーディオ"
+                    },
+                    {
+                        "label": "タイプ*1",
+                        "value": "インナーイヤー"
+                    },
+                    {
+                        "label": "接続タイプ",
+                        "value": "完全ワイヤレス(左右分離型)"
+                    },
+                    {
+                        "label": "構造",
+                        "value": "開放型(オープンエアー)"
+                    },
+                    {
+                        "label": "本体操作スイッチ",
+                        "value": "タッチセンサー"
+                    },
+                    {
+                        "label": "充電端子",
+                        "value": "充電ケース：USB Type-C"
+                    },
+                    {
+                        "label": "ワイヤレス",
+                        "value": "Bluetooth"
+                    },
+                    {
+                        "label": "Bluetoothバージョン",
+                        "value": "Ver.5.3"
+                    },
+                    {
+                        "label": "連続再生時間",
+                        "value": "最大5時間"
+                    },
+                    {
+                        "label": "マイク",
+                        "value": "○"
+                    },
+                    {
+                        "label": "自動電源ON機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "防水・防塵性能",
+                        "value": "IP54"
+                    },
+                    {
+                        "label": "リモコン",
+                        "value": "○"
+                    },
+                    {
+                        "label": "AIアシスタント呼び出し機能",
+                        "value": "○"
+                    },
+                    {
+                        "label": "カラー",
+                        "value": "ホワイト系"
+                    },
+                    {
+                        "label": "重量",
+                        "value": "4.3 g"
+                    },
+                    {
+                        "label": "特集",
+                        "value": "開放型でノイキャン搭載の「AirPods 4…"
+                    },
+                    {
+                        "label": "満足度：",
+                        "value": "3.59"
+                    }
+                ],
+                "spec1": "A",
+                "spec2": "B",
+                "spec3": "単体5時間",
+                "spec4": "開放型ANC/空間オーディオ",
+                "spec5": "インナーイヤー",
+                "spec6": "完全ワイヤレス(左右分離型)",
+                "spec7": "開放型(オープンエアー)",
+                "spec8": "タッチセンサー",
+                "spec9": "充電ケース：USB Type-C",
+                "spec10": "Bluetooth",
+                "spec11": "Ver.5.3",
+                "spec12": "最大5時間",
+                "spec13": "○",
+                "spec14": "○",
+                "spec15": "IP54",
+                "spec16": "○",
+                "spec17": "○",
+                "spec18": "ホワイト系",
+                "spec19": "4.3 g",
+                "spec20": "開放型でノイキャン搭載の「AirPods 4…",
+                "spec21": "3.59"
             }
         ],
         "buyingGuide": {
@@ -1042,11 +2777,21 @@
             ]
         },
         "products": [
+            "scout-B0DJCZLBFD",
+            "scout-B0D1R8X96X",
+            "scout-B0DRV8HD2D",
+            "scout-B0CTHY1JNJ",
+            "scout-B0C5WZDSDV",
+            "scout-B0FGPMX93Q",
+            "scout-B0BSGYZW4M",
             "scout-B0CP4RHK7X",
-            "scout-B0DGL3XD3D",
-            "scout-B0C61G4X7P",
+            "scout-B0DDKHF9XY",
             "scout-B0C5X122NF",
-            "scout-B0DDKK9DRV"
+            "scout-B0F3XFNHCW",
+            "scout-B0DGJBNYVY",
+            "scout-B0DBQNCZDG",
+            "scout-B0BZGTFF9L",
+            "scout-B0DGJ63QY8"
         ]
     },
     {

@@ -1317,7 +1317,7 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                             }
 
                             // Scan for Amazon
-                            amazonInfo = await page.evaluate(() => {
+                            amazonInfo = await page.evaluate((options) => {
                                 // Search ALL links on the page for Amazon
                                 const allLinks = Array.from(document.querySelectorAll('a'));
                                 for (const link of allLinks) {
@@ -2352,11 +2352,36 @@ async function scrapeKakakuRankingWithEnrichment(keyword = 'イヤホン', optio
     console.log(`\n🔗 Enriching ${productsToEnrich.length} products with Amazon links...`);
 
     let browser;
+    let isConnected = false;
     try {
-        browser = await puppeteer.launch({
-            headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
+        // Try connecting to existing Chrome (port 9222) first (Unified Session)
+        const http = require('http');
+        try {
+            const wsUrl = await new Promise((resolve, reject) => {
+                const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+                    let data = '';
+                    res.on('data', chunk => data += chunk);
+                    res.on('end', () => {
+                        try {
+                            const json = JSON.parse(data);
+                            resolve(json.webSocketDebuggerUrl);
+                        } catch (e) { reject(e); }
+                    });
+                });
+                req.on('error', reject);
+                req.setTimeout(2000, () => { req.destroy(); reject(new Error('timeout')); });
+            });
+            browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
+            isConnected = true;
+            console.log(`   🔌 Connected to shared Chrome session`);
+        } catch (connectErr) {
+            console.log(`   🚀 Launching dedicated headless browser for Kakaku...`);
+            browser = await puppeteer.launch({
+                headless: 'new',
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
+            });
+            isConnected = false;
+        }
 
         const page = await browser.newPage();
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
@@ -2474,11 +2499,15 @@ async function scrapeKakakuRankingWithEnrichment(keyword = 'イヤホン', optio
             await new Promise(r => setTimeout(r, 500));
         }
 
-        await browser.close();
+        if (isConnected) await browser.disconnect();
+        else await browser.close();
 
     } catch (e) {
         console.log(`   ⚠️ Enrichment failed: ${e.message}`);
-        if (browser) await browser.close();
+        if (browser) {
+            if (isConnected) await browser.disconnect();
+            else await browser.close();
+        }
     }
 
     // Summary
