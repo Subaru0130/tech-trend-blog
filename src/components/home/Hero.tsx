@@ -49,9 +49,9 @@ export default function Hero() {
                     <div className="flex-1 w-full max-w-[500px] lg:max-w-none relative animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
                         <div className="relative z-10 perspective-1000">
                             <div className="bg-white rounded-[2rem] p-3 md:p-4 shadow-float border border-white ring-1 ring-stone-100 transform transition-transform duration-500 hover:rotate-1">
-                                <Link href="/rankings/wireless-earphones-noise-cancelling" className="block aspect-[5/4] rounded-[1.5rem] overflow-hidden relative group bg-surface-subtle">
-                                    {/* Use Earphone image as Hero for existing content */}
-                                    <img alt="Best Buy Wireless Earphones" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="/images/articles/wireless-earphones-ranking-nc.jpg" />
+                                <Link href="/rankings/wireless-earphones" className="block aspect-[5/4] rounded-[1.5rem] overflow-hidden relative group bg-surface-subtle">
+                                    {/* Updated to Gym Wireless Earphones */}
+                                    <img alt="Best Buy Wireless Earphones" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="/images/articles/wireless-earphones.jpg" />
                                     <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6">
                                         <div className="bg-white/95 backdrop-blur-md shadow-lg rounded-2xl p-5 border border-white/50 ring-1 ring-black/5">
                                             <div className="flex items-start justify-between mb-3">
@@ -60,7 +60,7 @@ export default function Hero() {
                                                         <span className="bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Best Buy</span>
                                                         <span className="text-xs font-bold text-stone-500">イヤホン</span>
                                                     </div>
-                                                    <h3 className="text-lg font-bold text-primary line-clamp-1">ノイキャンイヤホン TOP15</h3>
+                                                    <h3 className="text-lg font-bold text-primary line-clamp-1">ジム最強ワイヤレスイヤホン</h3>
                                                 </div>
                                                 <div className="flex flex-col items-end">
                                                     <div className="flex text-rank-gold gap-0.5">
@@ -70,23 +70,23 @@ export default function Hero() {
                                                         <span className="material-symbols-outlined text-[16px] filled" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
                                                         <span className="material-symbols-outlined text-[16px] filled" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
                                                     </div>
-                                                    <span className="text-[10px] text-stone-400 font-medium">4.8 / 5.0</span>
+                                                    <span className="text-[10px] text-stone-400 font-medium">4.9 / 5.0</span>
                                                 </div>
                                             </div>
                                             <div className="space-y-2 mb-4">
                                                 <div className="flex items-center gap-2 text-xs text-text-sub">
                                                     <span className="material-symbols-outlined text-[14px] text-accent">check</span>
-                                                    <span>電車の騒音が消える最強のノイキャン</span>
+                                                    <span>汗・ズレに強い！タフネスモデル徹底検証</span>
                                                 </div>
                                                 <div className="flex items-center gap-2 text-xs text-text-sub">
                                                     <span className="material-symbols-outlined text-[14px] text-accent">check</span>
-                                                    <span>JBL / Apple / SONY / Bose 徹底比較</span>
+                                                    <span>防水性能・装着感をプロが比較</span>
                                                 </div>
                                             </div>
                                             <div className="flex items-center justify-between pt-3 border-t border-dashed border-stone-200">
                                                 <div>
                                                     <span className="text-xs font-bold text-stone-400">参考価格帯</span>
-                                                    <div className="text-lg font-black text-primary">¥8,000<span className="text-xs font-normal text-stone-500 ml-1">~</span></div>
+                                                    <div className="text-lg font-black text-primary">¥5,000<span className="text-xs font-normal text-stone-500 ml-1">~</span></div>
                                                 </div>
                                                 <div className="bg-primary hover:bg-accent text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1">
                                                     記事を読む <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

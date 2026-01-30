@@ -1,6 +1,15 @@
 
 import { getAllProducts, getProductById } from '@/lib/data';
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
+
+// Prevent indexing of affiliate redirect pages
+export const metadata: Metadata = {
+    robots: {
+        index: false,
+        follow: false,
+    },
+};
 
 // Static Generation for all products to support output: export
 export async function generateStaticParams() {

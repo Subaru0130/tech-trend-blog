@@ -1,10 +1,19 @@
 
-# Force HTTPS
+# Force HTTPS and redirect www to non-www
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    
+    # Redirect www to non-www (must be first)
+    RewriteCond %{HTTP_HOST} ^www\.choiceguide\.jp$ [NC]
+    RewriteRule ^(.*)$ https://choiceguide.jp/$1 [R=301,L]
+    
+    # Force HTTPS
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </IfModule>
+
+# Redirect old ranking URLs to new ones (works even if old path doesn't exist)
+RedirectMatch 301 ^/rankings/best-wireless-earphones-under-10000/?$ /rankings/wireless-earphones-under-10000yen/
 
 # Custom Error Pages (Optional, good for Xserver)
 ErrorDocument 404 /404.html

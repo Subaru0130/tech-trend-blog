@@ -1119,7 +1119,15 @@ function cleanProductName(rawName, knownBrand = null) {
         console.error('   ⚠️ Sitemap generation failed:', e.message);
     }
 
-    // 8. Save Enriched Data to Master JSON
+    // 8. Cleanup Orphaned Reviews (remove reviews not used in any article)
+    console.log('\n🧹 Cleaning up orphaned reviews...');
+    try {
+        execSync('node scripts/cleanup_orphaned_reviews.js', { stdio: 'inherit' });
+    } catch (e) {
+        console.warn('   ⚠️ Cleanup failed:', e.message);
+    }
+
+    // 9. Save Enriched Data to Master JSON
     fs.writeFileSync(PRODUCTS_JSON_PATH, JSON.stringify(productsData, null, 4));
     console.log(`\n🎉 Article Generated: src/content/articles/${TARGET_KEYWORD}.md`);
 
