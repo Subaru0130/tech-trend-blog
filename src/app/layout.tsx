@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import React from "react";
 import { Manrope, Noto_Sans_JP } from "next/font/google";
+import Script from "next/script";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -49,6 +50,18 @@ export default function RootLayout({
         className="antialiased font-sans bg-background-light text-text-main"
         suppressHydrationWarning
       >
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-EVXJ7G5J76"
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-EVXJ7G5J76');
+          `}
+        </Script>
         {children}
         <script
           type="application/ld+json"

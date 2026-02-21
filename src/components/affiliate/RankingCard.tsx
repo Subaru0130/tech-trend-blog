@@ -231,6 +231,7 @@ export function RankingCard({
                         href={links.amazon}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => { if (typeof window !== 'undefined' && (window as any).gtag) { (window as any).gtag('event', 'affiliate_click', { store: 'amazon', product_name: displayTitle, rank: rank }); } }}
                         className="flex items-center justify-center gap-2 bg-[#FF9900] hover:bg-[#ffad33] text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-transform hover:-translate-y-1 active:translate-y-0 whitespace-nowrap"
                     >
                         <ShoppingCart className="w-5 h-5" />
@@ -242,6 +243,7 @@ export function RankingCard({
                         href={links.rakuten}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => { if (typeof window !== 'undefined' && (window as any).gtag) { (window as any).gtag('event', 'affiliate_click', { store: 'rakuten', product_name: displayTitle, rank: rank }); } }}
                         className="flex items-center justify-center gap-2 bg-[#BF0000] hover:bg-[#d40000] text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-transform hover:-translate-y-1 active:translate-y-0 whitespace-nowrap"
                     >
                         <ShoppingCart className="w-5 h-5" />
