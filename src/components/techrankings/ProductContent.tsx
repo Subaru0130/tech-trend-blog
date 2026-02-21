@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { getAmazonLink } from '@/lib/affiliate';
 import { Product, Article } from '@/types';
 
@@ -8,6 +8,7 @@ interface ProductContentProps {
     product: Product;
     children?: React.ReactNode;
     parentArticle?: Article;
+    parentArticles?: Article[];  // ★ All articles that contain this product
     relatedProducts?: Product[];
     relatedArticles?: Article[];
 }
@@ -15,10 +16,25 @@ interface ProductContentProps {
 const ProductContent: React.FC<ProductContentProps> = ({
     product,
     children,
-    parentArticle,
+    parentArticle: parentArticleProp,
+    parentArticles: parentArticlesProp,
     relatedProducts = [],
     relatedArticles = []
 }) => {
+    // ★ Support both single and multi-article props
+    const allParentArticles = parentArticlesProp || (parentArticleProp ? [parentArticleProp] : []);
+    const defaultParent = allParentArticles[0] || undefined;
+
+    // ★ Client-side: read ?from= param to select the correct parent article
+    const [parentArticle, setParentArticle] = useState<Article | undefined>(defaultParent);
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const fromSlug = params.get('from');
+        if (fromSlug) {
+            const matched = allParentArticles.find(a => a.id === fromSlug);
+            if (matched) setParentArticle(matched);
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
     const [activeImage, setActiveImage] = useState(0);
     // Use product image and placeholders if only one image exists or mock multiple images
     const images = [product.image];
@@ -342,7 +358,7 @@ const ProductContent: React.FC<ProductContentProps> = ({
                         <div className="space-y-6">
                             {relatedProducts.length > 0 ? (
                                 relatedProducts.map((p, index) => (
-                                    <a key={p.id || index} className="flex items-center gap-4 group" href={`/reviews/${p.id}`}>
+                                    <a key={p.id || index} className="flex items-center gap-4 group" href={`/reviews/${p.id}${parentArticle ? `?from=${parentArticle.id}` : ''}`}>
                                         <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-surface-subtle border border-border-color shrink-0">
                                             <img
                                                 alt={p.name}
@@ -370,12 +386,18 @@ const ProductContent: React.FC<ProductContentProps> = ({
                                 <p className="text-sm text-text-sub">関連商品はありません。</p>
                             )}
                         </div>
-                        <div className="mt-8 pt-6 border-t border-border-color text-center">
-                            {parentArticle && (
-                                <a className="text-xs font-bold text-accent hover:underline flex items-center justify-center gap-1 whitespace-nowrap" href={`/rankings/${parentArticle.id}`}>
-                                    ランキングをもっと見る <span className="material-symbols-outlined text-xs">arrow_forward</span>
-                                </a>
-                            )}
+                        <div className="mt-8 pt-6 border-t border-border-color">
+                            {allParentArticles.length > 0 ? (
+                                <div className="space-y-3">
+                                    <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">この商品が紹介されている記事</p>
+                                    {allParentArticles.map((article) => (
+                                        <a key={article.id} className="text-xs font-bold text-accent hover:underline flex items-center gap-1" href={`/rankings/${article.id}`}>
+                                            <span className="material-symbols-outlined text-xs">arrow_forward</span>
+                                            <span className="line-clamp-1">{article.title}</span>
+                                        </a>
+                                    ))}
+                                </div>
+                            ) : null}
                         </div>
                     </div>
 

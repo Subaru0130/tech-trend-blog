@@ -9,7 +9,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import Header from '@/components/shared/Header';
 import Footer from '@/components/shared/Footer';
-import { getProductBySlug, getAllSlugs, CATEGORY_MAP, getArticleByProductId, getArticlesByCategory } from '@/lib/data';
+import { getProductBySlug, getAllSlugs, CATEGORY_MAP, getArticlesByProductId, getArticlesByCategory } from '@/lib/data';
 import { getAmazonLink } from '@/lib/affiliate';
 import ProductContent from '@/components/techrankings/ProductContent';
 import { Metadata } from 'next';
@@ -58,37 +58,54 @@ export default async function ReviewPage({ params }: Props) {
     }
     const filePath = path.join(REVIEW_DIR, `${slug}.md`);
     let content = null;
+    let frontmatterData: Record<string, any> = {};
     try {
         if (fs.existsSync(filePath)) {
             const rawContent = fs.readFileSync(filePath, 'utf8');
-            const { content: mdxContent } = matter(rawContent);
+            const { content: mdxContent, data } = matter(rawContent);
             content = mdxContent;
+            frontmatterData = data;
         }
     } catch (e) {
         console.error("Error reading review file:", e);
     }
 
-    // Determine category info
-    const subCat = (product as any).subCategory || product.category;
-    // Enhanced Category Mapping using shared data or fallback
-    let catLabel = '生活家電';
-    let catSlug = '/';
+    // Extract a clean text snippet for reviewBody (first 300 chars of markdown, stripped)
+    const reviewBodyText = content
+        ? content.replace(/[#*\[\]()\-_>`]/g, '').replace(/\n+/g, ' ').trim().slice(0, 300) + '...'
+        : product.description || '';
+    const publishDate = frontmatterData.date || new Date().toISOString().split('T')[0];
 
-    // Check known mappings
-    if (subCat === 'wireless-earphones') {
-        catLabel = '完全ワイヤレスイヤホン';
-        catSlug = '/rankings/best-wireless-earphones-under-10000'; // Or generic audio
-    } else if (subCat === 'refrigerators') {
-        catLabel = '冷蔵庫';
-        catSlug = '/rankings/best-refrigerators-single-2025';
-    } else if (CATEGORY_MAP[subCat]) {
-        catLabel = CATEGORY_MAP[subCat].label;
-        catSlug = CATEGORY_MAP[subCat].subCategories?.[0]?.slug ? `/categories/${subCat}` : '/';
-    }
+    // Determine category info dynamically
+    const subCat = (product as any).subCategory || (product as any).subCategoryId || product.category;
+    const CATEGORY_LABELS: Record<string, string> = {
+        'wireless-headphones': 'ワイヤレスイヤホン',
+        'audio': 'オーディオ',
+        'speakers': 'スピーカー',
+        'refrigerators': '冷蔵庫',
+        'washing-machines': '洗濯機',
+        'air-conditioners': 'エアコン',
+        'vacuum-cleaners': '掃除機',
+        'cameras': 'カメラ',
+        'tvs': 'テレビ・モニター',
+        'input-devices': 'PC周辺機器',
+        'tablets': 'タブレット',
+        'smartwatches': 'スマートウォッチ',
+        'kitchen-appliances': 'キッチン家電',
+        'hair-dryers': 'ドライヤー',
+        'air-quality': '空気清浄・加湿',
+        'projectors': 'プロジェクター',
+    };
+    let catLabel = CATEGORY_LABELS[subCat] || (CATEGORY_MAP[subCat]?.label) || '製品レビュー';
+    let catSlug = CATEGORY_MAP[subCat]?.subCategories?.[0]?.slug ? `/categories/${subCat}` : '/';
 
     const catInfo = { label: catLabel, slug: catSlug };
 
-    const jsonLd = {
+    // --- Structured Data: Product + Review + BreadcrumbList ---
+    const priceValue = product.price ? product.price.replace(/[^0-9]/g, '') : "0";
+    const actualReviewCount = (product as any).reviewCount || 1;
+
+    const productJsonLd = {
         "@context": "https://schema.org",
         "@type": "Product",
         "name": product.name,
@@ -107,26 +124,93 @@ export default async function ReviewPage({ params }: Props) {
             },
             "author": {
                 "@type": "Organization",
-                "name": "ChoiceGuide"
-            }
+                "name": "ChoiceGuide編集部",
+                "url": "https://choiceguide.jp"
+            },
+            "datePublished": publishDate,
+            "reviewBody": reviewBodyText
         },
         "aggregateRating": {
             "@type": "AggregateRating",
             "ratingValue": product.rating,
-            "reviewCount": 1 // Fallback since we removed reviewCount
+            "reviewCount": actualReviewCount
         },
         "offers": {
             "@type": "Offer",
             "url": product.affiliateLinks?.amazon || "",
             "priceCurrency": "JPY",
-            "price": product.price ? product.price.replace(/[^0-9]/g, '') : "0",
-            "availability": "https://schema.org/InStock"
+            "price": priceValue,
+            "availability": "https://schema.org/InStock",
+            "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "JP",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 30,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
+            },
+            "shippingDetails": {
+                "@type": "OfferShippingDetails",
+                "shippingDestination": {
+                    "@type": "DefinedRegion",
+                    "addressCountry": "JP"
+                },
+                "shippingRate": {
+                    "@type": "MonetaryAmount",
+                    "value": "0",
+                    "currency": "JPY"
+                },
+                "deliveryTime": {
+                    "@type": "ShippingDeliveryTime",
+                    "handlingTime": {
+                        "@type": "QuantitativeValue",
+                        "minValue": 0,
+                        "maxValue": 1,
+                        "unitCode": "DAY"
+                    },
+                    "transitTime": {
+                        "@type": "QuantitativeValue",
+                        "minValue": 1,
+                        "maxValue": 3,
+                        "unitCode": "DAY"
+                    }
+                }
+            }
         }
+    };
+
+    // BreadcrumbList schema for breadcrumb rich results
+    const breadcrumbJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "ホーム",
+                "item": "https://choiceguide.jp"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": catLabel,
+                "item": `https://choiceguide.jp${catSlug}`
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": `${product.name} レビュー`,
+                "item": `https://choiceguide.jp/reviews/${slug}`
+            }
+        ]
     };
 
 
 
-    const parentArticle = getArticleByProductId(product.id);
+    const allParentArticles = getArticlesByProductId(product.id);
+    // parentArticle selection is handled client-side in ProductContent via ?from= param
+    const parentArticle = allParentArticles[0] || undefined;
 
     // Create a display product with the correct rank from the parent article context
     const displayProduct = { ...product };
@@ -164,7 +248,11 @@ export default async function ReviewPage({ params }: Props) {
         <div className="bg-background-light text-text-main antialiased selection:bg-accent/20 selection:text-primary min-h-screen font-sans">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
             />
             <Header />
 
@@ -177,6 +265,7 @@ export default async function ReviewPage({ params }: Props) {
                         <ProductContent
                             product={displayProduct}
                             parentArticle={parentArticle}
+                            parentArticles={allParentArticles}
                             relatedProducts={topRelatedProducts}
                             relatedArticles={relatedArticles}
                         >

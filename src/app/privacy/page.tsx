@@ -1,6 +1,15 @@
 import React from 'react';
 import Header from '@/components/shared/Header';
 import Footer from '@/components/shared/Footer';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'プライバシーポリシー',
+    description: 'ChoiceGuideのプライバシーポリシーです。個人情報の取り扱い、Cookie利用、アクセス解析ツールについてご説明します。',
+    alternates: {
+        canonical: 'https://choiceguide.jp/privacy/',
+    },
+};
 
 export default function PrivacyPage() {
     return (

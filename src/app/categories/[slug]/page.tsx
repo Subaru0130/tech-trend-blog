@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     if (!categoryInfo) return { title: 'カテゴリが見つかりません' };
 
     return {
-        title: categoryInfo.label + ' 記事一覧 | BestChoice',
-        description: 'BestChoiceの' + categoryInfo.label + 'に関する記事一覧ページ。最新のランキングやレビューをチェック。',
+        title: categoryInfo.label + ' 記事一覧',
+        description: 'ChoiceGuideの' + categoryInfo.label + 'に関する記事一覧ページ。最新のランキングやレビューをチェック。',
     };
 }
 

@@ -86,10 +86,11 @@ const filterModel = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
 // 1. Configuration
 const JSON_FILE = process.argv[2];
 const TARGET_KEYWORD = process.argv[3];
+const FORCE_REVIEWS = process.argv.includes('--force-reviews'); // ★ Force regeneration of review pages
 const PRODUCTS_JSON_PATH = path.resolve(__dirname, '../src/data/products.json');
 
 if (!JSON_FILE || !TARGET_KEYWORD) {
-    console.error("❌ Usage: node scripts/produce_from_blueprint.js <JSON_FILE> <KEYWORD>");
+    console.error("❌ Usage: node scripts/produce_from_blueprint.js <JSON_FILE> <KEYWORD> [--force-reviews]");
     process.exit(1);
 }
 
@@ -897,7 +898,7 @@ function cleanProductName(rawName, knownBrand = null) {
             image: product.image && product.image.startsWith('http')
                 ? product.image
                 : (product.asin ? `https://images-na.ssl-images-amazon.com/images/P/${product.asin}.01.LZZZZZZZ.jpg` : '/images/placeholder.jpg'),
-            rating: product.calculatedRating || 4.5,
+            rating: product.rating || product.calculatedRating || 4.0,
             reviewCount: product.reviewCount || 0,
             description: product.description || '',
             brand: product.brand || '',
@@ -1020,6 +1021,7 @@ function cleanProductName(rawName, knownBrand = null) {
 
     // 5. Generate Reviews
     console.log("\n--> Generating Individual Reviews...");
+    const reviewDir = path.resolve(__dirname, '../src/content/reviews');
     for (let i = 0; i < validatedLineup.length; i++) {
         const p = validatedLineup[i]; // Verified items are already the source of truth
         const nextItem = validatedLineup[i + 1] || validatedLineup[0];
@@ -1030,9 +1032,21 @@ function cleanProductName(rawName, knownBrand = null) {
             p.description = `${p.name}は${pros[0] || '注目'}の製品です。`;
         }
 
+        // ★ Skip if review already exists (unless --force-reviews is set)
+        const reviewFilePath = path.join(reviewDir, `${p.id}.md`);
+        if (fs.existsSync(reviewFilePath) && !FORCE_REVIEWS) {
+            console.log(`   ⏭️ Review already exists: ${p.name} (skipping, use --force-reviews to overwrite)`);
+            continue;
+        }
+        if (fs.existsSync(reviewFilePath) && FORCE_REVIEWS) {
+            console.log(`   🔄 Force-regenerating review: ${p.name}`);
+        }
+
         try {
             console.log(`   ✍️ Review: ${p.name}...`);
             const body = await ai_writer.generateReviewBody(p, nextItem.name, BLUEPRINT);
+            // Set rankingKeyword so generateReviewPage() can build correct ranking_url
+            p.rankingKeyword = TARGET_KEYWORD;
             generateReviewPage(p, body);
         } catch (reviewError) {
             console.log(`   ⚠️ Failed to generate review for "${p.name}": ${reviewError.message}`);
@@ -1076,7 +1090,7 @@ function cleanProductName(rawName, knownBrand = null) {
             image: product.image && (product.image.startsWith('http') || product.image.startsWith('/'))
                 ? product.image
                 : (product.asin ? `https://images-na.ssl-images-amazon.com/images/P/${product.asin}.01.LZZZZZZZ.jpg` : '/images/placeholder.jpg'),
-            rating: product.calculatedRating || 4.5,
+            rating: product.rating || product.calculatedRating || 4.0,
             reviewCount: product.reviewCount || 0,
             description: product.description || '',
             brand: product.brand || '',
@@ -1100,9 +1114,19 @@ function cleanProductName(rawName, knownBrand = null) {
         };
 
         if (existingIndex >= 0) {
-            // Update existing product
-            // console.log(`      Found existing product: ${product.name} (Updating...)`);
-            productsData[existingIndex] = { ...productsData[existingIndex], ...productEntry };
+            // ★ Merge carefully: preserve existing rating/themeScore (don't overwrite with different article context)
+            const existing = productsData[existingIndex];
+            productsData[existingIndex] = {
+                ...existing,
+                ...productEntry,
+                // Preserve first-written values (don't let later articles overwrite)
+                rating: existing.rating || productEntry.rating,
+                themeScore: existing.themeScore || productEntry.themeScore,
+                themeReason: existing.themeReason || productEntry.themeReason,
+                // Always update price/specs (these are factual, not context-dependent)
+                price: productEntry.price || existing.price,
+                specs: productEntry.specs?.length > 0 ? productEntry.specs : existing.specs,
+            };
         } else {
             // Add new product
             productsData.push(productEntry);
@@ -1111,13 +1135,9 @@ function cleanProductName(rawName, knownBrand = null) {
 
     updateDatabase(TARGET_KEYWORD, validatedLineup, productsData, seoMetadata, BLUEPRINT, thumbPath);
 
-    // 7. Auto-generate Sitemap (idempotent - safe to run multiple times)
-    console.log('\n🗺️  Generating Sitemap...');
-    try {
-        generateSitemap();
-    } catch (e) {
-        console.error('   ⚠️ Sitemap generation failed:', e.message);
-    }
+    // 7. Sitemap is auto-generated by next-sitemap during `next build` postbuild
+    // Do NOT manually generate public/sitemap.xml here (causes dual-sitemap conflict)
+    console.log('🗺️  Sitemap will be generated by next-sitemap during build.');
 
     // 8. Cleanup Orphaned Reviews (remove reviews not used in any article)
     console.log('\n🧹 Cleaning up orphaned reviews...');

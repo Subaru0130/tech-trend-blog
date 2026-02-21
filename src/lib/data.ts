@@ -69,6 +69,15 @@ export function getArticleByProductId(productId: string): Article | undefined {
     });
 }
 
+// ★ Returns ALL articles that contain this product (for multi-article support)
+export function getArticlesByProductId(productId: string): Article[] {
+    return (articlesData as Article[]).filter(article => {
+        if (article.rankingItems?.some(item => item.productId === productId)) return true;
+        if (article.products?.includes(productId)) return true;
+        return false;
+    });
+}
+
 export const CATEGORY_MAP: Record<string, { label: string; icon: string; subCategories: { label: string; slug: string; icon: string }[] }> = {
     'audio': {
         label: 'オーディオ',

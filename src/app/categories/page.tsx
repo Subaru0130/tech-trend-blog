@@ -6,8 +6,11 @@ import { CATEGORY_MAP } from '@/lib/data';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'カテゴリ一覧 | BestChoice',
-    description: 'BestChoiceのカテゴリ一覧ページ。オーディオ、家電、ガジェットなど、興味のあるジャンルから記事を探せます。',
+    title: 'カテゴリ一覧',
+    description: 'ChoiceGuideのカテゴリ一覧ページ。オーディオ、家電、ガジェットなど、興味のあるジャンルから記事を探せます。',
+    alternates: {
+        canonical: 'https://choiceguide.jp/categories/',
+    },
 };
 
 export default function CategoriesPage() {

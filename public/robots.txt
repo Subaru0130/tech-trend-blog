@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /favicon.ico
+Disallow: /_next/static/
 
 Sitemap: https://choiceguide.jp/sitemap.xml

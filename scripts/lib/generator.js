@@ -7,10 +7,8 @@ const { processRakutenLink } = require('./affiliate_processor');
  * Xserver Apache doesn't handle Japanese URLs properly
  */
 function keywordToEnglishSlug(keyword) {
-    // Common keyword mappings
-    const mappings = {
-        'ワイヤレスイヤホン おすすめ ノイズキャンセリング': 'wireless-earphones-noise-cancelling',
-        'ワイヤレスイヤホン おすすめ 1万円以下': 'wireless-earphones-under-10000yen',
+    // Product category mappings (order matters: longer phrases first)
+    const productMappings = {
         'ワイヤレスイヤホン': 'wireless-earphones',
         'ノイズキャンセリング': 'noise-cancelling',
         'イヤホン': 'earphones',
@@ -19,8 +17,8 @@ function keywordToEnglishSlug(keyword) {
         '冷蔵庫': 'refrigerator',
         '洗濯機': 'washing-machine',
         'エアコン': 'air-conditioner',
-        '掃除機': 'vacuum-cleaner',
         'ロボット掃除機': 'robot-vacuum',
+        '掃除機': 'vacuum-cleaner',
         'カメラ': 'camera',
         '一眼レフ': 'dslr-camera',
         'ミラーレス': 'mirrorless-camera',
@@ -28,6 +26,49 @@ function keywordToEnglishSlug(keyword) {
         'モニター': 'monitor',
         'キーボード': 'keyboard',
         'マウス': 'mouse',
+        'タブレット': 'tablet',
+        'スマートウォッチ': 'smartwatch',
+        '電子レンジ': 'microwave',
+        '炊飯器': 'rice-cooker',
+        'ドライヤー': 'hair-dryer',
+        '空気清浄機': 'air-purifier',
+        '加湿器': 'humidifier',
+        '除湿機': 'dehumidifier',
+        'プロジェクター': 'projector',
+        '食洗機': 'dishwasher',
+    };
+
+    // Situation / modifier mappings
+    const situationMappings = {
+        '耳が小さい': 'small-ears',
+        'ジム': 'gym',
+        '防水': 'waterproof',
+        'テレワーク': 'telework',
+        '飛行機': 'airplane',
+        '睡眠': 'sleep',
+        'ゲーム': 'gaming',
+        'FPS': 'fps',
+        '低遅延': 'low-latency',
+        'PC接続': 'pc-connect',
+        'パソコン': 'pc',
+        'PC': 'pc',
+        'Pixel': 'pixel',
+        'Galaxy': 'galaxy',
+        'iPhone15': 'iphone15',
+        'iPhone14': 'iphone14',
+        'iPhone': 'iphone',
+        'Mac': 'mac',
+        'MacBook': 'macbook',
+        'Windows': 'windows',
+        'ランニング': 'running',
+        '通勤': 'commute',
+        '通学': 'school-commute',
+        '勉強': 'study',
+        'Web会議': 'web-meeting',
+        'オンライン会議': 'online-meeting',
+        'ASMR': 'asmr',
+        '音楽鑑賞': 'music',
+        '映画鑑賞': 'movie',
         'おすすめ': 'recommended',
         '1万円以下': 'under-10000yen',
         '2万円以下': 'under-20000yen',
@@ -37,18 +78,24 @@ function keywordToEnglishSlug(keyword) {
         'コスパ': 'cost-effective',
         '初心者': 'beginner',
         '一人暮らし': 'single-living',
+        '子供': 'kids',
+        'シニア': 'senior',
+        '女性': 'women',
+        '男性': 'men',
     };
 
+    // Merge all mappings (product first for exact match)
+    const allMappings = { ...productMappings, ...situationMappings };
+
     // Check for exact match first
-    if (mappings[keyword]) {
-        return mappings[keyword];
+    if (allMappings[keyword]) {
+        return allMappings[keyword];
     }
 
-    // Try to build a slug from parts
+    // Build slug by replacing known terms (longer phrases first to avoid partial matches)
     let slug = keyword;
-
-    // Replace known Japanese terms with English
-    Object.entries(mappings).forEach(([jp, en]) => {
+    const sortedEntries = Object.entries(allMappings).sort((a, b) => b[0].length - a[0].length);
+    sortedEntries.forEach(([jp, en]) => {
         slug = slug.replace(new RegExp(jp, 'g'), en);
     });
 
@@ -67,6 +114,62 @@ function keywordToEnglishSlug(keyword) {
     }
 
     return slug;
+}
+
+/**
+ * Detect category and subCategory from keyword
+ * Returns { category, categoryId, subCategoryId }
+ */
+function detectCategoryFromKeyword(keyword) {
+    const kw = keyword.toLowerCase();
+
+    if (kw.match(/イヤホン|ヘッドホン|ヘッドフォン/)) {
+        return { category: 'audio', categoryId: 'audio', subCategoryId: 'wireless-headphones' };
+    }
+    if (kw.match(/スピーカー/)) {
+        return { category: 'audio', categoryId: 'audio', subCategoryId: 'speakers' };
+    }
+    if (kw.match(/冷蔵庫/)) {
+        return { category: 'appliances', categoryId: 'appliances', subCategoryId: 'refrigerators' };
+    }
+    if (kw.match(/洗濯機/)) {
+        return { category: 'appliances', categoryId: 'appliances', subCategoryId: 'washing-machines' };
+    }
+    if (kw.match(/エアコン/)) {
+        return { category: 'appliances', categoryId: 'appliances', subCategoryId: 'air-conditioners' };
+    }
+    if (kw.match(/掃除機/)) {
+        return { category: 'appliances', categoryId: 'appliances', subCategoryId: 'vacuum-cleaners' };
+    }
+    if (kw.match(/カメラ|一眼|ミラーレス/)) {
+        return { category: 'camera', categoryId: 'camera', subCategoryId: 'cameras' };
+    }
+    if (kw.match(/テレビ|モニター/)) {
+        return { category: 'display', categoryId: 'display', subCategoryId: 'tvs' };
+    }
+    if (kw.match(/キーボード|マウス/)) {
+        return { category: 'pc-peripherals', categoryId: 'pc-peripherals', subCategoryId: 'input-devices' };
+    }
+    if (kw.match(/タブレット/)) {
+        return { category: 'mobile', categoryId: 'mobile', subCategoryId: 'tablets' };
+    }
+    if (kw.match(/スマートウォッチ/)) {
+        return { category: 'wearable', categoryId: 'wearable', subCategoryId: 'smartwatches' };
+    }
+    if (kw.match(/電子レンジ|炊飯器|食洗機/)) {
+        return { category: 'kitchen', categoryId: 'kitchen', subCategoryId: 'kitchen-appliances' };
+    }
+    if (kw.match(/ドライヤー/)) {
+        return { category: 'beauty', categoryId: 'beauty', subCategoryId: 'hair-dryers' };
+    }
+    if (kw.match(/空気清浄機|加湿器|除湿機/)) {
+        return { category: 'appliances', categoryId: 'appliances', subCategoryId: 'air-quality' };
+    }
+    if (kw.match(/プロジェクター/)) {
+        return { category: 'display', categoryId: 'display', subCategoryId: 'projectors' };
+    }
+    // Default
+    return { category: 'gadgets', categoryId: 'gadgets', subCategoryId: 'general' };
 }
 
 /**
@@ -206,11 +309,13 @@ function generateRankingArticle(targetKeyword, products, productsData, bodyConte
     // NOTE: Ranking table removed - frontend components handle the rich display
     // The ranking table was causing duplicate content in the article
 
+    const { category } = detectCategoryFromKeyword(targetKeyword);
+
     const content = `---
 title: "${title}"
 description: "${description}"
 date: "${dateStr}"
-category: "audio"
+category: "${category}"
 author: "ChoiceGuide編集部"
 thumbnail: "${topImage}"
 ---
@@ -241,6 +346,10 @@ function generateReviewPage(product, bodyContent) {
     // NOTE: Spec table REMOVED - ProductContent.tsx handles structured spec display
     // Writing specs here causes duplicate display (frontend already shows product.specs)
 
+    // Dynamic ranking URL from the keyword context
+    const rankingSlug = product.rankingSlug || keywordToEnglishSlug(product.rankingKeyword || '');
+    const rankingUrl = rankingSlug ? `/rankings/${rankingSlug}/` : '/rankings/';
+
     const content = `---
 title: "${safeName} レビュー：プロが教える「買い」の理由"
 description: "${safeName}の実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
@@ -249,7 +358,7 @@ category: "Reviews"
 product_id: "${product.id}"
 author: "ChoiceGuide編集部"
 thumbnail: "${image}"
-ranking_url: "/rankings/best-wireless-headphones-2025"
+ranking_url: "${rankingUrl}"
 ---
 
 ${bodyContent || ""}
@@ -295,9 +404,7 @@ function updateDatabase(targetKeyword, products, productsData, seoMetadata, blue
         image: finalThumbnail, // Main image for OG and Listing
         thumbnail: finalThumbnail, // Thumbnail for article header
         author: "ChoiceGuide編集部",
-        category: "audio",
-        categoryId: "audio",
-        subCategoryId: "wireless-headphones",
+        ...detectCategoryFromKeyword(targetKeyword),
         tags: ["ランキング", "2025最新", "おすすめ"],
         rankingCriteria: {
             description: "今回のランキングは、以下の基準で厳選しました。",
@@ -426,4 +533,4 @@ function generateSitemap() {
     console.log(`  🗺️  Sitemap Updated: sitemap.xml (${urls.size} URLs)`);
 }
 
-module.exports = { generateRankingArticle, generateReviewPage, updateDatabase, generateDefaultLabels, generateSitemap, keywordToEnglishSlug };
+module.exports = { generateRankingArticle, generateReviewPage, updateDatabase, generateDefaultLabels, generateSitemap, keywordToEnglishSlug, detectCategoryFromKeyword };

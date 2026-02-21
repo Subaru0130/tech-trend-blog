@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             title: frontmatter.title,
             description: frontmatter.description,
             type: 'article',
-            url: `https://tech-trend-blog-27mo.vercel.app/posts/${decodedSlug}`,
+            url: `https://choiceguide.jp/posts/${decodedSlug}`,
             images: frontmatter.image ? [{ url: frontmatter.image }] : [],
             publishedTime: frontmatter.date instanceof Date ? frontmatter.date.toISOString() : frontmatter.date,
             authors: ['Best Buy Guide Editorial'],
@@ -87,7 +87,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             images: frontmatter.image ? [frontmatter.image] : [],
         },
         alternates: {
-            canonical: `https://tech-trend-blog-27mo.vercel.app/posts/${decodedSlug}`,
+            canonical: `https://choiceguide.jp/posts/${decodedSlug}`,
         }
     };
 }
@@ -130,17 +130,17 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                 '@type': 'BlogPosting',
                 headline: frontmatter.title,
                 description: frontmatter.description,
-                image: frontmatter.image ? [`https://tech-trend-blog-27mo.vercel.app${frontmatter.image}`] : [],
+                image: frontmatter.image ? [`https://choiceguide.jp${frontmatter.image}`] : [],
                 datePublished: frontmatter.date,
                 author: { '@type': 'Organization', name: 'Best Buy Guide Editorial' },
-                mainEntityOfPage: { '@type': 'WebPage', '@id': `https://tech-trend-blog-27mo.vercel.app/posts/${decodedSlug}` }
+                mainEntityOfPage: { '@type': 'WebPage', '@id': `https://choiceguide.jp/posts/${decodedSlug}` }
             },
             { '@type': 'ItemList', itemListElement: itemListElement },
             {
                 '@type': 'BreadcrumbList',
                 itemListElement: [
-                    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://tech-trend-blog-27mo.vercel.app' },
-                    { '@type': 'ListItem', position: 2, name: frontmatter.title, item: `https://tech-trend-blog-27mo.vercel.app/posts/${decodedSlug}` }
+                    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://choiceguide.jp' },
+                    { '@type': 'ListItem', position: 2, name: frontmatter.title, item: `https://choiceguide.jp/posts/${decodedSlug}` }
                 ]
             }
         ]

@@ -22,6 +22,7 @@ import GlossarySection from '@/components/shared/GlossarySection';
 const slugify = (text: string) => {
     return text
         .toString()
+        .replace(/<[^>]+>/g, '')                  // Strip HTML tags before slugifying
         .toLowerCase()
         .trim()
         .replace(/\s+/g, '-')
@@ -32,6 +33,7 @@ const slugify = (text: string) => {
 // Utility to strip markdown (links, bold, etc) for TOC display
 const stripMarkdown = (text: string) => {
     return text
+        .replace(/<[^>]+>/g, '')                  // Remove HTML tags (<mark>, etc.)
         .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Remove links [text](url) -> text
         .replace(/[*_~`]/g, '')                   // Remove bold/italic/code markers
         .replace(/👉/g, '')                        // Remove specific emojis if widely used
@@ -62,7 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!article) {
         return {
-            title: 'ページが見つかりません | BestChoice',
+            title: 'ページが見つかりません',
         };
     }
 
@@ -83,7 +85,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 
     return {
-        title: `${article.title} | BestChoice`,
+        title: `${article.title}`,
         description: article.description,
         alternates: {
             canonical: `https://choiceguide.jp/rankings/${slug}`,
@@ -444,7 +446,7 @@ export default async function RankingPage({ params }: Props) {
                                                             <span className="text-3xl font-black text-primary">{item.product.price}</span>
                                                             <span className="text-xs text-text-sub mb-1">（税込）</span>
                                                         </div>
-                                                        <a className="group w-full py-4 rounded-xl bg-accent hover:bg-accent-dark text-white text-center font-bold shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2 mb-3" href={`/reviews/${item.productId}`}>
+                                                        <a className="group w-full py-4 rounded-xl bg-accent hover:bg-accent-dark text-white text-center font-bold shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2 mb-3" href={`/reviews/${item.productId}?from=${slug}`}>
                                                             詳細レビューを見る
                                                             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                                         </a>

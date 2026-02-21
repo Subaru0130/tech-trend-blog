@@ -33,81 +33,54 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 // 🎯 SITUATION SUFFIXES (状況ベースのキーワード)
 // ==========================================
 // これらは「ランキング」ではなく「特定の状況・ペルソナ」を表す
-const SITUATION_SUFFIXES = [
-    // === 身体的条件 ===
-    '眼鏡', 'メガネ', '眼鏡ユーザー',
-    '補聴器', '難聴',
-    '耳が小さい', '耳が大きい', '耳の形',
-    '外耳炎', '耳が痛い', '耳が痒い',
+// ==========================================
+// 🧠 AI BRAIN: DYNAMIC SITUATION GENERATOR
+// ==========================================
+async function generateSituationSuffixes(seed) {
+    console.log(`\n🧠 AI Brain is brainstorming situation scenarios for "${seed}"...`);
 
-    // === 運動・アクティビティ ===
-    'ランニング', 'ジョギング', 'マラソン',
-    'ジム', '筋トレ', 'ワークアウト',
-    '水泳', 'プール', '防水',
-    'サウナ', 'お風呂', 'シャワー',
-    'ヨガ', 'ストレッチ',
-    '自転車', 'サイクリング', 'ロードバイク',
-    'スキー', 'スノボ', '登山', 'キャンプ',
+    const prompt = `
+    あなたはWebコンテンツ戦略の専門家です。キーワード「${seed}」に関連する、50個の「特定の状況」や「ユーザー属性」を表す検索サフィックスを考えてください。
+    
+    ## 目的
+    一般的なランキングではなく、「特定の悩み」や「特殊なニーズ」を持つニッチなターゲット層を見つけること。
+    
+    ## 含めるべきカテゴリ
+    1. **使用シーン** (例: 狭い部屋, 一人暮らし, 同棲, アウトドア, 車中泊, 風呂...)
+    2. **ユーザー属性** (例: 腰痛持ち, 猫飼い, 赤ちゃん, 高齢者, ミニマリスト, 初心者...)
+    3. **物理的制約** (例: 6畳, 賃貸, 角部屋, 収納なし, 壁が薄い...)
+    4. **特定の悩み** (例: 蒸れない, 掃除しやすい, 傷つかない, 組み立て不要, 痛くない...)
+    5. **ライフスタイル** (例: 在宅勤務, ゲーム廃人, 読書, 映画鑑賞, 深夜...)
 
-    // === 仕事・シチュエーション ===
-    'テレワーク', 'リモートワーク', '在宅勤務',
-    'Web会議', 'オンライン会議', 'Zoom会議',
-    'コールセンター', '電話対応',
-    '工場', '現場', '騒音環境',
-    'カフェ', 'コワーキング',
-    '図書館', '勉強',
-    '飛行機', '新幹線', '長距離移動',
-    '寝ながら', '睡眠', '寝ホン', '横向き',
+    ## 除外するもの (NG)
+    - 汎用的な言葉 (おすすめ, ランキング, 安い, 人気, 比較, 最新, 最強, コスパ)
+    - ブランド名単体 (IKEA, ニトリ, 無印, Apple, Sony...)
+    
+    ## 出力形式
+    カンマ区切りのリストのみを出力してください。
+    例: 一人暮らし, 6畳, 腰痛, 猫, 北欧, テレワーク, ...
+    `;
 
-    // === ゲーム・エンタメ ===
-    'ゲーム', 'FPS', 'APEX', 'フォートナイト',
-    '遅延なし', '低遅延', 'ゲーミング',
-    'Switch', 'PS5', 'PC接続',
-    '映画', 'Netflix', '動画視聴',
-    'ASMR', '音フェチ',
+    try {
+        const result = await model.generateContent(prompt);
+        let text = result.response.text();
+        const suffixes = text.split(/,|\n/).map(s => s.trim().replace(/・/g, '')).filter(s => s.length > 1);
 
-    // === デバイス・互換性 ===
-    'Android', 'Pixel', 'Galaxy',
-    'iPhone15', 'iPhone14', 'Apple製品以外',
-    'Mac', 'MacBook', 'iPad',
-    'Windows', 'PC', 'パソコン',
-    '2台同時', 'ペアリング',
+        // Remove duplicates and limit to 50
+        const uniqueSuffixes = [...new Set(suffixes)].slice(0, 50);
 
-    // === ライフスタイル ===
-    '子育て', '育児', '赤ちゃん',
-    'ペット', '犬の散歩',
-    '料理中', '家事',
-    '通勤 自転車', '徒歩通勤',
-    '夜勤', '深夜',
-    '一人暮らし', '同棲',
+        console.log(`   ✨ Brainstormed ${uniqueSuffixes.length} unique situations:`);
+        console.log(`   ${uniqueSuffixes.slice(0, 5).join(', ')} ... and more`);
 
-    // === 特定のニーズ ===
-    '骨伝導', 'オープンイヤー', '耳を塞がない',
-    '片耳', '片方だけ',
-    '長時間', '8時間', '10時間',
-    'ワイヤレス充電', 'Qi対応',
-    'マルチポイント', '2台接続',
-    '紛失防止', '落ちない', '落下防止',
-    'イヤーフック', 'ネックバンド',
-    '小さい', 'コンパクト', '軽い',
-    '目立たない', '仕事中 バレない',
+        return uniqueSuffixes;
+    } catch (e) {
+        console.error(`   ⚠️ Brainstorming failed: ${e.message}`);
+        return [ // Fallback for earphones if AI fails
+            'テレワーク', 'ゲーム', '睡眠', 'スポーツ', '耳が小さい', 'メガネ', 'iPhone', 'PC', '通勤', '勉強'
+        ];
+    }
+}
 
-    // === 年齢・属性 ===
-    'シニア', '高齢者', '親へのプレゼント',
-    '子供', 'キッズ', '小学生',
-    '中学生', '高校生', '大学生',
-    '女性', 'レディース', '小さめ',
-    '男性', 'メンズ',
-    '初心者', '入門',
-
-    // === 課題・悩み解決 ===
-    '耳が蒸れる', '蒸れにくい',
-    '髪型崩れない', '髪型',
-    'イヤホン落とす', 'なくしやすい',
-    'うどん嫌', 'デザイン',
-    '圧迫感', '耳が疲れる',
-    '音漏れ', '電車 音漏れ',
-];
 
 // ==========================================
 // 🚫 EXCLUDE PATTERNS (除外パターン)
@@ -138,17 +111,18 @@ async function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 // ==========================================
 // 🔍 PHASE 1: SITUATION KEYWORD MINING
 // ==========================================
-async function mineSituationKeywords(seed) {
+async function mineSituationKeywords(seed, customSuffixes = []) {
     console.log(`\n🎯 Phase 1: Mining Situation-Based Keywords for "${seed}"...`);
-    console.log(`   Testing ${SITUATION_SUFFIXES.length} situation suffixes...\n`);
+    const targetSuffixes = customSuffixes.length > 0 ? customSuffixes : []; // SITUATION_SUFFIXES was removed
+    console.log(`   Testing ${targetSuffixes.length} situation suffixes...\n`);
 
     const validatedKeywords = [];
     let count = 0;
 
-    for (const suffix of SITUATION_SUFFIXES) {
+    for (const suffix of targetSuffixes) {
         count++;
         const query = `${seed} ${suffix}`;
-        process.stdout.write(`   [${count}/${SITUATION_SUFFIXES.length}] "${query}" `);
+        process.stdout.write(`   [${count}/${targetSuffixes.length}] "${query}" `);
 
         // Get suggestions for this query
         const suggestions = await fetchSuggestions(query);
@@ -324,8 +298,11 @@ async function main() {
     console.log(`   Strategy: Find situation-based niches with verified demand\n`);
     console.log('='.repeat(60));
 
-    // Phase 1: Mine situation keywords
-    const situationKeywords = await mineSituationKeywords(SEED_KEYWORD);
+    // Phase 1: Brainstorm & Mine
+    const situationSuffixes = await generateSituationSuffixes(SEED_KEYWORD);
+
+    // We modify mineSituationKeywords to accept the list
+    const situationKeywords = await mineSituationKeywords(SEED_KEYWORD, situationSuffixes);
 
     if (situationKeywords.length === 0) {
         console.log("\n❌ No situation-based keywords found with demand.");

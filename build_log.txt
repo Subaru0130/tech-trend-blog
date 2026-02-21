@@ -1,10 +1,187 @@
-﻿
-> tech-trend-blog@0.1.0 build
-> next build && npm run generate-redirects && next-sitemap
-
+﻿node.exe : [baseline-browser-mapp
+ing] The data in this module is o
+ver two months old.  To ensure ac
+curate Baseline data, please upda
+te: `npm i baseline-browser-mappi
+ng@latest -D`
+発生場所 行:1 文字:1
++ & "C:\Program Files\nodejs/node
+.exe" "C:\Program Files\nodejs/no
+de_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo          : No 
+   tSpecified: ([baseline-brows  
+  ...ping@latest -D`:String) [   
+ ], RemoteException
+    + FullyQualifiedErrorId : Na 
+   tiveCommandError
+ 
    笆ｲ Next.js 16.0.7 (Turbopack)
    - Environments: .env.local
 
    Creating an optimized production build ...
- 笨・Compiled successfully in 2.2s
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+ 笨・Compiled successfully in 2.6s
    Running TypeScript ...
+   Collecting page data using 15 workers ...
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+   Generating static pages using 15 workers (0/83) ...
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+[baseline-browser-mapping] The da
+ta in this module is over two mon
+ths old.  To ensure accurate Base
+line data, please update: `npm i 
+baseline-browser-mapping@latest -
+D`
+   Generating static pages using 15 workers (20/83) 
+   Generating static pages using 15 workers (41/83) 
+ComparisonTable Debug: {
+  hasCriteria: true,
+  points: [
+    { icon: 'graphic_eq', title: '髻ｳ雉ｪ' },
+    { icon: 'noise_control_off', title: '繝弱う繧ｭ繝｣繝ｳ' },
+    { icon: 'battery_charging_full', title: '繝舌ャ繝・Μ繝ｼ' },
+    { icon: 'settings', title: '讖溯・' }
+  ],
+  productsLen: 15,
+  firstProductCat: 'audio',
+  firstProductSub: undefined
+}
+Error occurred prerendering page 
+"/reviews/scout-B0C5WZ737Z". Read
+ more: https://nextjs.org/docs/me
+ssages/prerender-error
+[Error: [next-mdx-remote] error c
+ompiling MDX:
+Expected a closing tag for `<br>`
+ (68:17-68:21) before the end of 
+`tableData`
+
+  66 | | 迚ｹ蠕ｴ | Technics EAH-AZ60
+M2 | SONY WF-C510 |
+  67 | | :--- | :--- | :--- |
+> 68 | | 髻ｳ雉ｪ | S (譛鬮倥け繝ｩ繧ｹ)<br>
+LDAC蟇ｾ蠢懊・ｫ倩ｧ｣蜒丞ｺｦ | B (萓｡譬ｼ逶ｸ蠢・<
+br>AAC縺ｾ縺ｧ縲∬◇縺咲夢繧後＠縺ｪ縺・浹 |
+     |                 ^
+  69 | | 繝弱う繧ｭ繝｣繝ｳ | 縺ゅｊ (閾ｪ辟ｶ) |
+ 縺ｪ縺・(螟夜浹蜿悶ｊ霎ｼ縺ｿ縺ｮ縺ｿ) |
+  70 | | 繝槭Ν繝√・繧､繝ｳ繝・| 3蜿ｰ蜷梧凾 | 2
+蜿ｰ蜷梧凾 |
+
+More information: https://mdxjs.c
+om/docs/troubleshooting-mdx] {
+  digest: '1205939210'
+}
+Export encountered an error on /r
+eviews/[slug]/page: /reviews/scou
+t-B0C5WZ737Z, exiting the build.
+ 筧ｯ Next.js build worker exited w
+ith code: 1 and signal: null

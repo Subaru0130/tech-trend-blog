@@ -6,8 +6,8 @@ import { getAllArticles } from '@/lib/data';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: '検索結果 | BestChoice',
-    description: 'BestChoiceの記事検索結果ページです。',
+    title: '検索結果',
+    description: 'ChoiceGuideの記事検索結果ページです。',
 };
 
 // Wrapper for Suspense
