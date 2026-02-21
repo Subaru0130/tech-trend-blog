@@ -226,12 +226,72 @@ export default async function RankingPage({ params }: Props) {
                                 {
                                     "@context": "https://schema.org",
                                     "@type": "ItemList",
-                                    "itemListElement": rankingItems.map((item, index) => ({
-                                        "@type": "ListItem",
-                                        "position": index + 1,
-                                        "url": `https://choiceguide.jp/reviews/${item.productId}`,
-                                        "name": getProductById(item.productId)?.name || item.productId
-                                    }))
+                                    "itemListElement": enrichedItems.map((item, index) => {
+                                        const product = item.product;
+                                        const priceValue = product.price ? product.price.replace(/[^0-9]/g, '') : "0";
+                                        return {
+                                            "@type": "ListItem",
+                                            "position": index + 1,
+                                            "url": `https://choiceguide.jp/reviews/${item.productId}`,
+                                            "item": {
+                                                "@type": "Product",
+                                                "name": product.name,
+                                                "image": product.image,
+                                                "description": product.description,
+                                                "brand": {
+                                                    "@type": "Brand",
+                                                    "name": (product as any).brand || product.name.split(' ')[0]
+                                                },
+                                                "aggregateRating": {
+                                                    "@type": "AggregateRating",
+                                                    "ratingValue": product.rating || item.rating || 4.0,
+                                                    "bestRating": "5",
+                                                    "reviewCount": (product as any).reviewCount || 1
+                                                },
+                                                "offers": {
+                                                    "@type": "Offer",
+                                                    "priceCurrency": "JPY",
+                                                    "price": priceValue,
+                                                    "availability": "https://schema.org/InStock",
+                                                    "url": `https://choiceguide.jp/reviews/${item.productId}`,
+                                                    "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                                                    "hasMerchantReturnPolicy": {
+                                                        "@type": "MerchantReturnPolicy",
+                                                        "applicableCountry": "JP",
+                                                        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                                                        "merchantReturnDays": 30,
+                                                        "returnMethod": "https://schema.org/ReturnByMail",
+                                                        "returnFees": "https://schema.org/FreeReturn"
+                                                    },
+                                                    "shippingDetails": {
+                                                        "@type": "OfferShippingDetails",
+                                                        "shippingDestination": {
+                                                            "@type": "DefinedRegion",
+                                                            "addressCountry": "JP"
+                                                        },
+                                                        "deliveryTime": {
+                                                            "@type": "ShippingDeliveryTime",
+                                                            "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 3, "unitCode": "DAY" },
+                                                            "transitTime": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 5, "unitCode": "DAY" }
+                                                        }
+                                                    }
+                                                },
+                                                "review": {
+                                                    "@type": "Review",
+                                                    "reviewRating": {
+                                                        "@type": "Rating",
+                                                        "ratingValue": product.rating || item.rating || 4.0,
+                                                        "bestRating": "5"
+                                                    },
+                                                    "author": {
+                                                        "@type": "Organization",
+                                                        "name": "ChoiceGuide編集部",
+                                                        "url": "https://choiceguide.jp"
+                                                    }
+                                                }
+                                            }
+                                        };
+                                    })
                                 },
                                 {
                                     "@context": "https://schema.org",

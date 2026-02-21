@@ -32,6 +32,16 @@ export const metadata: Metadata = {
   openGraph: {
     siteName: 'ChoiceGuide',
     type: 'website',
+    images: [{
+      url: 'https://choiceguide.jp/images/ogp-default.png',
+      width: 1200,
+      height: 630,
+      alt: 'ChoiceGuide - 暮らしを豊かにする家電選び',
+    }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['https://choiceguide.jp/images/ogp-default.png'],
   },
 };
 
