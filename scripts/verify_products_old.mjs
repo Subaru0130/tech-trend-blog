@@ -38,7 +38,7 @@ export async function verifyProducts(productNames) {
             });
 
             if (asinResult) {
-                console.log(`✅ Verified ASIN: ${name} -> ${asinResult.asin}`);
+                console.log(`✁EVerified ASIN: ${name} -> ${asinResult.asin}`);
 
                 // 2. Find Image via Yahoo IMAGE Search (Robust Fallback)
                 let yahooImage = null;
@@ -70,11 +70,11 @@ export async function verifyProducts(productNames) {
                     // Check for 404 or "Page Not Found" title
                     const isDead = await page.evaluate(() => {
                         const title = document.title;
-                        return title.includes('ページが見つかりません') || title.includes('404');
+                        return title.includes('ペ�Eジが見つかりません') || title.includes('404');
                     });
 
                     if (response.status() === 404 || isDead) {
-                        console.warn(`⚠️ ASIN Link Dead: ${asinResult.url} -> Falling back to Search`);
+                        console.warn(`⚠�E�EASIN Link Dead: ${asinResult.url} -> Falling back to Search`);
                         asinResult.url = `https://www.amazon.co.jp/s?k=${encodeURIComponent(name)}`;
                         asinResult.asin = null; // Clear ASIN as it is invalid
                         // Skip image scraping from this dead page
@@ -108,11 +108,11 @@ export async function verifyProducts(productNames) {
 
                 // Clean Title
                 finalTitle = finalTitle
-                    .replace(/【.*?】/g, '')
-                    .replace(/Amazon\.co\.jp限定/g, '')
-                    .replace(/本体/g, '')
-                    .replace(/詰め替え/g, '')
-                    .replace(/セット/g, '')
+                    .replace(/、E*?、Eg, '')
+                    .replace(/Amazon\.co\.jp限宁Eg, '')
+                    .replace(/本佁Eg, '')
+                    .replace(/詰め替ぁEg, '')
+                    .replace(/セチE��/g, '')
                     .replace(/\s+/g, ' ')
                     .trim();
 
@@ -130,11 +130,11 @@ export async function verifyProducts(productNames) {
                         image: bestImage
                     });
                 } else {
-                    console.warn(`❌ No Image found for ${name}`);
+                    console.warn(`❁ENo Image found for ${name}`);
                 }
 
             } else {
-                console.warn(`❌ ASIN Not found for ${name}`);
+                console.warn(`❁EASIN Not found for ${name}`);
             }
 
             await new Promise(r => setTimeout(r, 2000 + Math.random() * 2000));
@@ -185,9 +185,9 @@ export async function getHeroImage(topic) {
 
     if (lowerTopic.includes('dryer') || lowerTopic.includes('ドライヤー')) {
         candidates = SAFE_HERO_IMAGES['hair dryer'];
-    } else if (lowerTopic.includes('water') || lowerTopic.includes('purifier') || lowerTopic.includes('浄水')) {
+    } else if (lowerTopic.includes('water') || lowerTopic.includes('purifier') || lowerTopic.includes('流E��')) {
         candidates = SAFE_HERO_IMAGES['water purifier'];
-    } else if (lowerTopic.includes('shampoo') || lowerTopic.includes('シャンプー')) {
+    } else if (lowerTopic.includes('shampoo') || lowerTopic.includes('シャンプ�E')) {
         candidates = SAFE_HERO_IMAGES['shampoo'];
     } else if (lowerTopic.includes('humidifier') || lowerTopic.includes('加湿')) {
         candidates = SAFE_HERO_IMAGES['humidifier'];
@@ -195,14 +195,14 @@ export async function getHeroImage(topic) {
 
     // Pick random candidate to vary slightly if multiple exist
     const selected = candidates[Math.floor(Math.random() * candidates.length)];
-    console.log(`✅ Selected Verified Image: ${selected}`);
+    console.log(`✁ESelected Verified Image: ${selected}`);
     return selected;
 }
 
 // Standalone test
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const testProducts = [
-        "アンドハニー ディープモイスト",
+        "アンドハニ�E チE��ープモイスチE,
         "YOLU カームナイトリペア"
     ];
     // verifyProducts(testProducts).then(res => console.log(JSON.stringify(res, null, 2)));

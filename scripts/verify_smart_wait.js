@@ -13,11 +13,11 @@ async function verifyFix() {
     try {
         // Use a broad term that definitely has results
         const products = await scrapeKakakuRanking('Sony イヤホン', options);
-        console.log(`✅ Result: Found ${products.length} verified products.`);
+        console.log(`✁EResult: Found ${products.length} verified products.`);
 
         // Check logs manually for "⚡ Smart Wait"
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error('❁EError:', error);
     }
 }
 

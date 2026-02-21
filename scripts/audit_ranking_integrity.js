@@ -49,10 +49,10 @@ articles.forEach(article => {
 });
 
 if (errors.length > 0) {
-    console.error("\n❌ Integrity Check Failed with errors:");
+    console.error("\n❁EIntegrity Check Failed with errors:");
     errors.forEach(e => console.error(e));
     process.exit(1);
 } else {
-    console.log("\n✅ Integrity Check Passed: All rankings are sequential and linked to valid products.");
+    console.log("\n✁EIntegrity Check Passed: All rankings are sequential and linked to valid products.");
     process.exit(0);
 }

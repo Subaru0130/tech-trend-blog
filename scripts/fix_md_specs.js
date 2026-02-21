@@ -18,11 +18,11 @@ function cleanSpecsFromReviews() {
         const filePath = path.join(REVIEWS_DIR, file);
         let content = fs.readFileSync(filePath, 'utf8');
 
-        // Regex to match "## スペック概要" and the table following it
-        // Matches: ## スペック概要 [newlines] |...| [newlines] until next header or end
+        // Regex to match "## スペック概要E and the table following it
+        // Matches: ## スペック概要E[newlines] |...| [newlines] until next header or end
         const specTableRegex = /## スペック概要\s*\n(\|.*\|\n)+/g;
         // Also simpler regex just for the header if table matching is flaky
-        const headerOnlyRegex = /## スペック概要/g;
+        const headerOnlyRegex = /## スペック概要Eg;
 
         if (headerOnlyRegex.test(content)) {
             // console.log(`Cleaning ${file}...`);
@@ -35,17 +35,17 @@ function cleanSpecsFromReviews() {
 
             // Just in case the table formatting is weird (e.g. empty lines), try a broader approach if first failed but header exists
             let finalContent = newContent;
-            if (finalContent.includes('## スペック概要')) {
+            if (finalContent.includes('## スペック概要E)) {
                 // Fallback: Remove up to the next "##" or EOF
                 finalContent = finalContent.replace(/## スペック概要[\s\S]*?(?=\n## |\n$)/g, '');
             }
 
             if (content !== finalContent) {
                 fs.writeFileSync(filePath, finalContent, 'utf8');
-                console.log(`✅ Cleaned: ${file}`);
+                console.log(`✁ECleaned: ${file}`);
                 cleanedCount++;
             } else {
-                console.log(`⚠️ Skipped (Regex mismatch): ${file}`);
+                console.log(`⚠�E�ESkipped (Regex mismatch): ${file}`);
             }
         }
     });

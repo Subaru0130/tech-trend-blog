@@ -23,7 +23,7 @@ async function getWsUrl() {
     console.log("🧪 VERIFYING CHROME PERSISTENCE");
 
     // 1. Launch
-    console.log("1️⃣  Launching Chrome (if needed)...");
+    console.log("1�E�⃣  Launching Chrome (if needed)...");
     execSync(`"${path.join(__dirname, 'start_chrome_quiet.bat')}"`, { stdio: 'inherit' });
 
     // Wait for start
@@ -33,42 +33,42 @@ async function getWsUrl() {
         if (wsUrl) break;
         await new Promise(r => setTimeout(r, 500));
     }
-    if (!wsUrl) { console.error("❌ Launch failed"); process.exit(1); }
-    console.log("   ✅ Chrome Running.");
+    if (!wsUrl) { console.error("❁ELaunch failed"); process.exit(1); }
+    console.log("   ✁EChrome Running.");
 
     // 2. Connect Cycle 1
-    console.log("2️⃣  Connecting (Session 1)...");
+    console.log("2�E�⃣  Connecting (Session 1)...");
     const browser1 = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
     const page1 = await browser1.newPage();
     console.log("   Process 1 connected. Doing work...");
     await new Promise(r => setTimeout(r, 1000));
 
     // 3. The Crucial Step: DISCONNECT
-    console.log("3️⃣  Disconnecting (NOT Closing)...");
+    console.log("3�E�⃣  Disconnecting (NOT Closing)...");
     await browser1.disconnect();
-    console.log("   ✅ Disconnected.");
+    console.log("   ✁EDisconnected.");
 
     // 4. Verify Persistence
-    console.log("4️⃣  Checking if Chrome is still alive...");
+    console.log("4�E�⃣  Checking if Chrome is still alive...");
     await new Promise(r => setTimeout(r, 2000)); // Wait a bit
 
     const wsUrl2 = await getWsUrl();
     if (!wsUrl2) {
-        console.error("❌ FAIL: Chrome died after disconnect!");
+        console.error("❁EFAIL: Chrome died after disconnect!");
         process.exit(1);
     }
-    console.log("   ✅ Chrome is still alive!");
+    console.log("   ✁EChrome is still alive!");
 
     // 5. Connect Cycle 2
-    console.log("5️⃣  Re-Connecting (Session 2)...");
+    console.log("5�E�⃣  Re-Connecting (Session 2)...");
     try {
         const browser2 = await puppeteer.connect({ browserWSEndpoint: wsUrl2, defaultViewport: null });
-        console.log("   ✅ Re-connected successfully!");
+        console.log("   ✁ERe-connected successfully!");
         await browser2.disconnect();
         console.log("\n🎉 PERSISTENCE CONFIRMED: Chrome survived the cycle.");
         process.exit(0);
     } catch (e) {
-        console.error("❌ FAIL: Could not re-connect:", e.message);
+        console.error("❁EFAIL: Could not re-connect:", e.message);
         process.exit(1);
     }
 })();

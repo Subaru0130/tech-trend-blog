@@ -26,7 +26,7 @@ function selectDynamicLineup(keywordArg, products) {
     let weights = { sound: 1, anc: 1, battery: 1, comfort: 1 }; // Default Balance
 
     // Theme Detection
-    if (keyword.includes('通勤') || keyword.includes('電車') || keyword.includes('commute')) {
+    if (keyword.includes('通勤') || keyword.includes('電軁E) || keyword.includes('commute')) {
         console.log("  👉 Theme Detected: [Commuting] (Prioritizing ANC & Comfort)");
         weights.anc = 2.0;     // Noise Cancelling is King
         weights.comfort = 1.5; // Long wear
@@ -45,7 +45,7 @@ function selectDynamicLineup(keywordArg, products) {
         .map(p => {
             const sSound = getScore(p, '音質');
             const sAnc = getScore(p, 'ノイキャン');
-            const sBat = getScore(p, 'バッテリー');
+            const sBat = getScore(p, 'バッチE��ー');
 
             // Calculate Weighted Score
             const score = (sSound * weights.sound) + (sAnc * weights.anc) + (sBat * weights.battery);
@@ -55,7 +55,7 @@ function selectDynamicLineup(keywordArg, products) {
         .sort((a, b) => b._score - a._score) // Descending
         .slice(0, 5); // Top 5
 
-    console.log(`  ✅ Selected Top 5 Products based on Score:`);
+    console.log(`  ✁ESelected Top 5 Products based on Score:`);
     scoredProducts.forEach((p, i) => console.log(`    ${i + 1}. ${p.name} (Score: ${p._score})`));
 
     return scoredProducts.map(p => ({ name: p.name, id: p.id }));
@@ -87,7 +87,7 @@ for (const item of TARGET_LINEUP) {
         const result = JSON.parse(resultJson);
 
         if (result.found) {
-            console.log(`  ✅ FOUND! ASIN: ${result.asin}`);
+            console.log(`  ✁EFOUND! ASIN: ${result.asin}`);
             console.log(`  📸 Image: ${result.imageUrl}`);
 
             // 4. Update JSON Database immediately
@@ -111,16 +111,16 @@ for (const item of TARGET_LINEUP) {
                 if (!productsData[productIndex].affiliateLinks) productsData[productIndex].affiliateLinks = {};
                 productsData[productIndex].affiliateLinks.amazon = `https://www.amazon.co.jp/dp/${result.asin}?tag=bestchoice-22`;
             } else {
-                console.warn(`  ⚠️ Product ID ${item.id} not found in JSON. Skipping update.`);
+                console.warn(`  ⚠�E�EProduct ID ${item.id} not found in JSON. Skipping update.`);
             }
             verifiedCount++;
         } else {
-            console.log(`  ❌ NOT FOUND on Amazon. (Reason: ${result.reason})`);
+            console.log(`  ❁ENOT FOUND on Amazon. (Reason: ${result.reason})`);
             // Strategy: "No Amazon, No Ranking" -> User said "Exclude".
             // For now, we warn. Implementation detail: Remove from list?
         }
     } catch (e) {
-        console.error(`  ⚠️ Script Error: ${e.message}`);
+        console.error(`  ⚠�E�EScript Error: ${e.message}`);
     }
 }
 
@@ -177,10 +177,10 @@ productsData = JSON.parse(fs.readFileSync(PRODUCTS_JSON_PATH, 'utf-8'));
                 finalThumbnailPath = `/images/articles/${imgFileName}`;
                 console.log(`  📸 AI Thumbnail Saved: ${finalThumbnailPath}`);
             } else {
-                console.log("  ⚠️ AI Thumbnail skipped (No data returned), using Top Product Image.");
+                console.log("  ⚠�E�EAI Thumbnail skipped (No data returned), using Top Product Image.");
             }
         } catch (imgError) {
-            console.warn("  ⚠️ AI Thumbnail Workflow Failed:", imgError.message);
+            console.warn("  ⚠�E�EAI Thumbnail Workflow Failed:", imgError.message);
         }
 
         generateRankingArticle(TARGET_KEYWORD, FINAL_LINEUP, productsData, buyingGuideBody, seoMetadata, finalThumbnailPath);
@@ -209,7 +209,7 @@ productsData = JSON.parse(fs.readFileSync(PRODUCTS_JSON_PATH, 'utf-8'));
 
         console.log(`\n=== 🎉 All Done. Validated ${FINAL_LINEUP.length} products & Generated 6 Articles & DB Updated. ===\n`);
     } catch (e) {
-        console.error("❌ Fatal Error in Async Generation:", e);
+        console.error("❁EFatal Error in Async Generation:", e);
         process.exit(1);
     }
 })();

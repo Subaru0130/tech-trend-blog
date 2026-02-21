@@ -41,7 +41,7 @@ async function testSmartWait() {
         }, { timeout: 15000 });
 
         const duration = Date.now() - startTime;
-        console.log(`   ✅ Smart Wait Success! Took ${duration}ms`);
+        console.log(`   ✁ESmart Wait Success! Took ${duration}ms`);
 
         // Verify what we found
         const debug = await page.evaluate(() => {
@@ -56,13 +56,13 @@ async function testSmartWait() {
         console.log('   📊 Page State:', debug);
 
         if (debug.bodyLength < 2000) {
-            console.error('   ❌ FAILED: Body length too small despite wait!');
+            console.error('   ❁EFAILED: Body length too small despite wait!');
         } else {
-            console.log('   ✅ PASSED: Body length sufficient.');
+            console.log('   ✁EPASSED: Body length sufficient.');
         }
 
     } catch (e) {
-        console.error(`   ❌ Error: ${e.message}`);
+        console.error(`   ❁EError: ${e.message}`);
     } finally {
         await browser.close();
     }

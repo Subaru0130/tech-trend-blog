@@ -34,7 +34,7 @@ async function checkPort() {
         if (wsUrl) break;
     }
 
-    if (!wsUrl) { console.error("❌ Failed to connect"); process.exit(1); }
+    if (!wsUrl) { console.error("❁EFailed to connect"); process.exit(1); }
 
     // 3. Connect
     const browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
@@ -60,9 +60,9 @@ async function checkPort() {
     console.log(`Has 'Sign in' text: ${status.signInText}`);
 
     if (status.accountName.includes('こんにちは') || !status.signInText) {
-        console.log("✅ JUDGMENT: Likely Logged In");
+        console.log("✁EJUDGMENT: Likely Logged In");
     } else {
-        console.log("⚠️ JUDGMENT: Likely NOT Logged In (Cold Session)");
+        console.log("⚠�E�EJUDGMENT: Likely NOT Logged In (Cold Session)");
     }
 
     await browser.disconnect();

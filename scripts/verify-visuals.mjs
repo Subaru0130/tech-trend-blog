@@ -44,16 +44,16 @@ async function main() {
         });
 
         if (noImageText) {
-            console.error("❌ FAIL: 'No Image' placeholder detected on Homepage!");
+            console.error("❁EFAIL: 'No Image' placeholder detected on Homepage!");
             hasError = true;
         } else {
-            console.log("✅ PASS: No placeholders found on Homepage.");
+            console.log("✁EPASS: No placeholders found on Homepage.");
         }
 
         // --- CHECK 1.5: Hero Title Existence (Void Check) ---
         const heroTitle = await page.$eval('section h1', el => el.textContent).catch(() => null);
         if (!heroTitle || heroTitle.trim() === '') {
-            console.error("❌ FAIL: Hero section has no title! Frontmatter parsing likely failed.");
+            console.error("❁EFAIL: Hero section has no title! Frontmatter parsing likely failed.");
             hasError = true;
         }
 
@@ -63,7 +63,7 @@ async function main() {
         });
 
         if (brokenImages.length > 0) {
-            console.error("❌ FAIL: Found broken images:", brokenImages);
+            console.error("❁EFAIL: Found broken images:", brokenImages);
             hasError = true;
         }
 
@@ -123,7 +123,7 @@ async function main() {
         });
 
         if (styleCheckResult.error) {
-            console.warn(`⚠️ WARN: Could not analyze image style: ${styleCheckResult.error}`);
+            console.warn(`⚠�E�EWARN: Could not analyze image style: ${styleCheckResult.error}`);
             // Don't fail hard on CORS, but warn
         } else {
             console.log(`   - Brightness: ${styleCheckResult.brightness.toFixed(1)}/255`);
@@ -133,15 +133,15 @@ async function main() {
             // Brightness should roughly be > 50 (Not pitch black)
             // Saturation should be > 5% (Not B&W)
             if (styleCheckResult.brightness < 40) {
-                console.error("❌ FAIL: Hero image is too DARK for the light theme.");
+                console.error("❁EFAIL: Hero image is too DARK for the light theme.");
                 hasError = true;
             }
             if (styleCheckResult.saturation < 5) {
-                console.error("❌ FAIL: Hero image is B&W (grayscale). Design requires color.");
+                console.error("❁EFAIL: Hero image is B&W (grayscale). Design requires color.");
                 hasError = true;
             }
             // Pass
-            if (!hasError) console.log("✅ PASS: Image fits visual guidelines.");
+            if (!hasError) console.log("✁EPASS: Image fits visual guidelines.");
         }
 
         // --- CHECK 2: Featured Post Visuals ---
@@ -166,14 +166,14 @@ async function main() {
             });
 
             if (!ctaVisible) {
-                console.warn("⚠️ WARN: Amazon CTA text might not be white. Please verify manually.");
+                console.warn("⚠�E�EWARN: Amazon CTA text might not be white. Please verify manually.");
             } else {
-                console.log("✅ PASS: Amazon CTA button has white text.");
+                console.log("✁EPASS: Amazon CTA button has white text.");
             }
         }
 
     } catch (e) {
-        console.error("❌ FATAL: Verification failed:", e.message);
+        console.error("❁EFATAL: Verification failed:", e.message);
         hasError = true;
     } finally {
         if (browser) await browser.close();

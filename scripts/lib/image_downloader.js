@@ -34,7 +34,7 @@ async function downloadImage(url, filename, directory = 'public/images/products'
         https.get(url, (response) => {
             if (response.statusCode !== 200) {
                 // Determine failure reason
-                console.error(`❌ Failed to download image: ${response.statusCode} ${response.statusMessage} for ${url}`);
+                console.error(`❁EFailed to download image: ${response.statusCode} ${response.statusMessage} for ${url}`);
                 response.resume(); // Consume valid cleanup
                 fs.unlink(filepath, () => { }); // Delete empty file
                 resolve(null); // Resolve null so we can fallback
@@ -52,7 +52,7 @@ async function downloadImage(url, filename, directory = 'public/images/products'
                         // console.log(`   ✨ Meta-injected: ${filename}`);
                         resolve(publicPath); // Return the web-accessible path
                     } catch (e) {
-                        console.warn(`   ⚠️ Metadata injection failed for ${filename}:`, e.message);
+                        console.warn(`   ⚠�E�EMetadata injection failed for ${filename}:`, e.message);
                         // Still return the image path, as the image itself is valid
                         resolve(publicPath);
                     }
@@ -60,7 +60,7 @@ async function downloadImage(url, filename, directory = 'public/images/products'
             });
         }).on('error', (err) => {
             fs.unlink(filepath, () => { });
-            console.error(`❌ Error downloading image ${url}:`, err.message);
+            console.error(`❁EError downloading image ${url}:`, err.message);
             resolve(null);
         });
     });

@@ -20,7 +20,7 @@ async function test() {
             console.log(`   "${result.positive[0].text.substring(0, 100)}..."`);
         }
     } catch (e) {
-        console.error("❌ Error:", e.message);
+        console.error("❁EError:", e.message);
     }
 }
 

@@ -16,17 +16,17 @@ async function verifyLiveSite() {
     const pagesToCheck = [
         {
             slug: '/posts/2025-12-09-%E5%8A%A0%E6%B9%BF%E5%99%A8',
-            expectedTitleFragment: '【加湿器】おすすめ',
+            expectedTitleFragment: '【加湿器】おすすめE,
             expectedImageFragment: 'hero-humidifier-gen.png'
         },
         {
             slug: '/posts/2025-12-07-%E6%9C%80%E6%96%B0%E3%83%98%E3%82%A2%E3%83%89%E3%83%A9%E3%82%A4%E3%83%A4%E3%83%BC',
-            expectedTitleFragment: '【ヘアドライヤー】美容師おすすめ',
+            expectedTitleFragment: '【�Eアドライヤー】美容師おすすめ',
             expectedImageFragment: 'hero-dryer-v3.png'
         },
         {
             slug: '/posts/2025-12-10-%E7%A9%BA%E6%B0%97%E6%B8%85%E6%B5%84%E6%A9%9F',
-            expectedTitleFragment: '【空気清浄機】おすすめ',
+            expectedTitleFragment: '【空気渁E��E��】おすすめE,
             expectedImageFragment: 'hero-air-purifier-gen.png'
         }
     ];
@@ -78,20 +78,20 @@ async function verifyLiveSite() {
             // Note: Browser might encode URL in src.
             const imageOk = heroSrc.includes(check.expectedImageFragment) || (check.slug.includes('ドライヤー') && !heroSrc.includes('humidifier'));
 
-            if (titleOk) console.log("✅ Title Update Clean: SUCCESS");
-            else console.error(`❌ Title Mismatch. Expected fragment: "${check.expectedTitleFragment}"`);
+            if (titleOk) console.log("✁ETitle Update Clean: SUCCESS");
+            else console.error(`❁ETitle Mismatch. Expected fragment: "${check.expectedTitleFragment}"`);
 
             if (check.slug.includes('ドライヤー')) {
-                if (heroSrc.includes('hero-dryer')) console.log("✅ Image OK (Dryer)");
-                else console.error(`❌ Image Mismatch. Got: ${heroSrc}`);
+                if (heroSrc.includes('hero-dryer')) console.log("✁EImage OK (Dryer)");
+                else console.error(`❁EImage Mismatch. Got: ${heroSrc}`);
             } else {
-                if (heroSrc.includes(check.expectedImageFragment)) console.log("✅ Image Update Clean: SUCCESS (v2 verified)");
-                else console.error(`❌ Image Mismatch. Expected fragment: "${check.expectedImageFragment}", Got: ${heroSrc}`);
+                if (heroSrc.includes(check.expectedImageFragment)) console.log("✁EImage Update Clean: SUCCESS (v2 verified)");
+                else console.error(`❁EImage Mismatch. Expected fragment: "${check.expectedImageFragment}", Got: ${heroSrc}`);
             }
 
-            if (linksOk && monetizableLinks.length > 0) console.log("✅ Affiliate Links: ALL TAGGED");
-            else if (monetizableLinks.length === 0) console.warn("⚠️ No monetizable links found in body.");
-            else console.error("❌ Affiliate Links: FAILED (Some links missing tags)");
+            if (linksOk && monetizableLinks.length > 0) console.log("✁EAffiliate Links: ALL TAGGED");
+            else if (monetizableLinks.length === 0) console.warn("⚠�E�ENo monetizable links found in body.");
+            else console.error("❁EAffiliate Links: FAILED (Some links missing tags)");
 
         } catch (e) {
             console.error(`Error visiting ${url}:`, e.message);

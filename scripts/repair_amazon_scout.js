@@ -43,13 +43,13 @@ const newFunction = `async function verifyProductOnAmazon(productName, category 
         // Search Amazon with exact product name
         const searchUrl = \`https://www.amazon.co.jp/s?k=\${encodeURIComponent(productName)}\`;
         // RELAXED WAIT: Don't fail on timeout if content is loaded
-        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(e => console.log(\`      ⚠️ Nav timeout ignored (search)\`));
+        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(e => console.log(\`      ⚠�E�ENav timeout ignored (search)\`));
         
         // Ensure results are present before evaluating
         try {
             await page.waitForSelector('div[data-asin]', { timeout: 10000 });
         } catch (e) {
-            console.log(\`      ⚠️ Results selector timeout (continuing anyway)\`);
+            console.log(\`      ⚠�E�EResults selector timeout (continuing anyway)\`);
         }
         await new Promise(r => setTimeout(r, 1000));
 
@@ -65,8 +65,8 @@ const newFunction = `async function verifyProductOnAmazon(productName, category 
                 const titleEl = node.querySelector('h2') || node.querySelector('span.a-text-normal');
                 const priceEl = node.querySelector('.a-price-whole');
                 const imgEl = node.querySelector('img.s-image');
-                const ratingEl = node.querySelector('span[aria-label*="5つ星のうち"]');
-                const reviewCountEl = node.querySelector('span[aria-label*="個の評価"]');
+                const ratingEl = node.querySelector('span[aria-label*="5つ星�EぁE��"]');
+                const reviewCountEl = node.querySelector('span[aria-label*="個�E評価"]');
 
                 if (!titleEl) continue;
 
@@ -92,7 +92,7 @@ const newFunction = `async function verifyProductOnAmazon(productName, category 
                 }
 
                 // Exclude junk
-                const junkKeywords = ["ケース用", "カバー", "保護", "case for", "cover for", "cable", "ケーブル", "フィルム", "イヤーピース"];
+                const junkKeywords = ["ケース用", "カバ�E", "保護", "case for", "cover for", "cable", "ケーブル", "フィルム", "イヤーピ�Eス"];
                 if (junkKeywords.some(kw => lowerTitle.includes(kw))) continue;
 
                 return {
@@ -101,7 +101,7 @@ const newFunction = `async function verifyProductOnAmazon(productName, category 
                     price: priceEl ? \`¥\${priceEl.innerText}\` : null,
                     image: imgEl ? imgEl.src : null,
                     link: \`https://www.amazon.co.jp/dp/\${asin}\`,
-                    rating: ratingEl ? parseFloat(ratingEl.getAttribute('aria-label').split('5つ星のうち')[1]) : null,
+                    rating: ratingEl ? parseFloat(ratingEl.getAttribute('aria-label').split('5つ星�EぁE��')[1]) : null,
                     reviewCount: reviewCountEl ? parseInt(reviewCountEl.getAttribute('aria-label').replace(/[^0-9]/g, '')) : 0
                 };
             }
@@ -115,11 +115,11 @@ const newFunction = `async function verifyProductOnAmazon(productName, category 
             const isMatch = await verifyProductMatchWithAI(productName, result.amazonTitle);
 
             if (isMatch) {
-                console.log(\`      ✅ AI confirmed: Correct product\`);
+                console.log(\`      ✁EAI confirmed: Correct product\`);
                 result.name = productName;
                 return result; // Return immediately
             } else {
-                console.log(\`      ⚠️ AI rejected: Not the same product\`);
+                console.log(\`      ⚠�E�EAI rejected: Not the same product\`);
                 result = null; // Clear result to trigger fallback
             }
         }
@@ -131,7 +131,7 @@ const newFunction = `async function verifyProductOnAmazon(productName, category 
             const bestCandidate = candidates[0];
 
             if (bestCandidate && bestCandidate !== productName && bestCandidate.length >= 5) {
-                console.log(\`      ⚠️ Amazon verification retry: searching for model number "\${bestCandidate}"...\`);
+                console.log(\`      ⚠�E�EAmazon verification retry: searching for model number "\${bestCandidate}"...\`);
 
                 // REUSE SAME BROWSER PAGE
                 // RELAXED WAIT for Home Page + Search
@@ -147,7 +147,7 @@ const newFunction = `async function verifyProductOnAmazon(productName, category 
                         page.click('#nav-search-submit-button')
                     ]);
                 } catch (e) {
-                     console.log(\`      ⚠️ Retry search nav timeout ignored\`);
+                     console.log(\`      ⚠�E�ERetry search nav timeout ignored\`);
                 }
                 await new Promise(r => setTimeout(r, 2000));
 
@@ -159,7 +159,7 @@ const newFunction = `async function verifyProductOnAmazon(productName, category 
                     if (!title) continue;
 
                     if (title.toLowerCase().includes(bestCandidate.toLowerCase())) {
-                        console.log(\`      ✅ Retrieval successful with model number: \${title.slice(0, 50)}...\`);
+                        console.log(\`      ✁ERetrieval successful with model number: \${title.slice(0, 50)}...\`);
                         const img = await node.evaluate(el => el.querySelector('.s-image')?.src);
                         const price = await node.evaluate(el => el.querySelector('.a-price-whole')?.innerText);
                         
@@ -178,11 +178,11 @@ const newFunction = `async function verifyProductOnAmazon(productName, category 
             }
         }
 
-        console.log(\`      ❌ Not found on Amazon\`);
+        console.log(\`      ❁ENot found on Amazon\`);
         return null;
 
     } catch (e) {
-        console.error(\`      ❌ Amazon verification error: \${e.message}\`);
+        console.error(\`      ❁EAmazon verification error: \${e.message}\`);
         return null;
     } finally {
         if (browser) await browser.close();

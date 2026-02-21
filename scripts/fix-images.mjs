@@ -168,5 +168,5 @@ if (targetFile) {
 } else {
     // Auto-detect verify last modified?
     // Hardcode for now
-    fixImages(path.join(process.cwd(), 'content/posts/2025-12-11-コーヒーメーカー.mdx'));
+    fixImages(path.join(process.cwd(), 'content/posts/2025-12-11-コーヒ�Eメーカー.mdx'));
 }

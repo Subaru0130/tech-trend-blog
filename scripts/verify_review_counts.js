@@ -27,13 +27,13 @@ const PRODUCTS = [
 
             if (kakakuResult && kakakuResult.summary) {
                 kakakuCount = kakakuResult.summary.totalFound;
-                console.log(`   ✅ Kakaku: Found ${kakakuCount} reviews in ${kakakuTime.toFixed(1)}s`);
+                console.log(`   ✁EKakaku: Found ${kakakuCount} reviews in ${kakakuTime.toFixed(1)}s`);
                 if (kakakuResult.positive.length > 0) console.log(`      Example (Pos): ${kakakuResult.positive[0].title}`);
             } else {
-                console.log(`   ⚠️ Kakaku: No reviews found`);
+                console.log(`   ⚠�E�EKakaku: No reviews found`);
             }
         } catch (e) {
-            console.log(`   ❌ Kakaku Error: ${e.message}`);
+            console.log(`   ❁EKakaku Error: ${e.message}`);
         }
 
         // 2. Amazon Reviews
@@ -56,16 +56,16 @@ const PRODUCTS = [
 
                 if (amazonResult && amazonResult.summary) {
                     amazonCount = amazonResult.summary.totalFound;
-                    console.log(`   ✅ Amazon: Found ${amazonCount} reviews in ${amazonTime.toFixed(1)}s`);
+                    console.log(`   ✁EAmazon: Found ${amazonCount} reviews in ${amazonTime.toFixed(1)}s`);
                     if (amazonResult.positive.length > 0) console.log(`      Example (Pos): ${amazonResult.positive[0].title}`);
                 } else {
-                    console.log(`   ⚠️ Amazon: No reviews found`);
+                    console.log(`   ⚠�E�EAmazon: No reviews found`);
                 }
             } else {
-                console.log(`   ⚠️ Amazon: Product not found (No ASIN)`);
+                console.log(`   ⚠�E�EAmazon: Product not found (No ASIN)`);
             }
         } catch (e) {
-            console.log(`   ❌ Amazon Error: ${e.message}`);
+            console.log(`   ❁EAmazon Error: ${e.message}`);
         }
 
         // Summary for this product
@@ -73,5 +73,5 @@ const PRODUCTS = [
     }
 
     console.log("\n---------------------------------------------------");
-    console.log("✅ Verification Complete");
+    console.log("✁EVerification Complete");
 })();

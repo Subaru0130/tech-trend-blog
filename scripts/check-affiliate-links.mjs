@@ -40,7 +40,7 @@ async function checkLinks() {
         console.error("🚨 Found broken affiliate links! Please review the logs.");
         process.exit(1); // Fail the CI workflow so user gets notified
     } else {
-        console.log("✅ All affiliate links are alive.");
+        console.log("✁EAll affiliate links are alive.");
     }
 }
 

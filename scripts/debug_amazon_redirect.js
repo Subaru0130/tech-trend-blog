@@ -16,7 +16,7 @@ const TARGET_URL = "https://kakaku.com/item/J0000041936/"; // Sony WF-1000XM5 (K
         const page = await browser.newPage();
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
 
-        console.log(`1️⃣  Navigating to Kakaku product page: ${TARGET_URL}`);
+        console.log(`1�E�⃣  Navigating to Kakaku product page: ${TARGET_URL}`);
         await page.goto(TARGET_URL + '#tab', { waitUntil: 'domcontentloaded', timeout: 60000 });
 
         // Find Amazon Link
@@ -31,7 +31,7 @@ const TARGET_URL = "https://kakaku.com/item/J0000041936/"; // Sony WF-1000XM5 (K
         });
 
         if (!amazonInfo) throw new Error("Amazon shop link not found on page.");
-        console.log(`2️⃣  Found Amazon Shop Link: ${amazonInfo.url}`);
+        console.log(`2�E�⃣  Found Amazon Shop Link: ${amazonInfo.url}`);
 
         // Go to shop page
         await page.goto(amazonInfo.url, { waitUntil: 'domcontentloaded', timeout: 60000 });
@@ -42,7 +42,7 @@ const TARGET_URL = "https://kakaku.com/item/J0000041936/"; // Sony WF-1000XM5 (K
         });
 
         if (!forwarderUrl) throw new Error("Forwarder link not found.");
-        console.log(`3️⃣  Found Forwarder Link: ${forwarderUrl}`);
+        console.log(`3�E�⃣  Found Forwarder Link: ${forwarderUrl}`);
         console.log(`⏳ Attempting redirect with RELAXED wait condition...`);
 
         // === THE FIX ===
@@ -61,14 +61,14 @@ const TARGET_URL = "https://kakaku.com/item/J0000041936/"; // Sony WF-1000XM5 (K
             ]);
 
         } catch (e) {
-            console.log(`   ⚠️ Navigation warning (ignored if URL is correct): ${e.message}`);
+            console.log(`   ⚠�E�ENavigation warning (ignored if URL is correct): ${e.message}`);
         }
 
         const finalUrl = page.url();
-        console.log(`4️⃣  Final URL: ${finalUrl}`);
+        console.log(`4�E�⃣  Final URL: ${finalUrl}`);
 
         if (finalUrl.includes('amazon.co.jp')) {
-            console.log("✅ SUCCESS! Reached Amazon.");
+            console.log("✁ESUCCESS! Reached Amazon.");
 
             // Extract ASIN
             const asinMatch = finalUrl.match(/\/dp\/([A-Z0-9]{10})/);
@@ -80,11 +80,11 @@ const TARGET_URL = "https://kakaku.com/item/J0000041936/"; // Sony WF-1000XM5 (K
             const title = await page.evaluate(() => document.title);
             console.log(`   📄 Page Title: ${title}`);
         } else {
-            console.log("❌ FAILED. Did not reach Amazon.");
+            console.log("❁EFAILED. Did not reach Amazon.");
         }
 
     } catch (e) {
-        console.error(`❌ Error: ${e.message}`);
+        console.error(`❁EError: ${e.message}`);
     } finally {
         await browser.close();
     }

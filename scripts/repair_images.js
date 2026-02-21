@@ -34,7 +34,7 @@ async function repairImages() {
                 const bestMatch = results[0];
 
                 if (bestMatch && bestMatch.image && bestMatch.image.includes('media-amazon.com')) {
-                    console.log(`   ✅ Found High-Res Image: ${bestMatch.image}`);
+                    console.log(`   ✁EFound High-Res Image: ${bestMatch.image}`);
 
                     // Update the product in the MAIN list (by reference/index)
                     const index = products.findIndex(p => p.id === product.id);
@@ -43,17 +43,17 @@ async function repairImages() {
                         updateCount++;
                     }
                 } else {
-                    console.log("   ❌ No Amazon image found in search results.");
+                    console.log("   ❁ENo Amazon image found in search results.");
                 }
             } else {
-                console.log("   ❌ No search results found.");
+                console.log("   ❁ENo search results found.");
             }
 
             // Be nice to Amazon
             await new Promise(r => setTimeout(r, 2000));
 
         } catch (e) {
-            console.error(`   ⚠️ Error processing ${product.name}: ${e.message}`);
+            console.error(`   ⚠�E�EError processing ${product.name}: ${e.message}`);
         }
     }
 
@@ -62,7 +62,7 @@ async function repairImages() {
         fs.writeFileSync(productsPath, JSON.stringify(products, null, 4), 'utf8');
         console.log("✨ database updated.");
     } else {
-        console.log("\n⚠️ No updates were made.");
+        console.log("\n⚠�E�ENo updates were made.");
     }
 }
 

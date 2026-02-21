@@ -77,9 +77,9 @@ async function main() {
         // Okay, I'll try this ID: photo-1521590832167 (Pink background beauty).
         await download("https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=1600&auto=format&fit=crop", "hero-dryer-v3.png");
 
-        console.log("✅ High-Resolution Hero Images Updated (Unsplash)");
+        console.log("✁EHigh-Resolution Hero Images Updated (Unsplash)");
     } catch (e) {
-        console.error("❌ Error downloading images:", e.message);
+        console.error("❁EError downloading images:", e.message);
         process.exit(1);
     }
 }

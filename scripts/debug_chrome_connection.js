@@ -26,9 +26,9 @@ async function debugChromeConnection() {
             req.setTimeout(2000, () => { req.destroy(); reject(new Error('timeout')); });
         });
         isConnected = true;
-        console.log("   ✅ Found Remote Debugging Port (9222) open.");
+        console.log("   ✁EFound Remote Debugging Port (9222) open.");
     } catch (e) {
-        console.log("   ❌ Could NOT connect to port 9222. Chrome is not running with remote debugging.");
+        console.log("   ❁ECould NOT connect to port 9222. Chrome is not running with remote debugging.");
         console.log("      Please close ALL Chrome windows and run:");
         console.log('      Start-Process "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" -ArgumentList "--remote-debugging-port=9222","--user-data-dir=$env:LOCALAPPDATA\\Google\\Chrome\\User Data","--profile-directory=Default"');
         return;
@@ -55,13 +55,13 @@ async function debugChromeConnection() {
         console.log(`   📸 Saved screenshot to: ${screenshotPath}`);
 
         if (title.includes('ログイン') || title.includes('Sign-In')) {
-            console.log("   ⚠️ RESULT: NOT Logged In. (You need to sign in manually in this window)");
+            console.log("   ⚠�E�ERESULT: NOT Logged In. (You need to sign in manually in this window)");
         } else {
-            console.log("   ✅ RESULT: Logged In! (Accessing Order History successfully)");
+            console.log("   ✁ERESULT: Logged In! (Accessing Order History successfully)");
         }
 
     } catch (e) {
-        console.log(`   ⚠️ Navigation failed: ${e.message}`);
+        console.log(`   ⚠�E�ENavigation failed: ${e.message}`);
     } finally {
         // Don't close browser, just page
         await page.close();

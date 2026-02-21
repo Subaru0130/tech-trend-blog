@@ -68,7 +68,7 @@ async function auditStrategy() {
 
     try {
         const result = await client.models.generateContent({
-            model: 'gemini-3-pro-preview',
+            model: 'gemini-3.1-pro-preview',
             contents: [{ role: 'user', parts: [{ text: prompt + "\n\nCONTEXT:\n" + context }] }],
             config: {
                 thinkingConfig: { thinkingLevel: "high" }
@@ -79,7 +79,7 @@ async function auditStrategy() {
 
         // Save report
         fs.writeFileSync('STRATEGY_AUDIT_REPORT.md', report);
-        console.log("\n✅ Audit Complete. Report saved to STRATEGY_AUDIT_REPORT.md");
+        console.log("\n✁EAudit Complete. Report saved to STRATEGY_AUDIT_REPORT.md");
         console.log("---------------------------------------------------------");
         console.log(report.substring(0, 500) + "...\n(See file for full report)");
 

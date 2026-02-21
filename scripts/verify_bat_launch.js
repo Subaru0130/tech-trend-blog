@@ -31,7 +31,7 @@ function killChrome() {
     try {
         execSync(`"${batPath}"`, { stdio: 'inherit' });
     } catch (e) {
-        console.error("❌ Failed to execute batch file:", e.message);
+        console.error("❁EFailed to execute batch file:", e.message);
         process.exit(1);
     }
 
@@ -41,13 +41,13 @@ function killChrome() {
         await new Promise(r => setTimeout(r, 1000));
         const alive = await checkPort();
         if (alive) {
-            console.log("✅ SUCCESS: Chrome is listening on port 9222!");
+            console.log("✁ESUCCESS: Chrome is listening on port 9222!");
             console.log("   (This confirms start_chrome_quiet.bat works)");
             process.exit(0);
         }
         process.stdout.write(".");
     }
 
-    console.log("\n❌ FAILURE: Chrome did not open port 9222 within 20s.");
+    console.log("\n❁EFAILURE: Chrome did not open port 9222 within 20s.");
     process.exit(1);
 })();

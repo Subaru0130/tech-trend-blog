@@ -11,7 +11,7 @@ async function test() {
             maxPages: 1
         });
 
-        console.log('\n✅ Test Complete');
+        console.log('\n✁ETest Complete');
         console.log(`Found ${results.length} products`);
 
         if (results.length > 0) {
@@ -20,8 +20,8 @@ async function test() {
             console.log('---------------------------------------------------');
             console.log(`📦 Product: ${p.name}`);
             console.log(`💰 Price:   ¥${p.price}`);
-            console.log(`⭐ Rating:  ${p.rating} (${p.reviewCount} reviews)`);
-            console.log(`🔗 Amazon:  ${p.amazonUrl ? '✅ Found' : '❌ Not Found'}`);
+            console.log(`⭁ERating:  ${p.rating} (${p.reviewCount} reviews)`);
+            console.log(`🔗 Amazon:  ${p.amazonUrl ? '✁EFound' : '❁ENot Found'}`);
             console.log(`📋 Specs (${Object.keys(p.kakakuSpecs || {}).length} items found):`);
 
             // Show first 5 specs as proof
@@ -31,7 +31,7 @@ async function test() {
             console.log('---------------------------------------------------');
         }
     } catch (e) {
-        console.error('❌ Test Failed:', e);
+        console.error('❁ETest Failed:', e);
     }
 }
 

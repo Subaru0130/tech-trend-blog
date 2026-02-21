@@ -29,9 +29,9 @@ async function testTimeoutBehavior() {
                 waitUntil: 'networkidle0', // Very strict wait - likely to fail if ads are streaming
                 timeout: 30000
             });
-            console.log('✅ Navigation finished successfully (unexpectedly fast)');
+            console.log('✁ENavigation finished successfully (unexpectedly fast)');
         } catch (e) {
-            console.log(`⚠️ Navigation timed out as expected: ${e.message}`);
+            console.log(`⚠�E�ENavigation timed out as expected: ${e.message}`);
 
             // IMMEDIATE CHECK: Is the DOM actually useful?
             const pageTitle = await page.title();
@@ -49,7 +49,7 @@ async function testTimeoutBehavior() {
             if (shopListExists || amazonLink) {
                 console.log('🎯 CONCLUSION: safe to ignore timeout! Content is present.');
             } else {
-                console.log('❌ CONCLUSION: Page is genuinely broken/white screen.');
+                console.log('❁ECONCLUSION: Page is genuinely broken/white screen.');
             }
         }
 

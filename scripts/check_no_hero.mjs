@@ -20,20 +20,20 @@ async function main() {
     const heroImage = await page.$('header img');
 
     if (heroImage) {
-        console.error("❌ Hero Image FOUND! (Test Failed)");
+        console.error("❁EHero Image FOUND! (Test Failed)");
         // Log src to be sure
         const src = await page.evaluate(el => el.src, heroImage);
         console.log("Image Src:", src);
     } else {
-        console.log("✅ Hero Image NOT found. (Test Passed)");
+        console.log("✁EHero Image NOT found. (Test Passed)");
     }
 
     // Check for Quick Summary existence
     const summary = await page.$('.bg-gradient-to-br'); // QuickSummary usually has this or similar class, or check text
-    const summaryText = await page.evaluate(() => document.body.innerText.includes('編集部コメント')); // Check context
+    const summaryText = await page.evaluate(() => document.body.innerText.includes('編雁E��コメンチE)); // Check context
 
     if (summaryText) {
-        console.log("✅ Editor Comment found (context confirmed).");
+        console.log("✁EEditor Comment found (context confirmed).");
     }
 
     await page.screenshot({ path: 'verification-no-hero.png', fullPage: false });

@@ -61,7 +61,7 @@ async function generateThumbnail(topic, style = "photorealistic") {
 
         // Helper to check if model supports generateImages (runtime check)
         if (!model.generateImages) {
-            console.log("⚠️  SDK version might not support direct image generation. Attempting raw REST call...");
+            console.log("⚠�E�E SDK version might not support direct image generation. Attempting raw REST call...");
             // Fallback to fetch if needed, but let's try to assume the user has the right environment
             // calling a custom REST wrapper here would be safer.
         }
@@ -87,11 +87,11 @@ async function generateThumbnail(topic, style = "photorealistic") {
 
         fs.writeFileSync(filepath, Buffer.from(imageBase64, 'base64'));
 
-        console.log(`✅ Thumbnail saved to: public/images/products/${filename}`);
+        console.log(`✁EThumbnail saved to: public/images/products/${filename}`);
         return `/images/products/${filename}`;
 
     } catch (error) {
-        console.error("❌ Generation Failed:", error.message);
+        console.error("❁EGeneration Failed:", error.message);
         console.log("💡 Tip: Ensure 'imagen-3.0-generate-001' is enabled in your Google Cloud Project.");
         return null;
     }

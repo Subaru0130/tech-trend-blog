@@ -5,8 +5,8 @@ const productName = "Sony WF-1000XM5";
 const targetLabels = {
     spec1: "音質",       // Should trigger Grade
     spec2: "ノイキャン",   // Should trigger Grade
-    spec3: "バッテリー",   // Should be Value
-    spec4: "装着感"       // Should trigger Grade
+    spec3: "バッチE��ー",   // Should be Value
+    spec4: "裁E��愁E       // Should trigger Grade
 };
 
 const mockSpecs = [
@@ -26,14 +26,14 @@ const mockSpecs = [
             targetLabels // <--- Testing new arg
         );
 
-        console.log("\n✅ Result Specs:");
+        console.log("\n✁EResult Specs:");
         if (result && result.specs) {
             result.specs.forEach(s => console.log(`  - ${s.label}: ${s.value}`));
         } else {
-            console.log("❌ No specs returned.");
+            console.log("❁ENo specs returned.");
         }
 
     } catch (e) {
-        console.error("❌ CRITICAL ERROR:", e);
+        console.error("❁ECRITICAL ERROR:", e);
     }
 })();

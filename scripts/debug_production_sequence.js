@@ -11,21 +11,21 @@ const ASIN = "B0DGL3XD3D";
 
     try {
         // Step 1: Kakaku Reviews (Suspect)
-        console.log(`\n1️⃣ Running scrapeKakakuReviews for ${PRODUCT_NAME}...`);
+        console.log(`\n1�E�⃣ Running scrapeKakakuReviews for ${PRODUCT_NAME}...`);
         console.log("   (This mimics the production step just before failure)");
         const kakakuResult = await scrapeKakakuReviews(PRODUCT_NAME, null, 50);
-        console.log(`   ✅ Kakaku Done. Reviews found: ${kakakuResult?.summary?.totalFound || 0}`);
+        console.log(`   ✁EKakaku Done. Reviews found: ${kakakuResult?.summary?.totalFound || 0}`);
 
         // Step 2: Amazon Reviews (Victim)
-        console.log(`\n2️⃣ Running scrapeProductReviews for ${ASIN} (Amazon)...`);
+        console.log(`\n2�E�⃣ Running scrapeProductReviews for ${ASIN} (Amazon)...`);
         console.log("   (This mimics the failed step)");
         const amazonResult = await scrapeProductReviews(ASIN, 10);
-        console.log(`   ✅ Amazon Done. Reviews found: ${amazonResult?.summary?.totalFound || 0}`);
+        console.log(`   ✁EAmazon Done. Reviews found: ${amazonResult?.summary?.totalFound || 0}`);
 
-        console.log("\n✅ SEQUENCE SUCCESS: Both scrapers ran without conflict.");
+        console.log("\n✁ESEQUENCE SUCCESS: Both scrapers ran without conflict.");
 
     } catch (e) {
-        console.error("\n❌ SEQUENCE FAILED:");
+        console.error("\n❁ESEQUENCE FAILED:");
         console.error(`   Error: ${e.message}`);
         console.error("   Stack:", e.stack);
     }

@@ -61,14 +61,14 @@ async function localizeImages() {
                 console.log(`-> Saved to ${relativePath}`);
                 
             } catch (e) {
-                console.error(`❌ Failed to download ${product.image}: ${e.message}`);
+                console.error(`❁EFailed to download ${product.image}: ${e.message}`);
             }
         }
     }
 
     if (changed) {
         fs.writeFileSync(productsPath, JSON.stringify(products, null, 4));
-        console.log("✅ products.json updated with local paths.");
+        console.log("✁Eproducts.json updated with local paths.");
     } else {
         console.log("✨ All images are already local.");
     }

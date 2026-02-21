@@ -14,9 +14,9 @@ async function verifyStock() {
 
     try {
         const products = await scrapeKakakuRanking('AirPods 4', options);
-        console.log('✅ Result:', JSON.stringify(products, null, 2));
+        console.log('✁EResult:', JSON.stringify(products, null, 2));
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error('❁EError:', error);
     }
 }
 

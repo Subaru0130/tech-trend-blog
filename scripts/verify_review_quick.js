@@ -43,6 +43,6 @@ const PRODUCTS = [
     }
 
     fs.writeFileSync('review_stats.json', JSON.stringify(logParams, null, 2));
-    console.log("✅ Done");
+    console.log("✁EDone");
     process.exit(0);
 })();

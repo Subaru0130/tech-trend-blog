@@ -102,7 +102,7 @@ async function generateArticle(topic) {
   let candidates = [];
   try {
     const selectionResp = await client.models.generateContent({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-3.1-pro-preview',
       contents: [{ role: 'user', parts: [{ text: selectionPrompt }] }],
       config: {
         thinkingConfig: { thinkingLevel: "high" }
@@ -186,13 +186,13 @@ async function generateArticle(topic) {
     **Structure & Requirements (MDX)**:
     1.  **Frontmatter**:
         - title: "SEO Optimized Title"
-          - **MUST FOLLOW THIS PATTERN**: "【Topic】Recommendation Ranking N Selection【BrandA vs BrandB vs BrandC】"
+          - **MUST FOLLOW THIS PATTERN**: "【Topic】Recommendation Ranking N Selection【BrandA vs BrandB vs BrandC、E
           - **CRITICAL**: The TOPIC (${topic}) MUST be the VERY FIRST word.
-          - **Example**: "【加湿器】おすすめ人気ランキング5選【象印・ダイニチ・パナソニック徹底比較】"
-          - **Example**: "【ドライヤー】美容師おすすめ5選【パナソニック・ダイソン・リファ比較】"
+          - **Example**: "【加湿器】おすすめ人気ランキング5選【象印・ダイニチ・パナソニック徹底比輁E��E
+          - **Example**: "【ドライヤー】美容師おすすめ5選【パナソニック・ダイソン・リファ比輁E��E
           - Include concrete brand names of the top 3 products.
         - date: ${(new Date()).toISOString().split('T')[0]}
-        - description: "Generate a compelling, click-worthy meta description (max 120 chars). Mention the benefits of reading this verification. Ex: '彻底比較10選...結論はこれだ'"
+        - description: "Generate a compelling, click-worthy meta description (max 120 chars). Mention the benefits of reading this verification. Ex: '彻底比輁E0選...結論�Eこれだ'"
         - image: /images/hero-water.png
         - category: "Kitchen"
 
@@ -215,7 +215,7 @@ async function generateArticle(topic) {
         - **Must be specific to the category** (e.g. for Coffee Maker: "Mill Type", "Cleaning", "Size").
 
      7.  **The Ranking (1 to 5)**:
-        - **IMPORTANT**: Section Header MUST be "### 第N位: Product Name" (Do NOT use "Rank N").
+        - **IMPORTANT**: Section Header MUST be "### 第N佁E Product Name" (Do NOT use "Rank N").
         - Use \`<RankingCard ... />\` for each product.
         - **Props**:
           - rank={N}
@@ -224,7 +224,7 @@ async function generateArticle(topic) {
           - rating={4.x}
           - ratings={{ filtration: N, taste: N, flow: N, cost: N, ease: N, design: N }} (1-5 scale)
            - description="Sales Copy: Focus on the experience. Do NOT use markdown (no bold/italic). Write in natural, professional Japanese. (200-300 chars)"
-          - bestFor="Target Persona (e.g. '子育て世帯', '料理好き')"
+          - bestFor="Target Persona (e.g. '子育て世帯', '料理好ぁE)"
           - pros={["Benefit 1 in Japanese", "Benefit 2 in Japanese", "Benefit 3 in Japanese"]}
           - cons={["Drawback 1 in Japanese", "Drawback 2 in Japanese"]}
           - affiliateLinks={{ amazon: "SEARCH:Product Name", rakuten: "SEARCH:Product Name" }}
@@ -238,16 +238,16 @@ async function generateArticle(topic) {
         **Structure for each product (REQUIRED):**
         1. **<RankingCard ... />** (The summary card)
         2. **Angle 1: Situation Fit ("How it changes your life")**
-           - Headline: \`#### 🌅 【生活が変わる】\${Target Persona}での使い心地\`
+           - Headline: \`#### 🌅 【生活が変わる】\${Target Persona}での使ぁE��E��\`
            - Content: Describe a specific scenario where this product shines. (e.g. "For commuters, physical buttons > touch sensors").
         3. **Angle 2: Competitor Checkmate ("Why this wins")**
-           - Headline: \`#### 🆚 【ライバル比較】同価格帯の定番機と比べて\`
+           - Headline: \`#### �E 【ライバル比輁E��同価格帯の定番機と比べて\`
            - Content: Why buy this over the most popular competitor? Be specific.
         4. **Angle 3: Data-Driven Deep Knowledge ("The AI Advantage")**
-           - Headline: \`#### 📊 【データ分析】1,000件のレビューから判明した事実\`
+           - Headline: \`#### 📊 【データ刁E��、E,000件のレビューから判明した事実\`
            - Content: Cite specific patterns from mass data. (e.g. "While experts praise sound, 30% of users report hinge issues.").
         5. **Honest Caution**
-           - Headline: \`#### ⚠️ ここは妥協が必要\`
+           - Headline: \`#### ⚠�E�Eここは妥協が忁E��\`
            - Content: A brutal but helpful truth about what this product lacks.
 
      8.  **Comparison Table**:
@@ -257,9 +257,9 @@ async function generateArticle(topic) {
         - **Values**: Must be in Japanese.
         - **Example**:
           \`\`\`js
-          specLabels: { size: "サイズ", weight: "重量", power: "消費電力", cost: "コスパ" }
+          specLabels: { size: "サイズ", weight: "重量", power: "消費電劁E, cost: "コスチE }
           products={[
-            { rank: 1, name: "製品名", image: "...", asin: "B00xxxx", specs: { size: "Compact", weight: "500g", power: "1200W", cost: "◎" } },
+            { rank: 1, name: "製品名", image: "...", asin: "B00xxxx", specs: { size: "Compact", weight: "500g", power: "1200W", cost: "◁E } },
           ]}
           \`\`\`
 
@@ -271,12 +271,12 @@ async function generateArticle(topic) {
         - Final recommendation ONLY.
         - **CRITICAL**: Do NOT use bolding (**) anywhere. Plain text only.
         - **CRITICAL**: Every time you mention a product name here, you **MUST** format it as a link to Amazon.
-          - **Good**: "静音性なら [ダイニチ HD-RX500A](SEARCH:Dainichi HD-RX500A) がおすすめです。"
+          - **Good**: "静音性なめE[ダイニチ HD-RX500A](SEARCH:Dainichi HD-RX500A) がおすすめです、E
         - Include at least links to the Rank 1, 2, and 3 products in the text.
     `;
 
   const result = await client.models.generateContent({
-    model: 'gemini-3-pro-preview',
+    model: 'gemini-3.1-pro-preview',
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: {
       thinkingConfig: { thinkingLevel: "high" }
@@ -284,7 +284,7 @@ async function generateArticle(topic) {
   });
 
   if (!result.candidates || result.candidates.length === 0 || !result.candidates[0].content) {
-    console.error("❌ Gemini Generation Failed: No candidates returned.");
+    console.error("❁EGemini Generation Failed: No candidates returned.");
     if (result.promptFeedback) {
       console.error("Prompt Feedback:", JSON.stringify(result.promptFeedback, null, 2));
     }
@@ -417,7 +417,7 @@ async function generateArticle(topic) {
   while ((fallbackMatch = fallbackRegex.exec(mdxContent)) !== null) {
     const url = fallbackMatch[1];
     if (!urlMap.has(url)) {
-      console.log("  ⚠️ Image found without product name association. Using generic name.");
+      console.log("  ⚠�E�EImage found without product name association. Using generic name.");
       const filename = `misc-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
       urlMap.set(url, filename);
     }
@@ -496,9 +496,9 @@ async function main() {
     console.log("--- Running Strict Quality Gate ---");
     const { execSync } = await import('child_process');
     execSync('node scripts/check-quality.mjs', { stdio: 'inherit' });
-    console.log("✅ Generation & Verification Complete.");
+    console.log("✁EGeneration & Verification Complete.");
   } catch (e) {
-    console.error("❌ GENERATION / VERIFICATION FAILED:", e);
+    console.error("❁EGENERATION / VERIFICATION FAILED:", e);
     process.exit(1);
   } finally {
     // Cleanup ExifTool

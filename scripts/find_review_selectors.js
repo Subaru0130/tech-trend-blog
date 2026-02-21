@@ -20,7 +20,7 @@ async function checkPort() {
 }
 
 (async () => {
-    console.log("🕵️ FINDING SELECTORS");
+    console.log("🕵�E�EFINDING SELECTORS");
 
     // 1. Launch
     console.log("🚀 Launching Chrome...");
@@ -34,7 +34,7 @@ async function checkPort() {
         if (wsUrl) break;
     }
 
-    if (!wsUrl) { console.error("❌ Failed to connect"); process.exit(1); }
+    if (!wsUrl) { console.error("❁EFailed to connect"); process.exit(1); }
 
     // 3. Connect
     const browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
@@ -54,7 +54,7 @@ async function checkPort() {
 
         // Filter for those that look like reviews (contain star rating or review body)
         const candidates = sections.filter(div => {
-            return div.innerHTML.includes('review-title') || div.innerHTML.includes('5つ星のうち');
+            return div.innerHTML.includes('review-title') || div.innerHTML.includes('5つ星�EぁE��');
         });
 
         // Analyze specific data-hooks found
@@ -99,7 +99,7 @@ async function checkPort() {
         console.log(`Data-Hook: ${analysis.firstCandidate.dataHook}`);
         console.log(`HTML Snippet: ${analysis.firstCandidate.htmlSnippet}`);
     } else {
-        console.log("❌ No likely review elements found.");
+        console.log("❁ENo likely review elements found.");
     }
 
     await browser.disconnect();

@@ -22,7 +22,7 @@ const KEYWORD = process.argv[2] || "ワイヤレスイヤホン";
         });
 
         const top3 = products.slice(0, 3);
-        console.log(`   ✅ Found ${products.length} items, processing Top ${top3.length}...`);
+        console.log(`   ✁EFound ${products.length} items, processing Top ${top3.length}...`);
 
         const results = [];
 
@@ -37,8 +37,8 @@ const KEYWORD = process.argv[2] || "ワイヤレスイヤホン";
                 rank: p.kakakuRank,
                 kakakuCount: 0,
                 amazonCount: 0,
-                kakakuStatus: '❌ Fail',
-                amazonStatus: '❌ Fail'
+                kakakuStatus: '❁EFail',
+                amazonStatus: '❁EFail'
             };
 
             // A. Kakaku Reviews (Direct URL)
@@ -48,38 +48,38 @@ const KEYWORD = process.argv[2] || "ワイヤレスイヤホン";
                     const kRes = await scrapeKakakuReviews(p.name, p.kakakuUrl, 10);
                     if (kRes && kRes.summary) {
                         itemResult.kakakuCount = kRes.summary.totalFound;
-                        itemResult.kakakuStatus = '✅ OK';
-                        console.log(`      ✅ Kakaku Reviews: ${kRes.summary.totalFound}`);
+                        itemResult.kakakuStatus = '✁EOK';
+                        console.log(`      ✁EKakaku Reviews: ${kRes.summary.totalFound}`);
                     } else {
-                        console.log(`      ⚠️ No reviews found (or error)`);
+                        console.log(`      ⚠�E�ENo reviews found (or error)`);
                     }
                 } catch (e) {
-                    console.log(`      ❌ Kakaku Error: ${e.message}`);
+                    console.log(`      ❁EKakaku Error: ${e.message}`);
                 }
             } else {
-                console.log(`      ⚠️ Skipping Kakaku (No URL)`);
+                console.log(`      ⚠�E�ESkipping Kakaku (No URL)`);
             }
 
             // B. Amazon Reviews (ASIN)
             if (p.asin) {
-                console.log(`   ⭐️ Fetching Amazon reviews via ASIN: ${p.asin}`);
+                console.log(`   ⭐︁EFetching Amazon reviews via ASIN: ${p.asin}`);
                 try {
                     const aRes = await scrapeProductReviews(p.asin, 10);
                     if (aRes && aRes.summary) {
                         itemResult.amazonCount = aRes.summary.totalFound;
-                        itemResult.amazonStatus = '✅ OK';
-                        console.log(`      ✅ Amazon Reviews: ${aRes.summary.totalFound}`);
+                        itemResult.amazonStatus = '✁EOK';
+                        console.log(`      ✁EAmazon Reviews: ${aRes.summary.totalFound}`);
                     } else {
-                        console.log(`      ⚠️ No reviews found (or blocked)`);
-                        itemResult.amazonStatus = '⚠️ 0 Reviews';
+                        console.log(`      ⚠�E�ENo reviews found (or blocked)`);
+                        itemResult.amazonStatus = '⚠�E�E0 Reviews';
                     }
                 } catch (e) {
-                    console.log(`      ❌ Amazon Error: ${e.message}`);
-                    itemResult.amazonStatus = `❌ Err: ${e.message.slice(0, 15)}...`;
+                    console.log(`      ❁EAmazon Error: ${e.message}`);
+                    itemResult.amazonStatus = `❁EErr: ${e.message.slice(0, 15)}...`;
                 }
             } else {
-                console.log(`      ⚠️ Skipping Amazon (No ASIN extracted from ranking)`);
-                itemResult.amazonStatus = '⚠️ No ASIN';
+                console.log(`      ⚠�E�ESkipping Amazon (No ASIN extracted from ranking)`);
+                itemResult.amazonStatus = '⚠�E�ENo ASIN';
             }
 
             results.push(itemResult);
@@ -93,6 +93,6 @@ const KEYWORD = process.argv[2] || "ワイヤレスイヤホン";
         console.log(JSON.stringify(results, null, 2));
 
     } catch (e) {
-        console.error(`❌ Critical Error: ${e.message}`);
+        console.error(`❁ECritical Error: ${e.message}`);
     }
 })();

@@ -97,12 +97,12 @@ async function main() {
         console.log(`Screenshot saved to ${screenshotPath}`);
 
         if (errors.length > 0) {
-            console.error("❌ Verification FAILED with errors:");
+            console.error("❁EVerification FAILED with errors:");
             errors.forEach(e => console.error(`  - ${e}`));
             throw new Error("Verification failed");
         }
 
-        console.log("✅ Verification PASSED.");
+        console.log("✁EVerification PASSED.");
 
     } catch (e) {
         console.error(`Verification Loop Failed: ${e.message}`);

@@ -13,9 +13,9 @@ async function main() {
         console.log('Client initialized.');
 
         // Test Text Generation
-        console.log('Testing Text Gen (gemini-3-pro-preview)...');
+        console.log('Testing Text Gen (gemini-3.1-pro-preview)...');
         const textResponse = await client.models.generateContent({
-            model: 'gemini-3-pro-preview',
+            model: 'gemini-3.1-pro-preview',
             contents: 'Hello'
         });
         console.log('Text Response OK');
