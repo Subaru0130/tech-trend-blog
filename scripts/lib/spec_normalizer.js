@@ -156,6 +156,19 @@ function normalizeSpecs(specs) {
             if (value.match(/^Ver\d+\.\d+$/)) return;
         }
 
+        // D. Waterproof / IP Rating Normalization
+        // IP67 → "IPX7（防塵6等級つき）" のように、IPX体系に統一して読者の混乱を防ぐ
+        if (label.includes('防水') || label.includes('Water Resistance') || label.includes('IP') || label.includes('防塵')) {
+            // IP + 2桁の数字 (例: IP67, IP55) → IPXに変換
+            const ipMatch = value.match(/IP(\d)(\d)/);
+            if (ipMatch) {
+                const dustLevel = ipMatch[1];
+                const waterLevel = ipMatch[2];
+                value = `IPX${waterLevel}（防塵${dustLevel}等級つき）`;
+            }
+            // IPX + 数字はそのまま（既にIPX体系）
+        }
+
         // --- 3. DEDUPLICATION LOGIC ---
         if (uniqueSpecs.has(label)) {
             const existing = uniqueSpecs.get(label);
