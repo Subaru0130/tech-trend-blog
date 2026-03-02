@@ -1,0 +1,30 @@
+}
+
+/**
+ * レビュー惁E��をテキストに変換
+ */
+function buildReviewContext(product) {
+    if (!product.rawReviews) return null;
+
+    const parts = [];
+
+    // Amazon positive reviews
+    if (product.rawReviews.positive && product.rawReviews.positive.length > 0) {
+        parts.push("【Amazon高評価レビュー、E);
+        product.rawReviews.positive.slice(0, 3).forEach(r => {
+            const text = r.text || r.body || r.title || '';
+            parts.push(`[${r.rating || '?'}☁E ${text.slice(0, 150)}`);
+        });
+    }
+
+    // Amazon negative reviews
+    if (product.rawReviews.negative && product.rawReviews.negative.length > 0) {
+        parts.push("【Amazon低評価レビュー、E);
+        product.rawReviews.negative.slice(0, 2).forEach(r => {
+            const text = r.text || r.body || r.title || '';
+            parts.push(`[${r.rating || '?'}☁E ${text.slice(0, 150)}`);
+        });
+    }
+
+    // 価格.com reviews (kakaku)
+    if (product.rawReviews.kakaku) {

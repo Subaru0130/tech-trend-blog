@@ -37,10 +37,10 @@ products.forEach(product => {
 });
 
 if (errors.length > 0) {
-    console.error("\n❁EPrice/Link Audit Failed:");
+    console.error("\n❌ Price/Link Audit Failed:");
     errors.forEach(e => console.error(e));
     process.exit(1);
 } else {
-    console.log("\n✁EPrice/Link Audit Passed.");
+    console.log("\n✅ Price/Link Audit Passed.");
     process.exit(0);
 }

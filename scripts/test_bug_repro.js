@@ -36,16 +36,16 @@ function killChrome() {
     try {
         execSync(`powershell -Command "${badCommand}"`, { stdio: 'ignore' });
         console.log("   👉 Chrome launched.");
-    } catch (e) { console.log("   ❁ELaunch failed."); }
+    } catch (e) { console.log("   ❌ Launch failed."); }
 
     // Wait for start
     await new Promise(r => setTimeout(r, 3000));
 
     const oldSuccess = await checkPort();
     if (oldSuccess) {
-        console.log("   ❁EUNEXPECTED: Old command worked? (Maybe path has no spaces?)");
+        console.log("   ❓ UNEXPECTED: Old command worked? (Maybe path has no spaces?)");
     } else {
-        console.log("   ✁EPROOF: Old command FAILED directly connecting to 9222. (Expected Failure)");
+        console.log("   ✅ PROOF: Old command FAILED directly connecting to 9222. (Expected Failure)");
         console.log("      (Chrome likely opened 'Data' as a URL instead of loading the profile)");
     }
 
@@ -57,23 +57,23 @@ function killChrome() {
     try {
         execSync(`powershell -Command "${goodCommand}"`, { stdio: 'ignore' });
         console.log("   👉 Chrome launched.");
-    } catch (e) { console.log("   ❁ELaunch failed."); }
+    } catch (e) { console.log("   ❌ Launch failed."); }
 
     // Wait for start
     await new Promise(r => setTimeout(r, 3000));
 
     const newSuccess = await checkPort();
     if (newSuccess) {
-        console.log("   ✁EPROOF: New command SUCCEEDED connecting to 9222.");
+        console.log("   ✅ PROOF: New command SUCCEEDED connecting to 9222.");
     } else {
-        console.log("   ❁ESomething else is wrong. New command also failed.");
+        console.log("   ❌ Something else is wrong. New command also failed.");
     }
 
     console.log("\n====================================");
     if (!oldSuccess && newSuccess) {
         console.log("🏆 CONCLUSION: The missing quotes were definitely the root cause.");
     } else {
-        console.log("🤁ECONNECTION: Results inconclusive.");
+        console.log("🤔 CONNECTION: Results inconclusive.");
     }
 
     // Cleanup

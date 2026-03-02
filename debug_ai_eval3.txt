@@ -1,0 +1,30 @@
+    if (product.rawReviews.negative && product.rawReviews.negative.length > 0) {
+        parts.push("【Amazon低評価レビュー】");
+        product.rawReviews.negative.slice(0, 2).forEach(r => {
+            const text = r.text || r.body || r.title || '';
+            parts.push(`[${r.rating || '?'}★] ${text.slice(0, 150)}`);
+        });
+    }
+
+    // 価格.com reviews (kakaku)
+    if (product.rawReviews.kakaku) {
+        if (product.rawReviews.kakaku.positive && product.rawReviews.kakaku.positive.length > 0) {
+            parts.push("【価格.com高評価、E);
+            product.rawReviews.kakaku.positive.slice(0, 2).forEach(r => {
+                const text = r.text || r.title || '';
+                parts.push(text.slice(0, 150));
+            });
+        }
+        if (product.rawReviews.kakaku.negative && product.rawReviews.kakaku.negative.length > 0) {
+            parts.push("【価格.com低評価、E);
+            product.rawReviews.kakaku.negative.slice(0, 2).forEach(r => {
+                const text = r.text || r.title || '';
+                parts.push(text.slice(0, 150));
+            });
+        }
+    }
+
+    // Situational reviews (Amazon)
+    if (product.rawReviews.situational && product.rawReviews.situational.length > 0) {
+        parts.push("【シチュエーション別、E);
+        product.rawReviews.situational.slice(0, 2).forEach(r => {

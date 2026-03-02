@@ -31,7 +31,7 @@ async function checkPort() {
     try {
         execSync(`"${batPath}"`, { stdio: 'inherit' });
     } catch (e) {
-        console.error("❁EBat launch failed:", e.message);
+        console.error("❌ Bat launch failed:", e.message);
         process.exit(1);
     }
 
@@ -49,10 +49,10 @@ async function checkPort() {
     console.log("");
 
     if (!connected) {
-        console.error("❁EChrome failed to open port 9222 (Launch failed)");
+        console.error("❌ Chrome failed to open port 9222 (Launch failed)");
         process.exit(1);
     }
-    console.log("✁EChrome is Listening!");
+    console.log("✅ Chrome is Listening!");
 
     // 4. Run Actual Scraping Logic
     const TEST_ASIN = "B0DGL3XD3D"; // SONY WF-1000XM5
@@ -65,15 +65,15 @@ async function checkPort() {
 
         console.log("\n================ RESULT ================");
         if (reviews.length > 0) {
-            console.log(`✁ESUCCESS! Collected ${reviews.length} reviews.`);
+            console.log(`✅ SUCCESS! Collected ${reviews.length} reviews.`);
             console.log("Sample Review:", reviews[0].title);
             process.exit(0);
         } else {
-            console.log("⚠�E�E Scraper ran but returned 0 reviews (Login wall or Stock issue?)");
+            console.log("⚠️  Scraper ran but returned 0 reviews (Login wall or Stock issue?)");
             process.exit(0);
         }
     } catch (e) {
-        console.error("❁EScraper Crashed:", e);
+        console.error("❌ Scraper Crashed:", e);
         process.exit(1);
     }
 })();

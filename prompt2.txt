@@ -1,0 +1,217 @@
+/**
+ * 🎯 Universal Miner - Situation Edition v1
+ * 
+ * 従来のランキング記事（価格帯、おすすめ）ではなく、
+ * 「特定の状況にいるユーザー」を対象としたニッチなキーワードを発掘
+ * 
+ * [戦略]
+ * 1. 「ユーザーの状況」を表すサフィックスを網羅的に試す
+ * 2. Googleサジェストで需要を検証
+ * 3. 需要があるものだけをBlueprint化
+ * 
+ * [使い方]
+ * node scripts/universal_miner_situation_v1.js "ワイヤレスイヤホン"
+ */
+
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const axios = require('axios');
+const fs = require('fs');
+require('dotenv').config({ path: '.env.local' });
+
+const GEMINI_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
+const SEED_KEYWORD = process.argv[2] || "ワイヤレスイヤホン";
+
+if (!GEMINI_API_KEY) {
+    console.error("❌ Error: API Key is missing.");
+    process.exit(1);
+}
+
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+
+// ==========================================
+// 🎯 SITUATION SUFFIXES (状況ベースのキーワード)
+// ==========================================
+// これらは「ランキング」ではなく「特定の状況・ペルソナ」を表す
+const SITUATION_SUFFIXES = [
+    // === 身体的条件 ===
+    '眼鏡', 'メガネ', '眼鏡ユーザー',
+    '補聴器', '難聴',
+    '耳が小さい', '耳が大きい', '耳の形',
+    '外耳炎', '耳が痛い', '耳が痒い',
+
+    // === 運動・アクティビティ ===
+    'ランニング', 'ジョギング', 'マラソン',
+    'ジム', '筋トレ', 'ワークアウト',
+    '水泳', 'プール', '防水',
+    'サウナ', 'お風呂', 'シャワー',
+    'ヨガ', 'ストレッチ',
+    '自転車', 'サイクリング', 'ロードバイク',
+    'スキー', 'スノボ', '登山', 'キャンプ',
+
+    // === 仕事・シチュエーション ===
+    'テレワーク', 'リモートワーク', '在宅勤務',
+    'Web会議', 'オンライン会議', 'Zoom会議',
+    'コールセンター', '電話対応',
+    '工場', '現場', '騒音環境',
+    'カフェ', 'コワーキング',
+    '図書館', '勉強',
+    '飛行機', '新幹線', '長距離移動',
+    '寝ながら', '睡眠', '寝ホン', '横向き',
+
+    // === ゲーム・エンタメ ===
+    'ゲーム', 'FPS', 'APEX', 'フォートナイト',
+    '遅延なし', '低遅延', 'ゲーミング',
+    'Switch', 'PS5', 'PC接続',
+    '映画', 'Netflix', '動画視聴',
+    'ASMR', '音フェチ',
+
+    // === デバイス・互換性 ===
+    'Android', 'Pixel', 'Galaxy',
+    'iPhone15', 'iPhone14', 'Apple製品以外',
+    'Mac', 'MacBook', 'iPad',
+    'Windows', 'PC', 'パソコン',
+    '2台同時', 'ペアリング',
+
+    // === ライフスタイル ===
+    '子育て', '育児', '赤ちゃん',
+    'ペット', '犬の散歩',
+    '料理中', '家事',
+    '通勤 自転車', '徒歩通勤',
+    '夜勤', '深夜',
+    '一人暮らし', '同棲',
+
+    // === 特定のニーズ ===
+    '骨伝導', 'オープンイヤー', '耳を塞がない',
+    '片耳', '片方だけ',
+    '長時間', '8時間', '10時間',
+    'ワイヤレス充電', 'Qi対応',
+    'マルチポイント', '2台接続',
+    '紛失防止', '落ちない', '落下防止',
+    'イヤーフック', 'ネックバンド',
+    '小さい', 'コンパクト', '軽い',
+    '目立たない', '仕事中 バレない',
+
+    // === 年齢・属性 ===
+    'シニア', '高齢者', '親へのプレゼント',
+    '子供', 'キッズ', '小学生',
+    '中学生', '高校生', '大学生',
+    '女性', 'レディース', '小さめ',
+    '男性', 'メンズ',
+    '初心者', '入門',
+
+    // === 課題・悩み解決 ===
+    '耳が蒸れる', '蒸れにくい',
+    '髪型崩れない', '髪型',
+    'イヤホン落とす', 'なくしやすい',
+    'うどん嫌', 'デザイン',
+    '圧迫感', '耳が疲れる',
+    '音漏れ', '電車 音漏れ',
+];
+
+// ==========================================
+// 🚫 EXCLUDE PATTERNS (除外パターン)
+// ==========================================
+const EXCLUDE_PATTERNS = [
+    // ランキング系（今回は避ける）
+    'ランキング', 'おすすめ', '比較', '最強', '人気',
+    // トラブルシューティング
+    '修理', '故障', '接続できない', '聞こえない', '片方',
+    // 非Amazon
+    '100均', 'ダイソー', 'セリア', 'ドンキ', 'コストコ',
+    'メルカリ', 'ヤフオク', '中古',
+];
+
+// ==========================================
+// 📊 Googleサジェストで需要を検証
+// ==========================================
+async function fetchSuggestions(query) {
+    try {
+        const url = `http://suggestqueries.google.com/complete/search?client=firefox&hl=ja&gl=jp&q=${encodeURIComponent(query)}`;
+        const res = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 5000 });
+        return (res.data && res.data[1]) ? res.data[1] : [];
+    } catch { return []; }
+}
+
+async function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ==========================================
+// 🔍 PHASE 1: SITUATION KEYWORD MINING
+// ==========================================
+async function mineSituationKeywords(seed) {
+    console.log(`\n🎯 Phase 1: Mining Situation-Based Keywords for "${seed}"...`);
+    console.log(`   Testing ${SITUATION_SUFFIXES.length} situation suffixes...\n`);
+
+    const validatedKeywords = [];
+    let count = 0;
+
+    for (const suffix of SITUATION_SUFFIXES) {
+        count++;
+        const query = `${seed} ${suffix}`;
+        process.stdout.write(`   [${count}/${SITUATION_SUFFIXES.length}] "${query}" `);
+
+        // Get suggestions for this query
+        const suggestions = await fetchSuggestions(query);
+
+        // Check if the query itself or similar appears in suggestions
+        const hasExactMatch = suggestions.some(s => s.toLowerCase().includes(suffix.toLowerCase()));
+        const hasSeedMatch = suggestions.length > 0;
+
+        if (hasExactMatch || hasSeedMatch) {
+            // Filter out excluded patterns
+            const isExcluded = EXCLUDE_PATTERNS.some(p =>
+                suggestions.some(s => s.includes(p))
+            );
+
+            // Get related suggestions that are NOT generic rankings
+            const relevantSuggestions = suggestions.filter(s => {
+                // Must contain the seed keyword
+                if (!s.includes(seed)) return false;
+                // Must contain the situation suffix
+                if (!s.toLowerCase().includes(suffix.toLowerCase())) return false;
+                // Must NOT be a generic ranking keyword
+                if (EXCLUDE_PATTERNS.some(p => s.includes(p))) return false;
+                return true;
+            });
+
+            if (relevantSuggestions.length > 0 || hasExactMatch) {
+                console.log(`✅ DEMAND FOUND (${suggestions.length} suggestions)`);
+                validatedKeywords.push({
+                    situation: suffix,
+                    baseQuery: query,
+                    suggestions: relevantSuggestions.slice(0, 3),
+                    demandScore: suggestions.length
+                });
+            } else if (hasSeedMatch && !isExcluded) {
+                console.log(`⚙️ Partial (${suggestions.length})`);
+                // Still include if there's some demand
+                validatedKeywords.push({
+                    situation: suffix,
+                    baseQuery: query,
+                    suggestions: suggestions.filter(s => s.includes(seed)).slice(0, 2),
+                    demandScore: Math.floor(suggestions.length / 2)
+                });
+            } else {
+                console.log(`❌ Excluded/Weak`);
+            }
+        } else {
+            console.log(`❌ No demand`);
+        }
+
+        await delay(200); // Rate limiting
+    }
+
+    // Sort by demand score
+    validatedKeywords.sort((a, b) => b.demandScore - a.demandScore);
+
+    console.log(`\n📊 Found ${validatedKeywords.length} situation-based keywords with demand`);
+    return validatedKeywords;
+}
+
+// ==========================================
+// 🏗️ PHASE 2: BLUEPRINT GENERATION
+// ==========================================
+async function generateSituationBlueprint(seed, situationData) {
+    const { situation, baseQuery, suggestions } = situationData;
+
+    

@@ -1,0 +1,40 @@
+            return link ? link.href : null;
+        });
+
+        if (specLink) {
+            await page.goto(specLink, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => { });
+            await new Promise(r => setTimeout(r, 1500));
+        }
+
+        // Extract specs from spec table
+        const data = await page.evaluate(() => {
+            const specs = [];
+            const price = document.querySelector('.priceBox .price')?.innerText || null;
+
+            // Look for spec tables
+            document.querySelectorAll('table.specTable tr, table.tblSpec tr').forEach(row => {
+                const label = row.querySelector('th')?.innerText?.trim();
+                const value = row.querySelector('td')?.innerText?.trim();
+
+                // Filter out irrelevant marketing rows
+                const blackList = ['特雁E, 'ピックアチE�E', '関連', '記亁E, 'キャンペ�Eン', '詳細', '更新'];
+                if (label && value && !blackList.some(b => label.includes(b))) {
+                    specs.push({ label, value });
+                }
+            });
+
+            return { specs, price, url: window.location.href };
+        });
+
+        await browser.close();
+
+        if (data.specs.length > 0) {
+            console.log(`      ✁EFound ${data.specs.length} specs from 価格.com`);
+            return { specs: data.specs, features: [], price: data.price, source: data.url };
+        }
+        return null;
+
+    } catch (e) {
+        if (browser) {
+            if (isRemote) {
+                const pages = await browser.pages();

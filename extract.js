@@ -1,0 +1,1 @@
+const fs = require('fs'); const lines = fs.readFileSync('c:/Users/Kokik/OneDrive/gemini/tech-trend-blog/scripts/produce_from_blueprint.js', 'utf8').split('\n'); const index = lines.findIndex(l => l.includes('productsData.push(')); if(index > -1) fs.writeFileSync('c:/Users/Kokik/OneDrive/gemini/tech-trend-blog/extracted.txt', lines.slice(index-40, index + 35).join('\n'));

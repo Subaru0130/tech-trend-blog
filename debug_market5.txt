@@ -1,0 +1,30 @@
+const KAKAKU_CATEGORY_MAP = {
+    // ================================================================
+    // イヤホン・ヘッド�Eン・オーチE��オ (headphones/audio)
+    // ================================================================
+    '完�Eワイヤレス': { path: 'headphones', code: '2046' },
+    'ワイヤレスイヤホン': { path: 'headphones', code: '2046' },
+    'イヤホン': { path: 'headphones', code: '2046' },
+    'ヘッド�Eン': { path: 'headphones', code: '2046' },
+    'Bluetooth': { path: 'headphones', code: '2046' },
+    'カナル': { path: 'headphones', code: '2046' },
+    '骨伝封E: { path: 'headphones', code: '2046' },
+    'ヘッドセチE��': { path: 'headset', code: '2049' },
+    'スピ�Eカー': { path: 'speaker', code: '2047' },
+    'Bluetoothスピ�Eカー': { path: 'bluetooth-speaker', code: '7091' },
+    'サウンドバー': { path: 'sound-bar', code: '7073' },
+    'ホ�Eムシアター': { path: 'home-theater-speaker', code: '2048' },
+    'AVアンチE: { path: 'av-amp', code: '2056' },
+    'プリメインアンチE: { path: 'pre-main-amp', code: '2059' },
+    'ミニコンチE: { path: 'mini-component', code: '2054' },
+    'ポ�EタブルオーチE��オ': { path: 'digital-audio-player', code: '2053' },
+    'DAP': { path: 'digital-audio-player', code: '2053' },
+    'ヘッド�EンアンチE: { path: 'headphone-amp', code: '7020' },
+
+    // ================================================================
+    // チE��ビ�E映像機器 (TV/Video)
+    // ================================================================
+    'チE��チE: { path: 'lcd-tv', code: '2041' },
+    '液晶チE��チE: { path: 'lcd-tv', code: '2041' },
+    '有機EL': { path: 'lcd-tv', code: '2041' },
+    'ブルーレイレコーダー': { path: 'dvd-recorder', code: '2022' },

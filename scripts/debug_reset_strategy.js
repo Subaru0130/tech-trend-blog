@@ -5,15 +5,15 @@ const http = require('http');
 puppeteer.use(StealthPlugin());
 
 async function debugResetStrategy() {
-    console.log("🛠�E�ETesting 'Reset & Launch' Strategy...");
+    console.log("🛠️ Testing 'Reset & Launch' Strategy...");
 
     // 1. Force Kill ALL Chrome Processes
     console.log("   🔪 Killing all running Chrome processes...");
     try {
         execSync('taskkill /F /IM chrome.exe');
-        console.log("   ✁EChrome killed successfully.");
+        console.log("   ✅ Chrome killed successfully.");
     } catch (e) {
-        console.log("   ℹ�E�ENo Chrome processes found (or kill failed). Continuing...");
+        console.log("   ℹ️ No Chrome processes found (or kill failed). Continuing...");
     }
 
     // Wait a moment for OS cleanup
@@ -35,7 +35,7 @@ async function debugResetStrategy() {
         // Wrap entire PS command in double quotes for CMD
         execSync(`powershell -Command "${psCommand}"`, { stdio: 'inherit' });
     } catch (launchErr) {
-        console.error("   ❁EFailed to launch Chrome via PowerShell:", launchErr.message);
+        console.error("   ❌ Failed to launch Chrome via PowerShell:", launchErr.message);
         return;
     }
 
@@ -67,7 +67,7 @@ async function debugResetStrategy() {
             browserWSEndpoint: wsUrl,
             defaultViewport: null
         });
-        console.log("   ✁EPuppeteer Connected!");
+        console.log("   ✅ Puppeteer Connected!");
 
         // 4. Verify Login via Page Title
         const pages = await browser.pages();
@@ -80,9 +80,9 @@ async function debugResetStrategy() {
         console.log(`   📸 Screenshot saved: ${screenshotPath}`);
 
         if (title.includes('ログイン') || title.includes('Sign-In')) {
-            console.log("   ⚠�E�ERESULT: Not Logged In. (Default profile might not be the right one?)");
+            console.log("   ⚠️ RESULT: Not Logged In. (Default profile might not be the right one?)");
         } else {
-            console.log("   ✁ERESULT: SUCCESS! Logged In.");
+            console.log("   ✅ RESULT: SUCCESS! Logged In.");
         }
 
         // Leave browser OPEN for user to see
@@ -90,7 +90,7 @@ async function debugResetStrategy() {
         browser.disconnect();
 
     } catch (e) {
-        console.error(`   ❁EConnection Failed: ${e.message}`);
+        console.error(`   ❌ Connection Failed: ${e.message}`);
     }
 }
 

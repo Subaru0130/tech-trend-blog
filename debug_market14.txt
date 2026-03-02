@@ -1,0 +1,20 @@
+
+                try {
+                    const response = await client.generateContent(prompt);
+                    const text = response.response.text().trim();
+
+                    if (text !== 'NONE') {
+                        text.split('\n').forEach((name, i) => {
+                            if (name.trim().length > 3) {
+                                products.push({
+                                    name: name.trim(),
+                                    monoqloRank: products.length + 1,
+                                    source: 'MONOQLO/家電批詁E
+                                });
+                            }
+                        });
+                    }
+                } catch (e) {
+                    // Continue without this snippet
+                }
+            }

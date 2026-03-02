@@ -1,0 +1,80 @@
+async function generateSituationBlueprint(seed, situationData) {
+    const { situation, baseQuery, suggestions } = situationData;
+
+    const prompt = `
+あなた�EWebコンチE��チE��略の刁E��官です、E
+、E{seed}」を、E{situation}」とぁE��**特定�E状況E*で使ぁE��ぁE��ーザー向けの記事を設計してください、E
+
+重要E これは「ランキング記事」ではありません、E
+、E{situation}」とぁE��検索ワードには、一般皁E��おすすめ記事では満たせなぁE*独自の悩み**があります、E
+
+## Googleサジェストで見つかった関連キーワーチE
+${suggestions.join(', ') || baseQuery}
+
+## タスク
+1. こ�E「状況」で検索する人の**具体的な悩み・不宁E*を深堀りしてください
+2. 一般皁E��ランキング記事では解決できなぁE*こ�E状況特有�E選び方ポインチE*を特定してください
+3. こ�E状況に最適な製品�E**忁E��条件**を�E確にしてください
+
+## 🚫 禁止事頁E
+- 「○○おすすめランキング」�Eような汎用タイトルは禁止
+- 「通勤電車で〜」�Eような**他�E状況を混ぜる**のは禁止
+- 、E{situation}」に特化してぁE��ぁE�E容は禁止
+
+## ✁E承認基溁E(status: APPROVED)
+1. **独自性**: こ�E状況ならではの「選び方の基準」が存在する
+2. **需要E*: 深刻な悩みめE��強ぁE��だわりがあめE
+
+## 設計指示
+
+### 1. 検索意図の深掘り (search_intent_analysis)
+- こ�E状況にぁE��ユーザーの「隠れた悩み」「本当�Eペイン」�E何か�E�E
+- 侁E ジム用 ↁE「汗で壊れる�Eが怖い」「激しく動くと外れる」「集中したぁE��E
+
+### 2. タイトル設訁E(title)
+- **「誰の」「どんな悩みを」「どぁE��決するか、E*が一目でわかるタイトル
+- 忁E��「、E{situation}】」や状況を示す言葉を含める
+- 侁E "【ジム専用】汗で壊れなぁE��外れなぁE��最強スポ�EチE��ヤホン5選"
+
+### 3. ターゲチE��読老E(target_reader)
+- **徹底的に具体的かつニッチな状況E*を描写する、E
+- ❁E「ジムに通う人、E
+- ⭕︁E「週3回ジムに通い、激しいHIITトレーニング中も絶対にズレおちず、汗で水没しなぁE��フな相棒を探してぁE��トレーニ�E、E
+
+### 4. 比輁E�� (comparison_axis) ☁E��要�E
+- そ�EターゲチE��層ぁE*「�E通して最も重視する�Eイント、E*を主軸にする、E
+- カンマ区刁E��の斁E���E�E�侁E "防水・防汗性能, 裁E��安定性�E�外れにくさ�E�E 重低音"�E�E
+
+### 5. セールスフック (sales_hook)
+- そ�E悩みを持つ層全体に対し、「この記事が最適解である」と紁E��する、E
+
+### 6. 導�E部設訁E(intro_structure)
+- hook: 多くの読老E��「�E刁E�Eことだ」と感じる�E愁E
+- background_explanation: 従来品E��普通�E製品E��ではなぜダメなのか！E
+
+### 7. フィルタリング惁E�� (重要E Kakaku.com互換性)
+- **price_min / price_max**: 
+  - そ�E状況で「安物買ぁE�E銭失ぁE��を防ぐため�E最低価格、また�E学生などのための上限価格、E
+  - 数値�E��E�E�で出力、E
+- **required_features**:
+  - **フィルタリング用の「検索可能な」忁E��キーワーチE*、E
+  - ⭕︁E**「機�Eの有無�E�EN/OFF�E�」で判定できるも�E限宁E*�E�侁E "防水", "ノイズキャンセリング", "ワイヤレス", "マイク", "ハイレゾ", "マルチ�EインチE�E�、E
+      ↁE琁E��: スクリプトはスペック値が「○」「対応」になってぁE��か判定するため、E
+  - ❁E**数値めE��キストで表されるスペックは厳禁E*�E�侁E "連続�E生時閁E, "重量", "サイズ", "允E��端孁E, "カラー"�E�、E
+      ↁE琁E��: 値が、E0時間」や「USB-C」だと、「○」ではなぁE�Eで**誤って除夁E*されます、E
+  - ❁E**検索ヒット率が低いニッチな用語�E禁止**�E�侁E "XSサイズ", "趁E��型", "睡眠用", "横向き"�E�、E
+  - ※ 迷ったら**最も庁E��で安�Eな語（侁E "防水"�E�E*めEつだけ選んでください、E
+
+## 出力JSON (承認時 - Universal Miner God v12完�E互換)
+{
+  "status": "APPROVED",
+  "keyword": "${baseQuery}", 
+  "title": "...",
+  "search_intent_analysis": "...",
+  "intro_structure": { "hook": "...", "background_explanation": "..." },
+  "ranking_criteria": ["基溁E", "基溁E", "基溁E"],
+  "target_reader": "...", // 戦略皁E��ーゲチE��記述
+  "user_demographics": { // ターゲチE��構�E要素
+    "situation": "${situation}", // 状況E
+    "pain_point": "...", // 悩み
+    "desire": "..." // 願望

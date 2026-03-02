@@ -1,0 +1,30 @@
+
+                // Priority 1: Domain contains brand name (e.g., sony.jp, ankerjapan.com)
+                if (brandLower && (hrefLower.includes(brandLower) ||
+                    hrefLower.includes(brandLower.replace(/[\s\-]/g, '')))) {
+                    // Exclude shopping sites and review sites
+                    const excludePatterns = ['amazon', 'rakuten', 'kakaku', 'my-best', 'review', 'blog'];
+                    if (!excludePatterns.some(p => hrefLower.includes(p))) {
+                        return href;
+                    }
+                }
+
+                // Priority 2: Official-looking domains (.jp, .com with product in path)
+                if (hrefLower.includes('/product') || hrefLower.includes('/spec') ||
+                    hrefLower.includes('仕槁E) || hrefLower.includes('support')) {
+                    const excludePatterns = ['amazon', 'rakuten', 'kakaku', 'my-best', 'review', 'blog', 'twitter', 'youtube'];
+                    if (!excludePatterns.some(p => hrefLower.includes(p))) {
+                        return href;
+                    }
+                }
+            }
+            return null;
+        }, brandName);
+
+        if (!officialLink) {
+            if (browser) {
+                if (isRemote) {
+                    await page.close().catch(() => { });
+                } else {
+                    await browser.close();
+                }

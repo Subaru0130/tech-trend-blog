@@ -8,7 +8,7 @@ const ASIN = "B0C61G4X7P"; // DENON PerL Pro (User's failing item)
     try {
         const result = await scrapeProductReviews(ASIN, 10);
 
-        console.log("\n✁EScrape Result:");
+        console.log("\n✅ Scrape Result:");
         console.log(`   Total Found: ${result.summary.totalFound}`);
         console.log(`   Situational: ${result.summary.situationalCount}`);
 
@@ -22,10 +22,10 @@ const ASIN = "B0C61G4X7P"; // DENON PerL Pro (User's failing item)
         if (result.summary.totalFound > 0) {
             console.log("\n🎉 SUCCESS: Reviews were scraped successfully!");
         } else {
-            console.log("\n❁EFAILURE: No reviews found.");
+            console.log("\n❌ FAILURE: No reviews found.");
         }
 
     } catch (e) {
-        console.error("❁ECRITICAL ERROR:", e);
+        console.error("❌ CRITICAL ERROR:", e);
     }
 })();

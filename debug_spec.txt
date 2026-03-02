@@ -1,0 +1,30 @@
+        if (v === 'C') return 1;
+        return 0;
+    };
+
+    specs.forEach(spec => {
+        if (!spec.label) return;
+        let label = spec.label.trim();
+        let value = spec.value ? String(spec.value).trim() : '';
+
+        // --- 0. TRANSLATION (English -> Japanese) ---
+        const TRANSLATION_MAP = {
+            'Model Name': '型番',
+            'Connectivity Technology': '接続方弁E,
+            'Wireless Communication Technology': 'ワイヤレス技衁E,
+            'Included Components': '付属品',
+            'Age Range (Description)': '対象年齢',
+            'Material': '素杁E,
+            'Specific Uses For Product': '用送E,
+            'Charging Time': '允E��時間',
+            'Recommended Uses For Product': '推奨用送E,
+            'Compatible Devices': '対応機器',
+            'Control Type': '操作方弁E,
+            'Control Method': '操作方況E,
+            'Number of Items': '個数',
+            'Batteries Required': 'バッチE��ー',
+            'Manufacturer': 'メーカー',
+            'Item Model Number': '型番',
+            'Package Dimensions': 'サイズ',
+            'ASIN': 'ASIN',
+            'Date First Available': '発売日',

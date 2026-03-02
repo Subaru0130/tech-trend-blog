@@ -14,9 +14,9 @@ async function verifyStock() {
 
     try {
         const products = await scrapeKakakuRanking('WF-1000XM5', options);
-        console.log('✁EResult:', JSON.stringify(products, null, 2));
+        console.log('✅ Result:', JSON.stringify(products, null, 2));
     } catch (error) {
-        console.error('❁EError:', error);
+        console.error('❌ Error:', error);
     }
 }
 

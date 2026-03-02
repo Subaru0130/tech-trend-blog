@@ -8,11 +8,11 @@ const googleTrends = require('google-trends-api');
 // User-Defined "Winning Candidates" (Situational/Problem-Solving)
 // Refined Strategy: "Bridge Keywords" (Specific Intent but Detectable Volume)
 const NICHE_TARGETS = [
-    "電軁Eイヤホン",           // Bridge for "Commuting/Subway"
+    "電車 イヤホン",           // Bridge for "Commuting/Subway"
     "音漏れ イヤホン",         // Bridge for "Public Transport/Quiet"
-    "耳栁Eイヤホン",           // Bridge for "Focus/Study/Sleep"
+    "耳栓 イヤホン",           // Bridge for "Focus/Study/Sleep"
     "ノイキャン 安い",         // Bridge for "Cost Performance"
-    "ノイズキャンセリング 比輁E // Bridge for "Buying Intent"
+    "ノイズキャンセリング 比較" // Bridge for "Buying Intent"
 ];
 
 async function scoutNiche(term) {
@@ -43,7 +43,7 @@ async function scoutNiche(term) {
 }
 
 async function runStrategy() {
-    console.log("⚔︁EScouting Competitive Flanks (Blue Ocean Strategy)...");
+    console.log("⚔️ Scouting Competitive Flanks (Blue Ocean Strategy)...");
 
     // Allow CLI override: node seo_scout.js "Custom Term"
     const customTerm = process.argv[2];
@@ -68,18 +68,18 @@ async function runStrategy() {
     const winners = results.filter(r => r.valid);
 
     if (winners.length === 0) {
-        console.log("⚠�E�EAll specific niche targets returned NO data.");
-        console.log("   Suggestion: Try slightly shorter combinations like '電軁Eイヤホン'.");
+        console.log("⚠️ All specific niche targets returned NO data.");
+        console.log("   Suggestion: Try slightly shorter combinations like '電車 イヤホン'.");
     } else {
         winners.forEach(w => {
-            console.log(`\n✁EWinnable Target: "${w.term}"`);
+            console.log(`\n✅ Winnable Target: "${w.term}"`);
             console.log(`   - Related (Top): ${w.topQueries.join(", ")}`);
             if (w.risingQueries.length) console.log(`   - Related (Rising): ${w.risingQueries.join(", ")}`);
 
             // Intelligence
-            if (w.term.includes("電軁E) || w.term.includes("地下鉄")) {
+            if (w.term.includes("電車") || w.term.includes("地下鉄")) {
                 console.log("   👉 Strategy: Title should focus on 'Commute Stress' & 'Silence'.");
-            } else if (w.term.includes("耳栁E)) {
+            } else if (w.term.includes("耳栓")) {
                 console.log("   👉 Strategy: Focus on 'Focus/Sleep' use cases.");
             }
         });

@@ -1,0 +1,100 @@
+    '電気ケトル': { path: 'electric-pot', code: '2120' },
+    'コーヒ�Eメーカー': { path: 'coffee-maker', code: '2121' },
+    'エスプレチE��マシン': { path: 'espresso-machine', code: '7019' },
+    '食器洗い橁E: { path: 'dish-washer', code: '2124' },
+    '食洗橁E: { path: 'dish-washer', code: '2124' },
+    'IHクチE��ングヒ�Eター': { path: 'ihcooking-heater', code: '2134' },
+    'ホット�EレーチE: { path: 'hot-plate', code: '2131' },
+    '圧力鍋': { path: 'pressure-cooker', code: '7074' },
+    '電気圧力鍋': { path: 'electric-pressure-cooker', code: '7091' },
+    '低温調琁E��': { path: 'low-temperature-cooker', code: '7092' },
+    'ノンフライヤー': { path: 'non-fryer', code: '7058' },
+
+    // ================================================================
+    // 生活家電 (Living)
+    // ================================================================
+    '掁E��橁E: { path: 'vacuum', code: '2165' },
+    'コードレス掁E��橁E: { path: 'cordless-vacuum', code: '7084' },
+    'ロボット掃除橁E: { path: 'robot-vacuum', code: '7032' },
+    'ハンチE��掁E��橁E: { path: 'handy-vacuum', code: '2167' },
+    '币E��クリーナ�E': { path: 'futon-cleaner', code: '7057' },
+    'スチ�Eムクリーナ�E': { path: 'steam-cleaner', code: '7044' },
+    '高圧洗流E��E: { path: 'pressure-washer', code: '7027' },
+    '洗濯橁E: { path: 'washing-machine', code: '2107' },
+    'ドラム式洗濯橁E: { path: 'washing-machine', code: '2107' },
+    '縦型洗濯橁E: { path: 'washing-machine', code: '2107' },
+    '衣類乾燥橁E: { path: 'clothes-dryer', code: '2109' },
+    '币E��乾燥橁E: { path: 'futon-dryer', code: '2186' },
+    'アイロン': { path: 'iron', code: '2183' },
+    'ミシン': { path: 'sewing-machine', code: '2163' },
+
+    // ================================================================
+    // 空調・季節家電 (Air/Season)
+    // ================================================================
+    'エアコン': { path: 'aircon', code: '2180' },
+    'クーラー': { path: 'aircon', code: '2180' },
+    '空気渁E��E��E: { path: 'air-purifier', code: '2147' },
+    '除湿橁E: { path: 'dehumidifier', code: '2175' },
+    '加湿器': { path: 'humidifier', code: '2161' },
+    '扁E��橁E: { path: 'fan', code: '2174' },
+    'サーキュレーター': { path: 'circulator', code: '7042' },
+    'ヒ�Eター': { path: 'heater', code: '2150' },
+    'スト�EチE: { path: 'heater', code: '2150' },
+    'ファンヒ�Eター': { path: 'fan-heater', code: '2151' },
+    'ホットカーペッチE: { path: 'hot-carpet', code: '2156' },
+    'こたつ': { path: 'kotatsu', code: '2158' },
+    '電気毛币E: { path: 'electric-blanket', code: '2159' },
+
+    // ================================================================
+    // 健康・美容家電 (Health/Beauty)
+    // ================================================================
+    'シェーバ�E': { path: 'shaver', code: '2143' },
+    '電気シェーバ�E': { path: 'shaver', code: '2143' },
+    '脱毛器': { path: 'epilator', code: '2144' },
+    'バリカン': { path: 'hair-clipper', code: '2145' },
+    '鼻毛カチE��ー': { path: 'nasal-hair-cutter', code: '7046' },
+    '電動歯ブラシ': { path: 'electric-toothbrush', code: '2149' },
+    'ヘアドライヤー': { path: 'hair-dryer', code: '2187' },
+    'ドライヤー': { path: 'hair-dryer', code: '2187' },
+    'ヘアアイロン': { path: 'hair-iron', code: '7028' },
+    '美顔器': { path: 'facial-equipment', code: '7047' },
+    'マッサージ器': { path: 'massager', code: '2191' },
+    'マッサージチェア': { path: 'massage-chair', code: '2192' },
+    '体重訁E: { path: 'weight-scale', code: '2148' },
+    '体脂肪訁E: { path: 'weight-scale', code: '2148' },
+    '体絁E�E訁E: { path: 'weight-scale', code: '2148' },
+    '血圧訁E: { path: 'blood-pressure-monitor', code: '2193' },
+    '体温訁E: { path: 'thermometer', code: '7048' },
+
+    // ================================================================
+    // 惁E��家電 (Info Appliances)
+    // ================================================================
+    '電子辞書': { path: 'electronic-dictionary', code: '2073' },
+    '電話橁E: { path: 'phone', code: '2185' },
+    'FAX': { path: 'fax', code: '2198' },
+    'ラジオ': { path: 'radio', code: '2055' },
+
+    // ================================================================
+    // 電源�Eモバイル (Power/Mobile)
+    // ================================================================
+    'モバイルバッチE��ー': { path: 'portable-charger', code: '7062' },
+    'ポ�Eタブル電溁E: { path: 'portable-power', code: '7089' },
+    '允E��器': { path: 'charger', code: '7063' },
+
+    // ================================================================
+    // 照昁E(Lighting)
+    // ================================================================
+    'シーリングライチE: { path: 'ceiling-light', code: '2081' },
+    'LEDシーリングライチE: { path: 'led-ceiling-light', code: '7031' },
+    'LED電琁E: { path: 'led-light', code: '7030' },
+    'チE��クライチE: { path: 'desk-light', code: '2082' },
+    'スタンドライチE: { path: 'stand-light', code: '2084' },
+
+    // ================================================================
+    // ネットワーク・通信 (Network)
+    // ================================================================
+    '無線LANルーター': { path: 'wifi-router', code: '2077' },
+    'Wi-Fiルーター': { path: 'wifi-router', code: '2077' },
+    'ルーター': { path: 'wifi-router', code: '2077' },
+
+    // ================================================================

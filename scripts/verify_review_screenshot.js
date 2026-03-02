@@ -35,7 +35,7 @@ async function checkPort() {
         if (wsUrl) break;
     }
 
-    if (!wsUrl) { console.error("❁EFailed to connect"); process.exit(1); }
+    if (!wsUrl) { console.error("❌ Failed to connect"); process.exit(1); }
 
     // 3. Connect & Screenshot
     console.log("🔗 Connecting...");

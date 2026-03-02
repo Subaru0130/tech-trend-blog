@@ -18,14 +18,14 @@ const { scrapeAmazonProductSpecs } = require('./lib/amazon_scout');
 
         if (result.image) {
             if (result.image.includes('.jpg') && !result.image.includes('_AC_SY')) {
-                console.log("  ✁EPotential High-Res Image (No resize params detected locally, but Amazon logic varies)");
+                console.log("  ✅ Potential High-Res Image (No resize params detected locally, but Amazon logic varies)");
             }
 
             // Check if it's the dynamic image structure (usually has specific patterns)
             // But main verification is just getting *an* image that isn't a tiny placeholder.
-            console.log("  ✁EImage extracted successfully.");
+            console.log("  ✅ Image extracted successfully.");
         } else {
-            console.error("  ❁ENo image found.");
+            console.error("  ❌ No image found.");
         }
 
         if (result.specs) {
@@ -33,6 +33,6 @@ const { scrapeAmazonProductSpecs } = require('./lib/amazon_scout');
             result.specs.slice(0, 3).forEach(s => console.log(`- ${s.label}: ${s.value}`));
         }
     } else {
-        console.error("❁EScrape failed completely.");
+        console.error("❌ Scrape failed completely.");
     }
 })();

@@ -2,7 +2,7 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 
-const KEYWORD = process.argv[2] || '完�Eワイヤレスイヤホン';
+const KEYWORD = process.argv[2] || '完全ワイヤレスイヤホン';
 
 (async () => {
     console.log(`Starting Amazon Search for: "${KEYWORD}"...`);

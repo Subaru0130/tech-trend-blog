@@ -10,8 +10,8 @@ const replacementStr = `// DEBUG: Screenshot if 0 reviews
             console.log("   📸 0 reviews found. Capturing debug screenshot...");
             try {
                 await page.screenshot({ path: 'amazon_review_debug.png', fullPage: false });
-                console.log("   ✁ESaved 'amazon_review_debug.png'");
-            } catch(e) { console.log("   ❁EAuto-screenshot failed: " + e.message); }
+                console.log("   ✅ Saved 'amazon_review_debug.png'");
+            } catch(e) { console.log("   ❌ Auto-screenshot failed: " + e.message); }
         }
 
         // Process results`;

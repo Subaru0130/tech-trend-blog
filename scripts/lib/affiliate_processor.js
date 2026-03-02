@@ -74,7 +74,7 @@ function processRakutenLink(productName) {
 
     // Clean product name for search
     const cleanName = productName
-        .replace(/、E*?、Eg, '')
+        .replace(/【.*?】/g, '')
         .replace(/\s+/g, ' ')
         .trim();
 

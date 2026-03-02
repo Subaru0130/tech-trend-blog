@@ -1,0 +1,25 @@
+                                            }
+
+                                            // Success condition: Reached Amazon
+                                            if (currentUrl.includes('amazon.co.jp') && !currentUrl.includes('kakaku.com')) {
+                                                console.log(`            ✨ Amazon reachable! Stopping wait.`);
+                                                break;
+                                            }
+
+                                            // Manual Click Handling (Fallback for "Click here" pages)
+                                            // Check every ~2 seconds
+                                            if ((Date.now() - startTime) % 2000 < 500) {
+                                                try {
+                                                    const hasManualLink = await page.evaluate(() => {
+                                                        const a = document.querySelector('a');
+                                                        return a && (a.innerText.includes('こちめE) || a.innerText.includes('Click') || a.innerText.includes('Amazon'));
+                                                    });
+                                                    if (hasManualLink) {
+                                                        console.log(`            👆 Found manual redirect link, clicking...`);
+                                                        await page.click('a');
+                                                    }
+                                                } catch (evalErr) {
+                                                    // Ignore evaluation errors (timeouts, etc.) during navigation
+                                                    // console.log(`            ⚠�E�EManual link check skipped: ${evalErr.message}`);
+                                                }
+                                            }

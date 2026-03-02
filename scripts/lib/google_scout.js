@@ -50,7 +50,7 @@ async function searchReviewSummaries(productName) {
 
     } catch (e) {
         if (browser) await browser.close();
-        console.log(`      ⚠�E�EWeb Scout failed: ${e.message}`);
+        console.log(`      ⚠️ Web Scout failed: ${e.message}`);
         return "Search failed.";
     }
 }
@@ -61,7 +61,7 @@ async function searchReviewSummaries(productName) {
  * Used as fallback when Amazon spec scraping fails
  */
 async function searchProductSpecs(productName) {
-    const query = `${productName} 公弁Eスペック 仕槁Eweight battery`;
+    const query = `${productName} 公式 スペック 仕様 weight battery`;
     console.log(`\n🌍 Web Scout: Searching Bing for specs of "${productName}"...`);
 
     const browser = await puppeteer.launch({
@@ -95,12 +95,12 @@ async function searchProductSpecs(productName) {
         await browser.close();
         if (snippets.length === 0) return "";
 
-        console.log(`      ✁EFound ${snippets.length} spec-related snippets.`);
+        console.log(`      ✅ Found ${snippets.length} spec-related snippets.`);
         return snippets.join("\n\n");
 
     } catch (e) {
         if (browser) await browser.close();
-        console.log(`      ⚠�E�ESpec Search failed: ${e.message}`);
+        console.log(`      ⚠️ Spec Search failed: ${e.message}`);
         return "";
     }
 }

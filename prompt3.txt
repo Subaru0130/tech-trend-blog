@@ -1,0 +1,187 @@
+/**
+ * 🎯 Universal Miner - Situation Edition v1
+ * 
+ * 従来のランキング記事（価格帯、おすすめE��ではなく、E
+ * 「特定�E状況にぁE��ユーザー」を対象としたニッチなキーワードを発掁E
+ * 
+ * [戦略]
+ * 1. 「ユーザーの状況」を表すサフィチE��スを網羁E��に試ぁE
+ * 2. Googleサジェストで需要を検証
+ * 3. 需要があるも�EだけをBlueprint匁E
+ * 
+ * [使ぁE��]
+ * node scripts/universal_miner_situation_v1.js "ワイヤレスイヤホン"
+ */
+
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const axios = require('axios');
+const fs = require('fs');
+require('dotenv').config({ path: '.env.local' });
+
+const GEMINI_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
+const SEED_KEYWORD = process.argv[2] || "ワイヤレスイヤホン";
+
+if (!GEMINI_API_KEY) {
+    console.error("❁EError: API Key is missing.");
+    process.exit(1);
+}
+
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+
+// ==========================================
+// 🎯 SITUATION SUFFIXES (状況�EースのキーワーチE
+// ==========================================
+// これら�E「ランキング」ではなく「特定�E状況�Eペルソナ」を表ぁE
+// ==========================================
+// 🧠 AI BRAIN: DYNAMIC SITUATION GENERATOR
+// ==========================================
+async function generateSituationSuffixes(seed) {
+    console.log(`\n🧠 AI Brain is brainstorming situation scenarios for "${seed}"...`);
+
+    const prompt = `
+    あなた�EWebコンチE��チE��略の専門家です。キーワード、E{seed}」に関連する、E0個�E「特定�E状況」や「ユーザー属性」を表す検索サフィチE��スを老E��てください、E
+    
+    ## 目皁E
+    一般皁E��ランキングではなく、「特定�E悩み」や「特殊なニ�Eズ」を持つニッチなターゲチE��層を見つけること、E
+    
+    ## 含めるべきカチE��リ
+    1. **使用シーン** (侁E 狭ぁE��屁E 一人暮らし, 同棲, アウトドア, 車中況E 風呁E..)
+    2. **ユーザー属性** (侁E 腰痛持ち, 猫飼ぁE 赤ちめE��, 高齢老E ミニマリスチE 初忁E��E..)
+    3. **物琁E��制紁E* (侁E 6畳, 賁E��, 角部屁E 収納なぁE 壁が薁E��...)
+    4. **特定�E悩み** (侁E 蒸れなぁE 掁E��しやすい, 傷つかなぁE 絁E��立て不要E 痛くなぁE..)
+    5. **ライフスタイル** (侁E 在宁E��勁E ゲーム廁E��, 読書, 映画鑑賁E 深夁E..)
+
+    ## 除外するもの (NG)
+    - 汎用皁E��言葁E(おすすめ, ランキング, 安い, 人氁E 比輁E 最新, 最強, コスチE
+    - ブランド名単佁E(IKEA, ニトリ, 無印, Apple, Sony...)
+    
+    ## 出力形弁E
+    カンマ区刁E��のリスト�Eみを�E力してください、E
+    侁E 一人暮らし, 6畳, 腰痁E 猫, 北欧, チE��ワーク, ...
+    `;
+
+    try {
+        const result = await model.generateContent(prompt);
+        let text = result.response.text();
+        const suffixes = text.split(/,|\n/).map(s => s.trim().replace(/・/g, '')).filter(s => s.length > 1);
+
+        // Remove duplicates and limit to 50
+        const uniqueSuffixes = [...new Set(suffixes)].slice(0, 50);
+
+        console.log(`   ✨ Brainstormed ${uniqueSuffixes.length} unique situations:`);
+        console.log(`   ${uniqueSuffixes.slice(0, 5).join(', ')} ... and more`);
+
+        return uniqueSuffixes;
+    } catch (e) {
+        console.error(`   ⚠�E�EBrainstorming failed: ${e.message}`);
+        return [ // Fallback for earphones if AI fails
+            'チE��ワーク', 'ゲーム', '睡眠', 'スポ�EチE, '耳が小さぁE, 'メガチE, 'iPhone', 'PC', '通勤', '勉強'
+        ];
+    }
+}
+
+
+// ==========================================
+// 🚫 EXCLUDE PATTERNS (除外パターン)
+// ==========================================
+const EXCLUDE_PATTERNS = [
+    // ランキング系�E�今回は避ける�E�E
+    'ランキング', 'おすすめ', '比輁E, '最強', '人氁E,
+    // トラブルシューチE��ング
+    '修琁E, '敁E��', '接続できなぁE, '聞こえなぁE, '牁E��',
+    // 非Amazon
+    '100坁E, 'ダイソー', 'セリア', 'ドンキ', 'コストコ',
+    'メルカリ', 'ヤフオク', '中古',
+];
+
+// ==========================================
+// 📊 Googleサジェストで需要を検証
+// ==========================================
+async function fetchSuggestions(query) {
+    try {
+        const url = `http://suggestqueries.google.com/complete/search?client=firefox&hl=ja&gl=jp&q=${encodeURIComponent(query)}`;
+        const res = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 5000 });
+        return (res.data && res.data[1]) ? res.data[1] : [];
+    } catch { return []; }
+}
+
+async function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ==========================================
+// 🔍 PHASE 1: SITUATION KEYWORD MINING
+// ==========================================
+async function mineSituationKeywords(seed, customSuffixes = []) {
+    console.log(`\n🎯 Phase 1: Mining Situation-Based Keywords for "${seed}"...`);
+    const targetSuffixes = customSuffixes.length > 0 ? customSuffixes : []; // SITUATION_SUFFIXES was removed
+    console.log(`   Testing ${targetSuffixes.length} situation suffixes...\n`);
+
+    const validatedKeywords = [];
+    let count = 0;
+
+    for (const suffix of targetSuffixes) {
+        count++;
+        const query = `${seed} ${suffix}`;
+        process.stdout.write(`   [${count}/${targetSuffixes.length}] "${query}" `);
+
+        // Get suggestions for this query
+        const suggestions = await fetchSuggestions(query);
+
+        // Check if the query itself or similar appears in suggestions
+        const hasExactMatch = suggestions.some(s => s.toLowerCase().includes(suffix.toLowerCase()));
+        const hasSeedMatch = suggestions.length > 0;
+
+        if (hasExactMatch || hasSeedMatch) {
+            // Filter out excluded patterns
+            const isExcluded = EXCLUDE_PATTERNS.some(p =>
+                suggestions.some(s => s.includes(p))
+            );
+
+            // Get related suggestions that are NOT generic rankings
+            const relevantSuggestions = suggestions.filter(s => {
+                // Must contain the seed keyword
+                if (!s.includes(seed)) return false;
+                // Must contain the situation suffix
+                if (!s.toLowerCase().includes(suffix.toLowerCase())) return false;
+                // Must NOT be a generic ranking keyword
+                if (EXCLUDE_PATTERNS.some(p => s.includes(p))) return false;
+                return true;
+            });
+
+            if (relevantSuggestions.length > 0 || hasExactMatch) {
+                console.log(`✁EDEMAND FOUND (${suggestions.length} suggestions)`);
+                validatedKeywords.push({
+                    situation: suffix,
+                    baseQuery: query,
+                    suggestions: relevantSuggestions.slice(0, 3),
+                    demandScore: suggestions.length
+                });
+            } else if (hasSeedMatch && !isExcluded) {
+                console.log(`⚙︁EPartial (${suggestions.length})`);
+                // Still include if there's some demand
+                validatedKeywords.push({
+                    situation: suffix,
+                    baseQuery: query,
+                    suggestions: suggestions.filter(s => s.includes(seed)).slice(0, 2),
+                    demandScore: Math.floor(suggestions.length / 2)
+                });
+            } else {
+                console.log(`❁EExcluded/Weak`);
+            }
+        } else {
+            console.log(`❁ENo demand`);
+        }
+
+        await delay(200); // Rate limiting
+    }
+
+    // Sort by demand score
+    validatedKeywords.sort((a, b) => b.demandScore - a.demandScore);
+
+    console.log(`\n📊 Found ${validatedKeywords.length} situation-based keywords with demand`);
+    return validatedKeywords;
+}
+
+// ==========================================
+// 🏗�E�EPHASE 2: BLUEPRINT GENERATION
+// ==========================================

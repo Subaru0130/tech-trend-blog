@@ -1,0 +1,30 @@
+                });
+                console.log(`      ⚠�E�EDebug Info: ${debugInfo ? debugInfo.slice(0, 500) : 'null'}`);
+                break;
+            }
+        }
+
+        const reviewData = allReviews.slice(0, maxReviews);
+
+        if (isRemote) await browser.disconnect();
+        else await browser.close();
+
+        if (reviewData.length > 0) {
+            // Categorize reviews by sentiment
+            const positive = reviewData.filter(r => r.rating >= 4 || (!r.rating && !r.text.includes('残念') && !r.text.includes('悪ぁE)));
+            const negative = reviewData.filter(r => r.rating <= 2 || (r.text.includes('残念') || r.text.includes('悪ぁE) || r.text.includes('不満')));
+
+            console.log(`      ✁EFound ${reviewData.length} 価格.com口コミ`);
+            return {
+                positive: positive.slice(0, 5),
+                negative: negative.slice(0, 3),
+                all: reviewData,
+                summary: {
+                    totalFound: reviewData.length,
+                    source: '価格.com'
+                }
+            };
+        }
+
+        console.log(`      ⚠�E�ENo reviews found on 価格.com for: ${productName}`);
+        return null;

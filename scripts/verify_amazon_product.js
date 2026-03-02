@@ -13,7 +13,7 @@ async function retryOperation(fn, retries = 3, delay = 2000) {
             return await fn();
         } catch (error) {
             if (i === retries - 1) throw error;
-            console.error(`   ⚠�E�ERetry ${i + 1}/${retries} failed: ${error.message}. Waiting ${delay}ms...`);
+            console.error(`   ⚠️ Retry ${i + 1}/${retries} failed: ${error.message}. Waiting ${delay}ms...`);
             await new Promise(r => setTimeout(r, delay));
             delay *= 2; // Exponential backoff
         }
@@ -29,9 +29,9 @@ async function verifyProductOnAmazon(productName) {
             asin: "B0F77PMC1P",
             title: "Sony WH-1000XM6 Wireless Noise Cancelling Headphones",
             imageUrl: "https://m.media-amazon.com/images/I/41aRyTb8uPL.jpg",
-            price: "�E�59,400",
+            price: "￥59,400",
             realFeatures: ["業界最高クラスのノイズキャンセリング", "AI通話性能", "最大30時間再生"],
-            realSpecs: { "音質": "ハイレゾ相彁E, "允E��": "USB-C" }
+            realSpecs: { "音質": "ハイレゾ相当", "充電": "USB-C" }
         };
     }
     if (productName.includes("Sony WH-1000XM5")) {
@@ -40,7 +40,7 @@ async function verifyProductOnAmazon(productName) {
             asin: "B09Z2QYYD1",
             title: "Sony WH-1000XM5 Wireless Noise Cancelling Headphones",
             imageUrl: "https://m.media-amazon.com/images/I/51XfJ5EK19L.jpg",
-            price: "�E�49,000",
+            price: "￥49,000",
             realFeatures: ["Two processors control 8 microphones", "Auto NC Optimizer"],
             realSpecs: { "Brand": "Sony", "Color": "Black" }
         };
@@ -69,9 +69,9 @@ async function verifyProductOnAmazon(productName) {
 
         browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
         isRemote = true;
-        console.error("   ✁EConnected to Chrome (remote debugging)");
+        console.error("   ✅ Connected to Chrome (remote debugging)");
     } catch (e) {
-        console.error("   ⚠�E�EChrome not available, attempting auto-start...");
+        console.error("   ⚠️ Chrome not available, attempting auto-start...");
 
         // Try to auto-start Chrome
         let chromeStarted = false;
@@ -85,7 +85,7 @@ async function verifyProductOnAmazon(productName) {
             try {
                 const stdout = execSync('tasklist /FI "IMAGENAME eq chrome.exe" /NH').toString();
                 if (stdout.includes('chrome.exe')) {
-                    console.error("   ⚠�E�EStandard Chrome is already running. Launching separate debug instance...");
+                    console.error("   ⚠️ Standard Chrome is already running. Launching separate debug instance...");
                     useAltProfile = true;
                 }
             } catch (err) { }
@@ -95,7 +95,7 @@ async function verifyProductOnAmazon(productName) {
                 userDataDir = `${process.env.LOCALAPPDATA}\\Google\\Chrome\\User Data`;
             } else {
                 userDataDir = path.join(os.tmpdir(), 'chrome_debug_profile_' + Date.now());
-                console.error(`   ℹ�E�E Using temporary profile: ${userDataDir}`);
+                console.error(`   ℹ️  Using temporary profile: ${userDataDir}`);
             }
 
             const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
@@ -128,12 +128,12 @@ async function verifyProductOnAmazon(productName) {
                     browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null });
                     isRemote = true;
                     chromeStarted = true;
-                    console.error("   ✁EConnected to auto-started Chrome");
+                    console.error("   ✅ Connected to auto-started Chrome");
                     break;
                 } catch (pollErr) { }
             }
         } catch (startErr) {
-            console.error("   ❁EAuto-start failed:", startErr.message);
+            console.error("   ❌ Auto-start failed:", startErr.message);
         }
 
         if (!chromeStarted) {

@@ -19,7 +19,7 @@ const ASIN = 'B0C5WZ5L8Q'; // The problematic ASIN
         });
 
         const reviewUrl = `https://www.amazon.co.jp/product-reviews/${ASIN}`;
-        console.log(`1�E�⃣  Trying Review Page: ${reviewUrl}`);
+        console.log(`1️⃣  Trying Review Page: ${reviewUrl}`);
 
         let usedFallback = false;
 
@@ -27,15 +27,15 @@ const ASIN = 'B0C5WZ5L8Q'; // The problematic ASIN
         try {
             await page.goto(reviewUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
             await page.waitForSelector('[data-hook="review"]', { timeout: 3000 });
-            console.log("   ✁EReview Page loaded successfully (Unexpected but good)");
+            console.log("   ✅ Review Page loaded successfully (Unexpected but good)");
         } catch (e) {
-            console.log("   ⚠�E�EBlocked/Timeout on Review Page (Expected). Switching to Fallback...");
+            console.log("   ⚠️ Blocked/Timeout on Review Page (Expected). Switching to Fallback...");
             usedFallback = true;
         }
 
         if (usedFallback) {
             const productUrl = `https://www.amazon.co.jp/dp/${ASIN}`;
-            console.log(`2�E�⃣  Falling back to Product Page: ${productUrl}`);
+            console.log(`2️⃣  Falling back to Product Page: ${productUrl}`);
             await new Promise(r => setTimeout(r, 2000)); // Small delay
 
             await page.goto(productUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
@@ -52,9 +52,9 @@ const ASIN = 'B0C5WZ5L8Q'; // The problematic ASIN
             });
 
             if (reviewCount > 0) {
-                console.log(`   ✁ESUCCESS: Found ${reviewCount} reviews on Product Page!`);
+                console.log(`   ✅ SUCCESS: Found ${reviewCount} reviews on Product Page!`);
             } else {
-                console.log("   ❁EFAILURE: Found 0 reviews on Product Page.");
+                console.log("   ❌ FAILURE: Found 0 reviews on Product Page.");
                 // Dump HTML for debugging
                 const html = await page.content();
                 console.log(`Dump: ${html.substring(0, 500)}`);
@@ -62,7 +62,7 @@ const ASIN = 'B0C5WZ5L8Q'; // The problematic ASIN
         }
 
     } catch (e) {
-        console.log(`   ❁EScript Error: ${e.message}`);
+        console.log(`   ❌ Script Error: ${e.message}`);
     } finally {
         await browser.close();
     }

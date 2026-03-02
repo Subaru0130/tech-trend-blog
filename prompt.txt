@@ -1,0 +1,50 @@
+
+// ==========================================
+// 🎯 SITUATION SUFFIXES (状況�EースのキーワーチE
+// ==========================================
+// これら�E「ランキング」ではなく「特定�E状況�Eペルソナ」を表ぁE
+// ==========================================
+// 🧠 AI BRAIN: DYNAMIC SITUATION GENERATOR
+// ==========================================
+async function generateSituationSuffixes(seed) {
+    console.log(`\n🧠 AI Brain is brainstorming situation scenarios for "${seed}"...`);
+
+    const prompt = `
+    あなた�EWebコンチE��チE��略の専門家です。キーワード、E{seed}」に関連する、E0個�E「特定�E状況」や「ユーザー属性」を表す検索サフィチE��スを老E��てください、E
+    
+    ## 目皁E
+    一般皁E��ランキングではなく、「特定�E悩み」や「特殊なニ�Eズ」を持つニッチなターゲチE��層を見つけること、E
+    
+    ## 含めるべきカチE��リ
+    1. **使用シーン** (侁E 狭ぁE��屁E 一人暮らし, 同棲, アウトドア, 車中況E 風呁E..)
+    2. **ユーザー属性** (侁E 腰痛持ち, 猫飼ぁE 赤ちめE��, 高齢老E ミニマリスチE 初忁E��E..)
+    3. **物琁E��制紁E* (侁E 6畳, 賁E��, 角部屁E 収納なぁE 壁が薁E��...)
+    4. **特定�E悩み** (侁E 蒸れなぁE 掁E��しやすい, 傷つかなぁE 絁E��立て不要E 痛くなぁE..)
+    5. **ライフスタイル** (侁E 在宁E��勁E ゲーム廁E��, 読書, 映画鑑賁E 深夁E..)
+
+    ## 除外するもの (NG)
+    - 汎用皁E��言葁E(おすすめ, ランキング, 安い, 人氁E 比輁E 最新, 最強, コスチE
+    - ブランド名単佁E(IKEA, ニトリ, 無印, Apple, Sony...)
+    
+    ## 出力形弁E
+    カンマ区刁E��のリスト�Eみを�E力してください、E
+    侁E 一人暮らし, 6畳, 腰痁E 猫, 北欧, チE��ワーク, ...
+    `;
+
+    try {
+        const result = await model.generateContent(prompt);
+        let text = result.response.text();
+        const suffixes = text.split(/,|\n/).map(s => s.trim().replace(/・/g, '')).filter(s => s.length > 1);
+
+        // Remove duplicates and limit to 50
+        const uniqueSuffixes = [...new Set(suffixes)].slice(0, 50);
+
+        console.log(`   ✨ Brainstormed ${uniqueSuffixes.length} unique situations:`);
+        console.log(`   ${uniqueSuffixes.slice(0, 5).join(', ')} ... and more`);
+
+        return uniqueSuffixes;
+    } catch (e) {
+        console.error(`   ⚠�E�EBrainstorming failed: ${e.message}`);
+        return [ // Fallback for earphones if AI fails
+            'チE��ワーク', 'ゲーム', '睡眠', 'スポ�EチE, '耳が小さぁE, 'メガチE, 'iPhone', 'PC', '通勤', '勉強'
+        ];

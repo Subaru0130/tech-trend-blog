@@ -1,0 +1,75 @@
+
+
+        const productEntry = {
+            id: product.id,
+            name: product.name,
+            asin: product.asin,
+            price: typeof actualPrice === 'number' ? `¥${actualPrice.toLocaleString()}` : actualPrice,
+            priceVal: typeof actualPrice === 'number' ? actualPrice : parseInt(String(actualPrice).replace(/[^0-9]/g, '')) || 0,
+            // Prefer actual image URLs (Amazon, etc.) over non-existent local paths
+            image: product.image && product.image.startsWith('http')
+                ? product.image
+                : (product.asin ? `https://images-na.ssl-images-amazon.com/images/P/${product.asin}.01.LZZZZZZZ.jpg` : '/images/placeholder.jpg'),
+            rating: product.rating || product.calculatedRating || 4.0,
+            reviewCount: product.reviewCount || 0,
+            description: product.description || '',
+            brand: product.brand || '',
+            category: BLUEPRINT.category || detectCategoryFromKeyword(TARGET_KEYWORD),
+            affiliateLinks: product.affiliateLinks || {},
+            specs: specsArray,
+            pros: product.pros || [],
+            cons: product.cons || [],
+            badge: product.badge || 'おすすめ',
+            tags: {},
+            kakakuSpecs: product.kakakuSpecs || {},
+            themeScore: product.themeScore || 0,
+            themeReason: product.themeReason || '',
+            costPerformance: product.costPerformance || 0,
+            costReason: product.costReason || '',
+            rawReviews: product.rawReviews || null,
+            reviewInsights: product.reviewInsights || null,
+            editorComment: product.editorComment || '',
+            specVerification: product.specVerification || '',
+            userScenario: product.userScenario || ''
+        };
+
+        if (existingIndex >= 0) {
+            // Update existing product
+            productsData[existingIndex] = { ...productsData[existingIndex], ...productEntry };
+        } else {
+            // Add new product
+            productsData.push(productEntry);
+        }
+    }
+
+    console.log(`   ✁EProducts synced. Total in database: ${productsData.length}`);
+
+    // Save valid data
+    fs.writeFileSync(PRODUCTS_JSON_PATH, JSON.stringify(productsData, null, 4));
+
+    // --- PHASE 3: CONTENT GENERATION ---
+    console.log("\n--> Phase 3: Generating Content...");
+
+    // 1. Buying Guide Body
+    const filteringStats = {
+        totalScanned: statsTotalScanned,
+        candidates: statsCandidates,
+        finalCount: validatedLineup.length
+    };
+    const buyingGuideBody = await ai_writer.generateBuyingGuideBody(TARGET_KEYWORD, validatedLineup, BLUEPRINT, filteringStats);
+
+    // 2. SEO Metadata - Use Blueprint title if available
+    let seoMetadata;
+    if (BLUEPRINT.title) {
+        // Use Blueprint's pre-defined title
+        seoMetadata = {
+            title: BLUEPRINT.title,
+            description: BLUEPRINT.intro ? BLUEPRINT.intro.slice(0, 150) + "..." : `プロが選ぶ${TARGET_KEYWORD}のおすすめ人気ランキング。選び方めE��輁E�Eイントも解説。`,
+            keywords: [TARGET_KEYWORD, "おすすめ", "ランキング", "比輁E]
+        };
+        console.log(`   ✁EUsing Blueprint Title: ${BLUEPRINT.title}`);
+    } else {
+        seoMetadata = await ai_writer.generateSeoMetadata(TARGET_KEYWORD, validatedLineup);
+    }
+
+    // 3. Thumbnail Generation

@@ -1,0 +1,20 @@
+                                // Kakaku image hack: Convert /m/ (medium) to /l/ (large)
+                                imageUrl = imageUrl.replace('/m/', '/l/');
+                            }
+                        }
+
+                        if (nameEl) {
+                            let rawName = nameEl.innerText?.trim() || '';
+                            // Clean up name: remove ranking (e.g., '2佁E), newlines, and normalize
+                            let name = rawName
+                                .replace(/\d+佁Eg, '')       // Remove ranking number anywhere
+                                .replace(/\n+/g, ' ')       // Replace newlines with space
+                                .replace(/\s+/g, ' ')       // Normalize whitespace
+                                .trim();
+
+                            if (name && name.length > 3) {
+                                const priceText = priceEl?.innerText || '';
+                                const priceMatch = priceText.match(/[\d,]+/);
+                                const productUrl = nameEl.href || '';
+
+                                // Skip if already seen this product URL

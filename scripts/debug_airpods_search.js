@@ -22,13 +22,13 @@ const VARIATIONS = [
             console.log(`   [Kakaku] Searching...`);
             const kRes = await scrapeKakakuReviews(name, null, 1); // Max 1 just to check existence
             if (kRes) {
-                console.log(`   ✁E[Kakaku] HIT! Found ${kRes.summary.totalFound} reviews`);
+                console.log(`   ✅ [Kakaku] HIT! Found ${kRes.summary.totalFound} reviews`);
                 console.log(`      Title: "${kRes.all[0].title.slice(0, 30)}..."`);
             } else {
-                console.log(`   ❁E[Kakaku] No reviews found`);
+                console.log(`   ❌ [Kakaku] No reviews found`);
             }
         } catch (e) {
-            console.log(`   ❁E[Kakaku] Error: ${e.message}`);
+            console.log(`   ❌ [Kakaku] Error: ${e.message}`);
         }
 
         // 2. Test Amazon Search
@@ -36,13 +36,13 @@ const VARIATIONS = [
             console.log(`   [Amazon] Searching...`);
             const aRes = await verifyProductOnAmazon(name);
             if (aRes) {
-                console.log(`   ✁E[Amazon] HIT! ASIN: ${aRes.asin}`);
+                console.log(`   ✅ [Amazon] HIT! ASIN: ${aRes.asin}`);
                 console.log(`      Title: "${aRes.amazonTitle.slice(0, 30)}..."`);
             } else {
-                console.log(`   ❁E[Amazon] Not found`);
+                console.log(`   ❌ [Amazon] Not found`);
             }
         } catch (e) {
-            console.log(`   ❁E[Amazon] Error: ${e.message}`);
+            console.log(`   ❌ [Amazon] Error: ${e.message}`);
         }
     }
 })();

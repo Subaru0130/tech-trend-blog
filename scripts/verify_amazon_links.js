@@ -44,7 +44,7 @@ const checkUrl = (url) => {
             // But here we just want to ensure the URL string itself is well-formed.
 
             if (!url.includes('/dp/B0') && !url.includes('amazon.co.jp')) {
-                console.error(`❁EInvalid Amazon URL Format for ${p.id}: ${url}`);
+                console.error(`❌ Invalid Amazon URL Format for ${p.id}: ${url}`);
                 failure = true;
             }
 
@@ -53,16 +53,16 @@ const checkUrl = (url) => {
             if (asinMatch) {
                 // Good ASIN format
             } else {
-                console.warn(`⚠�E�EURL might lack ASIN for ${p.id}: ${url}`);
+                console.warn(`⚠️ URL might lack ASIN for ${p.id}: ${url}`);
             }
         } else {
-            // console.warn(`ℹ�E�ENo Amazon link for ${p.id}`);
+            // console.warn(`ℹ️ No Amazon link for ${p.id}`);
         }
     }
 
     if (failure) {
-        console.log("❁ELink issues found.");
+        console.log("❌ Link issues found.");
     } else {
-        console.log("✁EURLs look syntactically correct. Running HEAD checks is unreliable due to bot protection, so relying on Puppeteer image fetch verification.");
+        console.log("✅ URLs look syntactically correct. Running HEAD checks is unreliable due to bot protection, so relying on Puppeteer image fetch verification.");
     }
 })();
