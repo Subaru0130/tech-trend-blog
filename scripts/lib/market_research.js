@@ -245,7 +245,7 @@ async function searchBing(query) {
  * Extract product names from scraped article content using AI
  */
 async function extractProductsFromArticles(articles, keyword, blueprint) {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.1-pro-preview' });
 
     // Combine all article content
     const context = articles.map(a => `[${a.source}]\n${a.content}`).join('\n\n---\n\n');
@@ -304,7 +304,7 @@ JSON配列で出力:
  * Use Gemini to extract product names from collected snippets
  */
 async function extractProductsWithAI(snippets, keyword, blueprint) {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.1-pro-preview' });
 
     // Combine all snippets into context
     const context = snippets.map(s => `[${s.source}] ${s.fullText}`).join('\n\n');

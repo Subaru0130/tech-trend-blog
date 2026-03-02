@@ -408,7 +408,7 @@ async function scrapeFromWebSearch(productName) {
 async function extractSpecsWithAI(content, productName, source) {
     if (!content || content.length < 50) return null;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.1-pro-preview' });
 
     const prompt = `
 以下のWebページコンテンツから「${productName}」のスペック情報を抽出してJSON形式で返してください。
