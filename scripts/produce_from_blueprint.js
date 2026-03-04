@@ -81,7 +81,7 @@ async function ensureChromeDebugMode() {
 // Gemini AI for product filtering
 const GEMINI_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const filterModel = genAI.getGenerativeModel({ model: "gemini-3.1-pro-preview" }); // High accuracy model for filtering
+const filterModel = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" }); // Fast model for filtering
 
 // 1. Configuration
 const JSON_FILE = process.argv[2];
