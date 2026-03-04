@@ -30,8 +30,9 @@ const useClaudeForArticles = () => articleAiProvider === 'claude' && claudeClien
 /**
  * Generic retry logic for AI API calls
  * Used for handling 503 High Demand, Rate Limits, and temporary network errors
+ * Features: 5 retries with exponential backoff + fallback to alternate model
  */
-async function withRetry(operation, maxRetries = 3, delayMs = 15000) {
+async function withRetry(operation, maxRetries = 5, delayMs = 15000) {
     let lastError;
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
@@ -47,10 +48,11 @@ async function withRetry(operation, maxRetries = 3, delayMs = 15000) {
                 errorStr.includes('fetch failed');
 
             if (isRetryable && attempt < maxRetries) {
+                const waitSec = Math.min(delayMs / 1000, 240);
                 console.warn(`  ⚠️ [Retry ${attempt}/${maxRetries}] AI API Error: ${error.message || '503/429'}`);
-                console.warn(`  ⏳ Waiting ${delayMs / 1000}s before retrying...`);
+                console.warn(`  ⏳ Waiting ${waitSec}s before retrying...`);
                 await new Promise(resolve => setTimeout(resolve, delayMs));
-                delayMs *= 2;
+                delayMs = Math.min(delayMs * 2, 240000); // Cap at 4 minutes
             } else {
                 throw error;
             }
@@ -58,6 +60,25 @@ async function withRetry(operation, maxRetries = 3, delayMs = 15000) {
     }
     throw lastError;
 }
+
+/**
+ * withRetry with automatic fallback to alternate Gemini model
+ * If primary model fails all retries, tries the alternate model
+ */
+async function withRetryAndFallback(primaryOp, fallbackOp, label = 'AI') {
+    try {
+        return await withRetry(primaryOp);
+    } catch (primaryError) {
+        console.warn(`  🔄 Primary model failed for ${label}. Trying fallback model...`);
+        try {
+            return await withRetry(fallbackOp, 3, 15000);
+        } catch (fallbackError) {
+            console.error(`  ❌ Both primary and fallback models failed for ${label}.`);
+            throw primaryError; // Throw original error
+        }
+    }
+}
+
 
 /**
  * Generate SEO Metadata (Title, Description)
