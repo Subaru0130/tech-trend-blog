@@ -8,6 +8,7 @@
  *   node scripts/batch_produce.js                                     # 全ブループリント
  *   node scripts/batch_produce.js SITUATION_BLUEPRINTS_オフィスチェア.json  # 特定ファイルのみ
  *   node scripts/batch_produce.js --force-reviews                     # レビューも強制再生成
+ *   node scripts/batch_produce.js --use-cache                         # キャッシュがあればスクレイピングスキップ
  */
 
 const fs = require('fs');
@@ -21,7 +22,11 @@ const ARTICLES_DIR = path.join(ROOT, 'src', 'content', 'articles');
 // Parse arguments
 const args = process.argv.slice(2);
 const FORCE_REVIEWS = args.includes('--force-reviews');
+const USE_CACHE = args.includes('--use-cache');
 const specificFile = args.find(a => a.endsWith('.json'));
+
+// Cache directory
+const CACHE_DIR = path.join(ROOT, '.cache');
 
 // Find all blueprint files
 function findBlueprintFiles() {
@@ -50,9 +55,26 @@ function articleExists(keyword) {
     return true;
 }
 
+// Check if scraping cache exists for a keyword
+function hasCacheFor(keyword) {
+    const cacheSlug = keyword.replace(/\s+/g, '_');
+    const cachePath = path.join(CACHE_DIR, `${cacheSlug}.json`);
+    return fs.existsSync(cachePath);
+}
+
 // Run produce_from_blueprint.js for a single keyword
 async function produceArticle(blueprintFile, keyword) {
-    const extraArgs = FORCE_REVIEWS ? ' --force-reviews' : '';
+    let extraArgs = FORCE_REVIEWS ? ' --force-reviews' : '';
+
+    // Auto-detect cache: use --use-cache if flag is set AND cache exists
+    const hasCache = hasCacheFor(keyword);
+    if (USE_CACHE && hasCache) {
+        extraArgs += ' --use-cache';
+        console.log(`   💾 Cache found, will skip scraping`);
+    } else if (USE_CACHE && !hasCache) {
+        console.log(`   ⚠️ No cache for "${keyword}", will do full scrape`);
+    }
+
     const cmd = `node scripts/produce_from_blueprint.js "${blueprintFile}" "${keyword}"${extraArgs}`;
 
     console.log(`\n${'='.repeat(80)}`);
@@ -116,6 +138,10 @@ async function main() {
     console.log(`📊 Summary: ${tasks.length} articles to generate`);
     console.log(`   Estimated time: ${Math.round(tasks.length * 17.5 / 60)} hours (${tasks.length} × ~17.5 min)`);
     if (FORCE_REVIEWS) console.log(`   🔄 --force-reviews: Review pages will be regenerated`);
+    if (USE_CACHE) {
+        const cachedCount = tasks.filter(t => hasCacheFor(t.keyword)).length;
+        console.log(`   💾 --use-cache: ${cachedCount}/${tasks.length} have cached data (scraping skip)`);
+    }
     console.log(`${'='.repeat(80)}\n`);
 
     if (tasks.length === 0) {
