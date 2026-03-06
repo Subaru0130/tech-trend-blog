@@ -177,16 +177,16 @@ async function main() {
 
         const result = await produceArticle(task.file, task.keyword);
 
-        // Quota exhausted: pause and retry same keyword
+        // Quota exhausted: stop batch completely
         if (result.status === 'QUOTA_EXHAUSTED') {
-            const pauseMin = 25;
-            console.log(`\n⏸️  QUOTA PAUSE: Waiting ${pauseMin} minutes for quota to reset...`);
-            console.log(`   (Will retry "${task.keyword}" after pause)`);
-            await new Promise(r => setTimeout(r, pauseMin * 60 * 1000));
-
-            // Retry the same keyword
-            i--;
-            continue;
+            console.log(`\n🛑 QUOTA EXHAUSTED — Stopping batch.`);
+            console.log(`   Completed: ${results.filter(r => r.status === 'SUCCESS').length} articles`);
+            const remaining = tasks.slice(i);
+            console.log(`   Remaining: ${remaining.length} articles:`);
+            remaining.forEach(t => console.log(`     - ${t.keyword}`));
+            console.log(`\n   Re-run tomorrow with --use-cache to continue:`);
+            console.log(`   node scripts/batch_produce.js ${specificFile || ''} --use-cache`);
+            break;
         }
 
         results.push(result);
