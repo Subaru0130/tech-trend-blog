@@ -29,8 +29,8 @@ const useClaudeForArticles = () => articleAiProvider === 'claude' && claudeClien
 
 /**
  * Generic retry logic for AI API calls
- * Used for handling 503 High Demand, Rate Limits, and temporary network errors
- * Features: 5 retries with exponential backoff + fallback to alternate model
+ * 503 (High Demand): retries with exponential backoff
+ * 429 (Quota Exhausted): throws immediately with QUOTA_EXHAUSTED flag (retrying is pointless)
  */
 async function withRetry(operation, maxRetries = 5, delayMs = 15000) {
     let lastError;
@@ -40,8 +40,22 @@ async function withRetry(operation, maxRetries = 5, delayMs = 15000) {
         } catch (error) {
             lastError = error;
             const errorStr = error.toString().toLowerCase();
+
+            // 429 Quota Exhausted: stop immediately, don't waste retries
+            const isQuotaError = error.status === 429 || errorStr.includes('quota exceeded');
+            if (isQuotaError) {
+                // Parse retryDelay from API response if available
+                const retryMatch = error.message?.match(/retryDelay.*?(\d+)s/i) ||
+                    error.message?.match(/retry in (\d+)m/i);
+                const retrySec = retryMatch ? parseInt(retryMatch[1]) * (error.message.includes('m') ? 60 : 1) : 1200;
+
+                console.error(`  🚫 [QUOTA EXHAUSTED] Daily limit reached. Retry in ${Math.round(retrySec / 60)} min.`);
+                error.quotaExhausted = true;
+                error.retryAfterSeconds = retrySec;
+                throw error;
+            }
+
             const isRetryable = error.status === 503 ||
-                error.status === 429 ||
                 errorStr.includes('503') ||
                 errorStr.includes('high demand') ||
                 errorStr.includes('rate limit') ||
@@ -49,10 +63,10 @@ async function withRetry(operation, maxRetries = 5, delayMs = 15000) {
 
             if (isRetryable && attempt < maxRetries) {
                 const waitSec = Math.min(delayMs / 1000, 240);
-                console.warn(`  ⚠️ [Retry ${attempt}/${maxRetries}] AI API Error: ${error.message || '503/429'}`);
+                console.warn(`  ⚠️ [Retry ${attempt}/${maxRetries}] AI API Error: ${error.message || '503'}`);
                 console.warn(`  ⏳ Waiting ${waitSec}s before retrying...`);
                 await new Promise(resolve => setTimeout(resolve, delayMs));
-                delayMs = Math.min(delayMs * 2, 240000); // Cap at 4 minutes
+                delayMs = Math.min(delayMs * 2, 240000);
             } else {
                 throw error;
             }

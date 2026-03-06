@@ -36,7 +36,7 @@ function findBlueprintFiles() {
     return files;
 }
 
-// Check if article already exists (and has real content, not just failure message)
+// Check if article already exists AND has proper content quality
 function articleExists(keyword) {
     const slug = keywordToEnglishSlug(keyword);
     const articlePath = path.join(ARTICLES_DIR, `${slug}.md`);
@@ -44,13 +44,19 @@ function articleExists(keyword) {
     if (!fs.existsSync(articlePath)) return false;
 
     const content = fs.readFileSync(articlePath, 'utf-8');
-    // Check if the article has real content (not just frontmatter + failure message)
+    // Check for explicit error messages
     if (content.includes('AI生成に失敗しました') || content.includes('レビュー生成に失敗しました')) {
-        return false; // Treat as non-existent
+        return false;
     }
-    // Check minimum content size (frontmatter + actual article body)
-    if (content.length < 1000) {
-        return false; // Too short, likely failed
+    // Check minimum content size
+    if (content.length < 2000) {
+        return false;
+    }
+    // Check structural quality: proper articles have multiple h2/h3 headings
+    const h2Count = (content.match(/^## /gm) || []).length;
+    const h3Count = (content.match(/^### /gm) || []).length;
+    if (h2Count < 2 || h3Count < 5) {
+        return false; // Missing sections (ranking, pros/cons, etc.)
     }
     return true;
 }
@@ -92,6 +98,14 @@ async function produceArticle(blueprintFile, keyword) {
         });
         return { keyword, status: 'SUCCESS' };
     } catch (error) {
+        const errStr = error.stderr?.toString() || error.message || '';
+        const isQuota = errStr.includes('QUOTA EXHAUSTED') || errStr.includes('quota exceeded') || errStr.includes('429');
+
+        if (isQuota) {
+            console.error(`\n🚫 QUOTA EXHAUSTED for: "${keyword}"`);
+            return { keyword, status: 'QUOTA_EXHAUSTED' };
+        }
+
         console.error(`\n❌ FAILED: "${keyword}" - ${error.message?.slice(0, 100)}`);
         return { keyword, status: 'FAILED', error: error.message?.slice(0, 200) };
     }
@@ -162,10 +176,23 @@ async function main() {
         console.log(`\n📦 [${i + 1}/${tasks.length}] Next: "${task.keyword}" (Est. remaining: ${remaining} min)`);
 
         const result = await produceArticle(task.file, task.keyword);
+
+        // Quota exhausted: pause and retry same keyword
+        if (result.status === 'QUOTA_EXHAUSTED') {
+            const pauseMin = 25;
+            console.log(`\n⏸️  QUOTA PAUSE: Waiting ${pauseMin} minutes for quota to reset...`);
+            console.log(`   (Will retry "${task.keyword}" after pause)`);
+            await new Promise(r => setTimeout(r, pauseMin * 60 * 1000));
+
+            // Retry the same keyword
+            i--;
+            continue;
+        }
+
         results.push(result);
 
         // Brief pause between articles to avoid API throttling
-        if (i < tasks.length - 1) {
+        if (i < tasks.length - 1 && result.status === 'SUCCESS') {
             console.log(`\n⏳ Waiting 30s before next article...`);
             await new Promise(r => setTimeout(r, 30000));
         }
