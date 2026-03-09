@@ -4494,5 +4494,7 @@
       "calculatedRating": 4.16
     }
   ],
-  "savedAt": "2026-03-06T23:34:23.764Z"
+  "statsTotalScanned": 0,
+  "statsCandidates": 0,
+  "savedAt": "2026-03-09T05:10:59.803Z"
 }

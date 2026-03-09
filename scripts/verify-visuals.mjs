@@ -5,16 +5,24 @@ import path from 'path';
 async function main() {
     console.log("üé® Starting Visual Verification Algorithm...");
 
-    // 1. Start Local Server
-    console.log("Starting local server...");
-    const nextApp = spawn('npm', ['run', 'dev'], {
+    // 1. Check if server is already running
+    let serverStarted = false;
+    const isServerRunning = await fetch('http://localhost:3000').then(() => true).catch(() => false);
+    if (isServerRunning) {
+        console.log("Using existing dev server on port 3000...");
+        nextApp = null;
+    } else {
+        console.log("Starting local server...");
+    let nextApp = spawn('npm', ['run', 'dev'], {
         cwd: process.cwd(),
         shell: true,
         stdio: 'pipe'
     });
 
-    // Wait for server to be ready (naive wait)
-    await new Promise(resolve => setTimeout(resolve, 5000));
+        serverStarted = true;
+        // Wait for server to be ready
+        await new Promise(resolve => setTimeout(resolve, 8000));
+    }
 
     let browser;
     let hasError = false;
@@ -123,7 +131,7 @@ async function main() {
         });
 
         if (styleCheckResult.error) {
-            console.warn(`‚ö†ÅEÅEWARN: Could not analyze image style: ${styleCheckResult.error}`);
+            console.warn(`‚ö†ÔøΩEÔøΩEWARN: Could not analyze image style: ${styleCheckResult.error}`);
             // Don't fail hard on CORS, but warn
         } else {
             console.log(`   - Brightness: ${styleCheckResult.brightness.toFixed(1)}/255`);
@@ -166,7 +174,7 @@ async function main() {
             });
 
             if (!ctaVisible) {
-                console.warn("‚ö†ÅEÅEWARN: Amazon CTA text might not be white. Please verify manually.");
+                console.warn("‚ö†ÔøΩEÔøΩEWARN: Amazon CTA text might not be white. Please verify manually.");
             } else {
                 console.log("‚úÅEPASS: Amazon CTA button has white text.");
             }
@@ -177,7 +185,7 @@ async function main() {
         hasError = true;
     } finally {
         if (browser) await browser.close();
-        if (nextApp) {
+        if (nextApp && serverStarted) {
             try {
                 process.kill(nextApp.pid);
             } catch (e) {
