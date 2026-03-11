@@ -60,7 +60,7 @@ async function discoverProducts(keyword, blueprint, targetCount = 20) {
         let currentQueries = [];
         if (attempt === 1) {
             currentQueries = [
-                `${keyword} おすすめ 2025`,
+                `${keyword} おすすめ ${new Date().getFullYear()}`,
                 `${keyword} ランキング`,
                 `${keyword} 徹底比較`
             ];
@@ -76,7 +76,7 @@ async function discoverProducts(keyword, blueprint, targetCount = 20) {
                 `site:my-best.com ${baseKeyword} 比較`,
                 `site:rentio.jp ${baseKeyword}`,
                 `site:the360.life ${baseKeyword}`,
-                `${baseKeyword} Best 2025 Japan`,
+                `${baseKeyword} Best ${new Date().getFullYear()} Japan`,
                 `${baseKeyword} 価格.com ランキング`
             ];
         }

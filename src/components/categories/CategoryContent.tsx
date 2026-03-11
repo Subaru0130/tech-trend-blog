@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import CategorySidebar from '@/components/categories/CategorySidebar';
@@ -10,6 +10,7 @@ type CategoryContentProps = {
     categoryInfo: {
         label: string;
         icon: string;
+        slug?: string;
         subCategories: { label: string; slug: string; icon: string }[];
     };
     initialArticles: Article[];
@@ -35,6 +36,23 @@ export default function CategoryContent({ categoryInfo, initialArticles }: Categ
             tags.some((tag: string) => tag.toLowerCase().includes(query));
         return matchesSearch;
     });
+
+    // Aggregate tags from all articles for sidebar
+    const popularTags = useMemo(() => {
+        const tagCounts: Record<string, number> = {};
+        initialArticles.forEach((article) => {
+            const tags = (article as any).tags || [];
+            tags.forEach((tag: string) => {
+                // Skip generic year-based tags
+                if (/^\d{4}最新$/.test(tag)) return;
+                tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+            });
+        });
+        return Object.entries(tagCounts)
+            .map(([tag, count]) => ({ tag, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 12);
+    }, [initialArticles]);
 
     return (
         <>
@@ -172,7 +190,7 @@ export default function CategoryContent({ categoryInfo, initialArticles }: Categ
                     </main>
 
                     {/* Sidebar */}
-                    <CategorySidebar />
+                    <CategorySidebar popularTags={popularTags} categorySlug={categoryInfo.slug} />
                 </div>
             </div>
         </>

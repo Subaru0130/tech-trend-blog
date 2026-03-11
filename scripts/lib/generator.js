@@ -140,6 +140,29 @@ function keywordToEnglishSlug(keyword) {
 }
 
 /**
+ * Generate tags from keyword for article categorization
+ * e.g., "ワイヤレスイヤホン ジム" → ["ワイヤレスイヤホン", "ジム", "ランキング", "2026最新"]
+ */
+function generateTagsFromKeyword(keyword) {
+    const currentYear = new Date().getFullYear();
+    const parts = keyword.trim().split(/\s+/);
+    const tags = [];
+
+    // Add each word as a tag
+    parts.forEach(part => {
+        if (part && !tags.includes(part)) {
+            tags.push(part);
+        }
+    });
+
+    // Add standard tags
+    tags.push("ランキング");
+    tags.push(`${currentYear}最新`);
+
+    return tags;
+}
+
+/**
  * Detect category and subCategory from keyword
  * Returns { category, categoryId, subCategoryId }
  */
@@ -329,8 +352,9 @@ function generateRankingArticle(targetKeyword, products, productsData, bodyConte
 
     // Use AI Material if provided, otherwise fallback
     const articleBody = bodyContent || "コンテンツ生成中...";
-    const title = seoMetadata ? seoMetadata.title : `【2025年】${targetKeyword} おすすめランキング`;
-    const description = seoMetadata ? seoMetadata.description : `2025年最新の${targetKeyword}市場を調査。`;
+    const currentYear = new Date().getFullYear();
+    const title = seoMetadata ? seoMetadata.title : `【${currentYear}年】${targetKeyword} おすすめランキング`;
+    const description = seoMetadata ? seoMetadata.description : `${currentYear}年最新の${targetKeyword}市場を調査。`;
 
     const { category } = detectCategoryFromKeyword(targetKeyword);
 
@@ -410,7 +434,8 @@ function updateDatabase(targetKeyword, products, productsData, seoMetadata, blue
     const dateStr = new Date().toISOString().split('T')[0];
     const topProduct = productsData.find(p => p.id === products[0]?.id) || products[0] || {};
     const defaultLabels = generateDefaultLabels(targetKeyword, blueprint);
-    const title = seoMetadata?.title || `【2025年】${targetKeyword} おすすめランキング`;
+    const currentYear = new Date().getFullYear();
+    const title = seoMetadata?.title || `【${currentYear}年】${targetKeyword} おすすめランキング`;
     const description = seoMetadata?.description || `プロが選ぶ${targetKeyword}のおすすめ人気ランキング。選び方や比較ポイントも解説。`;
 
     // Use AI Thumbnail if provided and valid, otherwise fallback to top product image
@@ -431,7 +456,7 @@ function updateDatabase(targetKeyword, products, productsData, seoMetadata, blue
         thumbnail: finalThumbnail, // Thumbnail for article header
         author: "ChoiceGuide編集部",
         ...detectCategoryFromKeyword(targetKeyword),
-        tags: ["ランキング", "2025最新", "おすすめ"],
+        tags: generateTagsFromKeyword(targetKeyword),
         rankingCriteria: {
             description: "今回のランキングは、以下の基準で厳選しました。",
             points: [

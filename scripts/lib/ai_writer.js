@@ -120,11 +120,11 @@ ${context}
 ⭕️ 人間っぽいタイトル（書け）:
 - 「電車で音楽に集中できるイヤホン10選」← 具体的なシーン
 - 「通勤用ノイキャンイヤホン、本当に使えるのはどれ？」← 疑問形で自然
-- 「【2025年】1万円台で買えるノイキャンイヤホンおすすめ」← 価格帯明示
+- 「【${new Date().getFullYear()}年】1万円台で買えるノイキャンイヤホンおすすめ」← 価格帯明示
 
 # Rules for TITLE
 1. **具体性**: 「最強」「究極」「革命」などの抽象的な形容詞は禁止。代わりに具体的な場面（電車で、通勤中、カフェで）を使う
-2. **Format**: 【2025年】のような年号はOK
+2. **Format**: 【${new Date().getFullYear()}年】のような年号はOK
 3. **Keywords**: キーワード「${keyword}」を自然に含める
 4. **Length**: Max 40文字
 5. **自然さ**: 友達に「この記事読んで」と紹介するときに恥ずかしくないタイトル
@@ -157,7 +157,7 @@ ${context}
         return JSON.parse(jsonText);
     } catch (e) {
         console.error("  ❌ SEO Gen Failed:", e);
-        return { title: `【2025】${keyword} 通勤用ランキング`, description: "通勤が快適になるヘッドホンを厳選紹介。" };
+        return { title: `【${new Date().getFullYear()}】${keyword} 通勤用ランキング`, description: "通勤が快適になるヘッドホンを厳選紹介。" };
     }
 }
 

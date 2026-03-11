@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Footer from '@/components/shared/Footer';
 import Header from '@/components/shared/Header';
-import CategorySidebar from '@/components/categories/CategorySidebar';
 import CategoryContent from '@/components/categories/CategoryContent';
 import { getMajorCategoryInfo, CATEGORY_MAP, getArticlesByCategory } from '@/lib/data';
 import { Metadata } from 'next';
@@ -54,7 +53,7 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ sl
 
             <div className="flex-grow">
                 <Suspense fallback={<div className="p-8 text-center text-stone-400">Loading...</div>}>
-                    <CategoryContent categoryInfo={categoryInfo} initialArticles={articles} />
+                    <CategoryContent categoryInfo={{ ...categoryInfo, slug }} initialArticles={articles} />
                 </Suspense>
             </div>
 
