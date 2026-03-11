@@ -169,7 +169,10 @@ function generateTagsFromKeyword(keyword) {
 function detectCategoryFromKeyword(keyword) {
     const kw = keyword.toLowerCase();
 
-    if (kw.match(/イヤホン|ヘッドホン|ヘッドフォン/)) {
+    if (kw.match(/イヤホン/) && !kw.match(/ヘッドホン|ヘッドフォン/)) {
+        return { category: 'audio', categoryId: 'audio', subCategoryId: 'wireless-earphones' };
+    }
+    if (kw.match(/ヘッドホン|ヘッドフォン/)) {
         return { category: 'audio', categoryId: 'audio', subCategoryId: 'wireless-headphones' };
     }
     if (kw.match(/スピーカー/)) {
