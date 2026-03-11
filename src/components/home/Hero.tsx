@@ -25,7 +25,7 @@ export default function Hero() {
                             長く愛用できる「本物」だけを厳選してご紹介します。
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
-                            <Link className="group bg-primary hover:bg-accent text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-3 min-w-[220px]" href="/rankings/best-wireless-earphones-under-10000">
+                            <Link className="group bg-primary hover:bg-accent text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-3 min-w-[220px]" href="/categories/audio">
                                 <span>今月のベストバイ</span>
                                 <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
                             </Link>
