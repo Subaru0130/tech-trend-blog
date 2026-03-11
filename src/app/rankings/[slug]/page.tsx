@@ -110,6 +110,12 @@ function stripRankingSection(content: string): string {
 
 const NullComponent = () => null;
 
+// Convert <mark>...</mark> HTML tags to **...** markdown bold
+// MDXRemote can't handle raw HTML, but CSS applies yellow markers to .prose strong
+function convertMarkToStrong(content: string): string {
+    return content.replace(/<mark>([^<]*)<\/mark>/gi, '**$1**');
+}
+
 export default async function RankingPage({ params }: Props) {
     const { slug } = await params;
     const article = getArticleBySlug(slug);
@@ -428,7 +434,7 @@ export default async function RankingPage({ params }: Props) {
                         <div className="max-w-4xl mx-auto px-4 md:px-6 mb-16">
                             <div className="prose prose-stone max-w-none prose-headings:scroll-mt-32 prose-headings:font-bold prose-headings:text-primary prose-a:text-accent prose-a:underline prose-a:decoration-accent/50 prose-a:underline-offset-2 prose-p:text-text-main prose-li:text-text-main">
                                 <MDXRemote
-                                    source={stripRankingSection(content)}
+                                    source={convertMarkToStrong(stripRankingSection(content))}
                                     components={{
                                         ComparisonTable: NullComponent,
                                         RankingCard: NullComponent,
