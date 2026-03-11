@@ -37,7 +37,7 @@ const components = {
     strong: (props: any) => <strong className="font-bold text-slate-900 bg-yellow-50 px-1" {...props} />,
     // Affiliate Link Injection
     a: (props: any) => {
-        const { href, children, ...rest } = props;
+        const { href, children } = props;
         let finalHref = href;
         if (href && href.includes('amazon.co.jp')) {
             const tag = process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG || 'demo-22';
@@ -50,7 +50,7 @@ const components = {
             if (!href.includes('a_id=')) finalHref = `${href}${separator}a_id=${id}`;
         }
         return (
-            <a href={finalHref} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline decoration-blue-200 hover:decoration-blue-600 transition-colors" {...rest}>
+            <a href={finalHref} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline decoration-blue-200 hover:decoration-blue-600 transition-colors">
                 {children}
             </a>
         );
