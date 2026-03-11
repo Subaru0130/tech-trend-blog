@@ -36,8 +36,12 @@ export default function CategoryContent({ categoryInfo, initialArticles }: Categ
             tags.some((tag: string) => tag.toLowerCase().includes(query));
         return matchesSearch;
     }).sort((a, b) => {
-        if (sortOrder === 'title') return a.title.localeCompare(b.title, 'ja');
-        return (b.publishDate || '').localeCompare(a.publishDate || ''); // newest first
+        if (sortOrder === 'featured') {
+            const aFeat = (a as any).isFeatured ? 1 : 0;
+            const bFeat = (b as any).isFeatured ? 1 : 0;
+            if (bFeat !== aFeat) return bFeat - aFeat;
+        }
+        return (b.publishDate || '').localeCompare(a.publishDate || '');
     });
 
     // Aggregate tags from all articles for sidebar
@@ -112,7 +116,7 @@ export default function CategoryContent({ categoryInfo, initialArticles }: Categ
                                     onChange={(e) => setSortOrder(e.target.value)}
                                 >
                                     <option value="newest">新着順</option>
-                                    <option value="title">名前順</option>
+                                    <option value="featured">おすすめ順</option>
                                 </select>
                             </div>
                         </div>
