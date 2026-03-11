@@ -19,7 +19,7 @@ type CategoryContentProps = {
 export default function CategoryContent({ categoryInfo, initialArticles }: CategoryContentProps) {
     const searchParams = useSearchParams();
     const [searchQuery, setSearchQuery] = useState('');
-    const [sortOrder, setSortOrder] = useState('Newest');
+    const [sortOrder, setSortOrder] = useState('newest');
 
     useEffect(() => {
         const q = searchParams.get('q');
@@ -35,6 +35,9 @@ export default function CategoryContent({ categoryInfo, initialArticles }: Categ
             article.description.toLowerCase().includes(query) ||
             tags.some((tag: string) => tag.toLowerCase().includes(query));
         return matchesSearch;
+    }).sort((a, b) => {
+        if (sortOrder === 'title') return a.title.localeCompare(b.title, 'ja');
+        return (b.publishDate || '').localeCompare(a.publishDate || ''); // newest first
     });
 
     // Aggregate tags from all articles for sidebar
@@ -103,10 +106,13 @@ export default function CategoryContent({ categoryInfo, initialArticles }: Categ
                                     <button className="p-1.5 rounded-md bg-white shadow text-primary"><span className="material-symbols-outlined text-sm">view_list</span></button>
                                     <button className="p-1.5 rounded-md text-stone-400 hover:text-stone-600"><span className="material-symbols-outlined text-sm">grid_view</span></button>
                                 </div>
-                                <select className="form-select text-xs font-bold bg-transparent border-none py-1 pr-8 pl-2 text-text-main focus:ring-0 cursor-pointer hover:bg-stone-50 rounded-lg transition-colors">
-                                    <option>新着順</option>
-                                    <option>人気順</option>
-                                    <option>更新日が新しい順</option>
+                                <select
+                                    className="form-select text-xs font-bold bg-transparent border-none py-1 pr-8 pl-2 text-text-main focus:ring-0 cursor-pointer hover:bg-stone-50 rounded-lg transition-colors"
+                                    value={sortOrder}
+                                    onChange={(e) => setSortOrder(e.target.value)}
+                                >
+                                    <option value="newest">新着順</option>
+                                    <option value="title">名前順</option>
                                 </select>
                             </div>
                         </div>
