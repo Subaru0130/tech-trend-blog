@@ -106,10 +106,6 @@ export default function CategoryContent({ categoryInfo, initialArticles }: Categ
                                 <span className="text-stone-400 text-xs">件の記事</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="hidden sm:flex items-center gap-1 bg-stone-100 p-1 rounded-lg">
-                                    <button className="p-1.5 rounded-md bg-white shadow text-primary"><span className="material-symbols-outlined text-sm">view_list</span></button>
-                                    <button className="p-1.5 rounded-md text-stone-400 hover:text-stone-600"><span className="material-symbols-outlined text-sm">grid_view</span></button>
-                                </div>
                                 <select
                                     className="form-select text-xs font-bold bg-transparent border-none py-1 pr-8 pl-2 text-text-main focus:ring-0 cursor-pointer hover:bg-stone-50 rounded-lg transition-colors"
                                     value={sortOrder}
