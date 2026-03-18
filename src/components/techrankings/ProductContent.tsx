@@ -25,12 +25,12 @@ const ProductContent: React.FC<ProductContentProps> = ({
     const allParentArticles = parentArticlesProp || (parentArticleProp ? [parentArticleProp] : []);
     const defaultParent = allParentArticles[0] || undefined;
 
-    // ★ Client-side: read ?from= param to select the correct parent article
+    // ★ Client-side: read #from-{slug} hash to select the correct parent article
     const [parentArticle, setParentArticle] = useState<Article | undefined>(defaultParent);
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const fromSlug = params.get('from');
-        if (fromSlug) {
+        const hash = window.location.hash;
+        if (hash.startsWith('#from-')) {
+            const fromSlug = hash.replace('#from-', '');
             const matched = allParentArticles.find(a => a.id === fromSlug);
             if (matched) setParentArticle(matched);
         }
@@ -358,7 +358,7 @@ const ProductContent: React.FC<ProductContentProps> = ({
                         <div className="space-y-6">
                             {relatedProducts.length > 0 ? (
                                 relatedProducts.map((p, index) => (
-                                    <a key={p.id || index} className="flex items-center gap-4 group" href={`/reviews/${p.id}${parentArticle ? `?from=${parentArticle.id}` : ''}`}>
+                                    <a key={p.id || index} className="flex items-center gap-4 group" href={`/reviews/${p.id}${parentArticle ? `#from-${parentArticle.id}` : ''}`}>
                                         <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-surface-subtle border border-border-color shrink-0">
                                             <img
                                                 alt={p.name}

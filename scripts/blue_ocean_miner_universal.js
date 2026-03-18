@@ -3,6 +3,9 @@ const fs = require('fs');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
+const http = require('http');
+const path = require('path');
+const { execSync } = require('child_process');
 
 /**
  * 🌍 Universal Blue Ocean Miner
@@ -94,12 +97,46 @@ async function deepExpansion(seed) {
     return list.map(k => ({ keyword: k, rankIndex: candidates.get(k) }));
 }
 
-// 5. RECON (Puppeteer)
+// 5. CHROME DEBUG MODE (connect to user's real Chrome)
+async function ensureChromeDebugMode() {
+    const checkPort = () => new Promise((resolve) => {
+        const req = http.get('http://127.0.0.1:9222/json/version', (res) => {
+            resolve(true);
+        });
+        req.on('error', () => resolve(false));
+        req.setTimeout(2000, () => { req.destroy(); resolve(false); });
+    });
+
+    if (await checkPort()) {
+        console.log('✅ Chrome remote debugging already active');
+        return true;
+    }
+
+    console.log('🚀 Starting Chrome with remote debugging...');
+    const batPath = path.join(__dirname, 'start_chrome_quiet.bat');
+    try {
+        execSync(`"${batPath}"`, { stdio: 'inherit' });
+    } catch (e) {
+        console.log(`   ⚠️ Startup script warning: ${e.message}`);
+    }
+
+    console.log('   ⏳ Waiting for Chrome to start (timeout: 60s)...');
+    for (let i = 0; i < 60; i++) {
+        await delay(1000);
+        if (await checkPort()) {
+            console.log('✅ Chrome started with remote debugging on port 9222');
+            return true;
+        }
+    }
+
+    console.log('❌ Failed to start Chrome in debug mode.');
+    return false;
+}
+
+// 6. RECON (Puppeteer via Chrome Debug Mode)
 async function checkSerp(browser, query) {
     const page = await browser.newPage();
     try {
-        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-
         await page.goto(`https://www.google.co.jp/search?q=${encodeURIComponent(query)}`, { waitUntil: 'domcontentloaded', timeout: 15000 });
 
         const links = await page.evaluate(() => {
@@ -120,7 +157,7 @@ async function checkSerp(browser, query) {
     }
 }
 
-// 6. SCORING
+// 7. SCORING
 function calculateScore(item, topDomains) {
     let score = 0;
 
@@ -160,14 +197,18 @@ async function main() {
     // Phase 1: Expansion
     let candidates = await deepExpansion(SEED_KEYWORD);
 
-    // Shuffle and pick top 20 for demo/prototype speed (Full run takes too long for interaction)
-    // In production, remove this slice.
-    console.log("   (Limiting to Top 20 candidates for prototype speed...)");
-    const targets = candidates.slice(0, 20);
+    // Limit to top 50 candidates
+    console.log(`   (Limiting to Top 50 candidates...)`);
+    const targets = candidates.slice(0, 50);
 
-    // Phase 2: Recon
+    // Phase 2: Recon via Chrome Debug Mode
     console.log(`\n🕵️ Phase 2: Recon (Scanning ${targets.length} keywords...)`);
-    const browser = await puppeteer.launch({ headless: "new" });
+    const chromeReady = await ensureChromeDebugMode();
+    if (!chromeReady) {
+        console.error('❌ Cannot proceed without Chrome debug mode. Please start Chrome manually.');
+        process.exit(1);
+    }
+    const browser = await puppeteer.connect({ browserURL: 'http://127.0.0.1:9222' });
 
     const results = [];
 
@@ -193,7 +234,7 @@ async function main() {
         });
     }
 
-    await browser.close();
+    await browser.disconnect();
 
     // Phase 4: Output
     results.sort((a, b) => b.score - a.score);

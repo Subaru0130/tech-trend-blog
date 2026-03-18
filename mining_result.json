@@ -1,145 +1,355 @@
 {
-  "seed_keyword": "ワイヤレスイヤホン",
-  "best_keyword": "ワイヤレスイヤホン 片方しか聞こえない",
+  "seed_keyword": "ロボット掃除機",
+  "best_keyword": "ロボット掃除機 動かない",
   "market_type": "GRAY",
   "target_intent": "High Viability",
   "competitors": [],
   "all_candidates": [
     {
-      "keyword": "ワイヤレスイヤホン 片方しか聞こえない",
-      "score": 17,
+      "keyword": "ロボット掃除機 動かない",
+      "score": 16,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン おすすめ",
+      "keyword": "ロボット掃除機 おすすめ",
       "score": -10.5,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン ランキング",
+      "keyword": "ロボット掃除機 おすすめ 2025",
+      "score": -10.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 ランキング",
       "score": -11,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン アンドロイド おすすめ",
-      "score": -13.5,
+      "keyword": "ロボット掃除機 売上ランキング",
+      "score": -11,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン イヤーカフ",
+      "keyword": "ロボット掃除機 エコバックス 比較",
+      "score": -12,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 比較",
+      "score": -12.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 アンカー 口コミ",
+      "score": -12.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 アンカー 比較",
+      "score": -14,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 色 おすすめ",
+      "score": -14,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 アンカー",
       "score": -30,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン amazon",
+      "keyword": "ロボット掃除機 インターネット接続 機能",
+      "score": -30,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 薄型",
+      "score": -30,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 エコバックス",
+      "score": -30,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 アイリスオーヤマ",
       "score": -30.5,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン インナーイヤー",
+      "keyword": "ロボット掃除機 椅子",
       "score": -30.5,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン アップル",
+      "keyword": "ロボット掃除機 wifiなし",
+      "score": -30.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 eufy",
+      "score": -30.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 anker",
       "score": -31,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン 寿命",
+      "keyword": "ロボット掃除機 いらない",
+      "score": -31,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 選び方",
+      "score": -31,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 日本製",
       "score": -31.5,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン アニメコラボ",
+      "keyword": "ロボット掃除機 amazon",
       "score": -31.5,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン 接続",
+      "keyword": "ロボット掃除機 イラスト",
+      "score": -31.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 うるさい",
+      "score": -31.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 英語",
+      "score": -31.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 水拭き",
       "score": -32,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン asmr",
+      "keyword": "ロボット掃除機 アイロボット",
       "score": -32,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン 捨て方",
+      "keyword": "ロボット掃除機 椅子 浮かせる",
+      "score": -32,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 薄い",
+      "score": -32,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 irobot",
       "score": -32.5,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン アイフォン",
+      "keyword": "ロボット掃除機 wifi不要",
       "score": -32.5,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン aviot",
+      "keyword": "ロボット掃除機 エイミー",
+      "score": -32.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 中国製以外",
       "score": -33,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン ノイズキャンセリング",
+      "keyword": "ロボット掃除機 安全性",
+      "score": -33,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 椅子の下",
+      "score": -33,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 売れ筋",
+      "score": -33,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 ecovacs",
+      "score": -33,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 最強",
       "score": -33.5,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン ソニー",
+      "keyword": "ロボット掃除機 アース線",
+      "score": -33.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 色",
+      "score": -33.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 売る",
+      "score": -33.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 エントリーモデル",
+      "score": -33.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 パナソニック",
       "score": -34,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン android",
+      "keyword": "ロボット掃除機 eufy x10 pro omni",
       "score": -34,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン アンカー",
+      "keyword": "ロボット掃除機 段差",
       "score": -34.5,
       "market_type": "GRAY",
       "top_domains": [],
       "intent": "Unknown"
     },
     {
-      "keyword": "ワイヤレスイヤホン anc",
+      "keyword": "ロボット掃除機 アメリカ",
+      "score": -34.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 インテリア",
+      "score": -34.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 ウェットシート",
+      "score": -34.5,
+      "market_type": "GRAY",
+      "top_domains": [],
+      "intent": "Unknown"
+    },
+    {
+      "keyword": "ロボット掃除機 延長コード",
       "score": -34.5,
       "market_type": "GRAY",
       "top_domains": [],

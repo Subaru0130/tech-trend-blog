@@ -209,7 +209,7 @@ export default async function ReviewPage({ params }: Props) {
 
 
     const allParentArticles = getArticlesByProductId(product.id);
-    // parentArticle selection is handled client-side in ProductContent via ?from= param
+    // parentArticle selection is handled client-side in ProductContent via #from-{slug} hash
     const parentArticle = allParentArticles[0] || undefined;
 
     // Create a display product with the correct rank from the parent article context
