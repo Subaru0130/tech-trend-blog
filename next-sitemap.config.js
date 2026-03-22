@@ -10,7 +10,6 @@ module.exports = {
             {
                 userAgent: '*',
                 allow: '/',
-                disallow: ['/favicon.ico', '/_next/static/'],
             },
         ],
     },
