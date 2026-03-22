@@ -1,6 +1,6 @@
 ---
-title: "JVC Victor nearphones HA-NP1T レビュー：プロが教える「買い」の理由"
-description: "JVC Victor nearphones HA-NP1Tの実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
+title: "JVC Victor nearphones HA-NP1T レビュー｜特徴・注意点・向いている人"
+description: "JVC Victor nearphones HA-NP1Tの特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
 date: "2026-03-09"
 category: "Reviews"
 product_id: "scout-B0DK4FPB82"

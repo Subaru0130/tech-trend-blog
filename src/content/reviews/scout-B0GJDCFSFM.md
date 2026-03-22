@@ -1,6 +1,6 @@
 ---
-title: "オーディオテクニカ ATH-SQ1TW2NC レビュー：プロが教える「買い」の理由"
-description: "オーディオテクニカ ATH-SQ1TW2NCの実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
+title: "オーディオテクニカ ATH-SQ1TW2NC レビュー｜特徴・注意点・向いている人"
+description: "オーディオテクニカ ATH-SQ1TW2NCの特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
 date: "2026-03-06"
 category: "Reviews"
 product_id: "scout-B0GJDCFSFM"

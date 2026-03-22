@@ -1,6 +1,12 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { processRakutenLink } = require('./affiliate_processor');
+const {
+    extractComparisonAxes,
+    buildRankingCriteriaSummary,
+    stripQuotes,
+} = require('./content_guardrails');
 
 /**
  * Convert Japanese keyword to English slug for URL compatibility
@@ -105,6 +111,16 @@ function keywordToEnglishSlug(keyword) {
         '在宅勤務': 'work-from-home',
         '軽い': 'lightweight',
         '防水': 'waterproof',
+        '水拭き': 'mopping',
+        '段差': 'step-climbing',
+        'カーペット': 'carpet',
+        '障害物回避': 'obstacle-avoidance',
+        '静音': 'quiet',
+        'ペットの毛': 'pet-hair',
+        '自動ゴミ収集': 'auto-empty',
+        '狭い部屋': 'small-room',
+        '二階建て': 'two-story',
+        '2階建て': 'two-story',
     };
 
     // Merge all mappings (product first for exact match)
@@ -131,9 +147,21 @@ function keywordToEnglishSlug(keyword) {
         .replace(/^-|-$/g, '')          // trim hyphens from ends
         .toLowerCase();
 
-    // If still contains no useful chars, generate a timestamp-based slug
+    const productSlugs = new Set(Object.values(productMappings));
+    const matchedSituationValues = Object.entries(situationMappings)
+        .filter(([jp]) => keyword.includes(jp))
+        .map(([, en]) => en);
+    const hasModifier = keyword.trim().split(/\s+/).length > 1 || matchedSituationValues.length > 0;
+
+    if (hasModifier && productSlugs.has(slug) && matchedSituationValues.length === 0) {
+        const stableSuffix = crypto.createHash('md5').update(keyword).digest('hex').slice(0, 6);
+        slug = `${slug}-${stableSuffix}`;
+    }
+
+    // If still contains no useful chars, generate a stable hash-based slug
     if (!slug || slug.length < 3) {
-        slug = `article-${Date.now()}`;
+        const stableSuffix = crypto.createHash('md5').update(keyword).digest('hex').slice(0, 8);
+        slug = `article-${stableSuffix}`;
     }
 
     return slug;
@@ -218,7 +246,7 @@ function detectCategoryFromKeyword(keyword) {
         return { category: 'display', categoryId: 'display', subCategoryId: 'projectors' };
     }
     if (kw.match(/オフィスチェア|椅子/)) {
-        return { category: 'furniture', categoryId: 'furniture', subCategoryId: 'office-chairs' };
+        return { category: 'interior', categoryId: 'interior', subCategoryId: 'office-chairs' };
     }
     // Default
     return { category: 'gadgets', categoryId: 'gadgets', subCategoryId: 'general' };
@@ -227,80 +255,88 @@ function detectCategoryFromKeyword(keyword) {
 /**
  * Generate dynamic spec labels based on keyword/category
  */
+function toSpecLabels(labels = []) {
+    const normalized = Array.from(new Set(labels.filter(Boolean))).slice(0, 4);
+
+    return {
+        spec1: normalized[0] || '性能',
+        spec2: normalized[1] || '機能',
+        spec3: normalized[2] || '価格',
+        spec4: normalized[3] || '使いやすさ',
+    };
+}
+
 function generateDefaultLabels(keyword, blueprint = {}) {
     const kw = keyword.toLowerCase();
+    let fallbackLabels = ['性能', '機能', 'コスパ', '評価'];
 
     // Audio category
     if (kw.match(/イヤホン|ヘッドホン|スピーカー/)) {
-        return { spec1: "音質", spec2: "ノイキャン", spec3: "バッテリー", spec4: "機能" };
+        fallbackLabels = ['音質', 'ノイキャン', 'バッテリー', '機能'];
     }
     // Home appliances
-    if (kw.match(/冷蔵庫/)) {
-        return { spec1: "容量", spec2: "省エネ", spec3: "機能", spec4: "サイズ" };
+    else if (kw.match(/冷蔵庫/)) {
+        fallbackLabels = ['容量', '省エネ', '機能', 'サイズ'];
     }
-    if (kw.match(/洗濯機/)) {
-        return { spec1: "容量", spec2: "乾燥機能", spec3: "静音性", spec4: "省エネ" };
+    else if (kw.match(/洗濯機/)) {
+        fallbackLabels = ['容量', '乾燥機能', '静音性', '省エネ'];
     }
-    if (kw.match(/エアコン/)) {
-        return { spec1: "適用畳数", spec2: "省エネ", spec3: "機能", spec4: "静音性" };
+    else if (kw.match(/エアコン/)) {
+        fallbackLabels = ['適用畳数', '省エネ', '機能', '静音性'];
     }
-    if (kw.match(/掃除機/)) {
-        return { spec1: "吸引力", spec2: "稼働時間", spec3: "軽さ", spec4: "機能" };
+    else if (kw.match(/掃除機/)) {
+        fallbackLabels = ['吸引力', '稼働時間', '軽さ', '機能'];
+    }
+    else if (kw.match(/オフィスチェア|椅子/)) {
+        fallbackLabels = ['腰の支え方', '座面クッション性', 'アームレスト調整', '座り心地と蒸れにくさ'];
     }
     // Camera
-    if (kw.match(/カメラ|一眼/)) {
-        return { spec1: "画質", spec2: "AF性能", spec3: "動画性能", spec4: "携帯性" };
+    else if (kw.match(/カメラ|一眼/)) {
+        fallbackLabels = ['画質', 'AF性能', '動画性能', '携帯性'];
     }
-    // Default/generic
-    return { spec1: "性能", spec2: "機能", spec3: "コスパ", spec4: "評価" };
+
+    const axes = extractComparisonAxes(blueprint, fallbackLabels);
+    return toSpecLabels([...axes, ...fallbackLabels]);
 }
 
 /**
  * Generate dynamic buying guide steps based on keyword/blueprint
  */
-function generateBuyingGuideSteps(keyword, blueprint = {}) {
-    const kw = keyword.toLowerCase();
-    const axis = blueprint.comparison_axis || '';
+function getGuideStepDescription(axis) {
+    const label = String(axis || '').toLowerCase();
 
-    // Audio category
-    if (kw.match(/イヤホン|ヘッドホン/)) {
-        return [
-            { icon: "check", title: "1. ノイズキャンセリング", description: "静寂性能がどこまで進化したか。" },
-            { icon: "check", title: "2. 音質・コーデック", description: "対応コーデックで音質が変わる。" },
-            { icon: "check", title: "3. バッテリー持ち", description: "使用時間と充電の利便性。" }
-        ];
+    if (/価格|コスパ|cost|value/.test(label)) {
+        return `「${axis}」の差で何が変わるのか、予算とのバランスを見極めます。`;
     }
-    // Refrigerator
-    if (kw.match(/冷蔵庫/)) {
-        return [
-            { icon: "check", title: "1. 容量の目安", description: "家族人数×70L+常備品が基本。" },
-            { icon: "check", title: "2. 省エネ性能", description: "年間電気代のチェック方法。" },
-            { icon: "check", title: "3. 設置サイズ", description: "搬入経路も含めた確認ポイント。" }
-        ];
+
+    if (/サイズ|寸法|幅|奥行|高さ|weight|重さ|軽さ/.test(label)) {
+        return `「${axis}」が設置しやすさや毎日の使いやすさにどう影響するかを確認します。`;
     }
-    // Camera
-    if (kw.match(/カメラ|一眼/)) {
-        return [
-            { icon: "check", title: "1. センサーサイズ", description: "画質と暗所性能を決める要素。" },
-            { icon: "check", title: "2. AF性能", description: "被写体追従とピント精度。" },
-            { icon: "check", title: "3. 動画性能", description: "4K撮影と手ブレ補正。" }
-        ];
+
+    if (/静音|騒音|noise|ノイキャン/.test(label)) {
+        return `「${axis}」の違いが生活ストレスや使えるシーンにどう響くかを整理します。`;
     }
-    // Dynamic from comparison_axis if available
-    if (axis) {
-        const axes = axis.split(/[、,\/]/).slice(0, 3);
-        return axes.map((a, i) => ({
-            icon: "check",
-            title: `${i + 1}. ${a.trim()}`,
-            description: `${a.trim()}のチェックポイント。`
-        }));
+
+    if (/容量|バッテリー|稼働時間|電池|充電|省エネ/.test(label)) {
+        return `「${axis}」を見て、毎日の運用コストや持続力に無理がないか判断します。`;
     }
-    // Default
-    return [
-        { icon: "check", title: "1. 基本性能", description: "核心機能をチェック。" },
-        { icon: "check", title: "2. コストパフォーマンス", description: "価格に見合う価値か。" },
-        { icon: "check", title: "3. 使いやすさ", description: "日常での利便性。" }
-    ];
+
+    return `「${axis}」を軸に、用途ごとの向き不向きと選ぶ基準をわかりやすく整理します。`;
+}
+
+function generateBuyingGuideSteps(keyword, blueprint = {}) {
+    const fallbackLabels = Object.values(generateDefaultLabels(keyword, blueprint));
+    const axes = extractComparisonAxes(blueprint, fallbackLabels);
+    const stepLabels = Array.from(new Set([
+        ...axes,
+        ...fallbackLabels,
+    ])).filter(Boolean).slice(0, 3);
+
+    return stepLabels.map((label, index) => ({
+        icon: 'check',
+        title: `${index + 1}. ${label}`,
+        description: getGuideStepDescription(label),
+    }));
 }
 
 /**
@@ -322,6 +358,112 @@ function getIconForLabel(label) {
     if (l.match(/吸引力|suction/)) return "cleaning_services";
     if (l.match(/乾燥/)) return "wb_sunny";
     return "check_circle";
+}
+
+function normalizeSpecLookupText(value) {
+    return String(value || '')
+        .normalize('NFKC')
+        .toLowerCase()
+        .replace(/\s+/g, '')
+        .replace(/[【】()[\]{}「」『』、,・:：]/g, '')
+        .replace(/の有無$/u, '')
+        .replace(/機能$|性能$|対応$/u, '')
+        .replace(/自動(?=リフトアップ)/u, '')
+        .trim();
+}
+
+function buildSpecAliases(label) {
+    const normalized = normalizeSpecLookupText(label);
+    const aliases = new Set([normalized]);
+
+    if (/モップ.*洗浄.*乾燥/u.test(normalized)) {
+        aliases.add('モップ自動洗浄乾燥');
+        aliases.add('モップ洗浄乾燥');
+    }
+
+    if (/モップ.*リフトアップ/u.test(normalized)) {
+        aliases.add('モップリフトアップ');
+        aliases.add('モップ自動リフトアップ');
+    }
+
+    if (/障害物回避|センサー|マッピング/u.test(normalized)) {
+        aliases.add('障害物回避');
+        aliases.add('衝突防止');
+        aliases.add('センサー');
+        aliases.add('マッピング');
+    }
+
+    if (/自動ゴミ収集|ゴミ収集|ゴミ捨て/u.test(normalized)) {
+        aliases.add('自動ゴミ収集');
+        aliases.add('ゴミ収集');
+        aliases.add('ダストステーション');
+        aliases.add('紙パック');
+    }
+
+    if (/静音|騒音|運転音/u.test(normalized)) {
+        aliases.add('静音');
+        aliases.add('騒音');
+        aliases.add('運転音');
+    }
+
+    if (/バッテリー|連続再生|稼働時間|運転時間/u.test(normalized)) {
+        aliases.add('バッテリー');
+        aliases.add('連続再生時間');
+        aliases.add('稼働時間');
+        aliases.add('最長運転時間連続使用時間');
+    }
+
+    return Array.from(aliases).filter(Boolean);
+}
+
+function findSpecValueByLabel(product = {}, label = '') {
+    const aliases = buildSpecAliases(label);
+    if (aliases.length === 0) {
+        return '';
+    }
+
+    const candidates = [];
+
+    const pushCandidate = (specLabel, value, priority) => {
+        if (!specLabel || value === undefined || value === null || value === '') {
+            return;
+        }
+
+        const normalizedLabel = normalizeSpecLookupText(specLabel);
+        if (!normalizedLabel) {
+            return;
+        }
+
+        let score = -1;
+        for (const alias of aliases) {
+            if (normalizedLabel === alias) {
+                score = Math.max(score, priority + 100);
+            } else if (normalizedLabel.includes(alias) || alias.includes(normalizedLabel)) {
+                score = Math.max(score, priority + 60);
+            }
+        }
+
+        if (score < 0) {
+            return;
+        }
+
+        candidates.push({
+            label: specLabel,
+            value: String(value),
+            score,
+        });
+    };
+
+    Object.entries(product.kakakuSpecs || {}).forEach(([specLabel, value]) => {
+        pushCandidate(specLabel, value, 200);
+    });
+
+    (product.specs || []).forEach((spec) => {
+        pushCandidate(spec?.label, spec?.value, 100);
+    });
+
+    candidates.sort((a, b) => b.score - a.score || a.label.length - b.label.length);
+    return candidates[0]?.value || '';
 }
 
 // Helper to save file
@@ -346,6 +488,11 @@ function saveMarkdown(filePath, content) {
 
 // 1. Generate Main Ranking Article (Buying Guide Only)
 // 1. Generate Main Ranking Article (Buying Guide Only)
+function syncSelectionCountInTitle(title, count) {
+    if (!title || !count) return title;
+    return title.replace(/\d+\s*選/g, `${count}選`);
+}
+
 function generateRankingArticle(targetKeyword, products, productsData, bodyContent, seoMetadata, overrideImage = null) {
     const dateStr = new Date().toISOString().split('T')[0];
     const topProduct = productsData.find(p => p.id === products[0].id);
@@ -356,8 +503,11 @@ function generateRankingArticle(targetKeyword, products, productsData, bodyConte
     // Use AI Material if provided, otherwise fallback
     const articleBody = bodyContent || "コンテンツ生成中...";
     const currentYear = new Date().getFullYear();
-    const title = seoMetadata ? seoMetadata.title : `【${currentYear}年】${targetKeyword} おすすめランキング`;
-    const description = seoMetadata ? seoMetadata.description : `${currentYear}年最新の${targetKeyword}市場を調査。`;
+    const title = syncSelectionCountInTitle(
+        stripQuotes(seoMetadata?.title || `【${currentYear}年】${targetKeyword} おすすめランキング`),
+        products.length
+    );
+    const description = stripQuotes(seoMetadata?.description || `${currentYear}年最新の${targetKeyword}市場を調査。`);
 
     const { category } = detectCategoryFromKeyword(targetKeyword);
 
@@ -404,8 +554,8 @@ function generateReviewPage(product, bodyContent) {
     const rankingUrl = rankingSlug ? `/rankings/${rankingSlug}/` : '/rankings/';
 
     const content = `---
-title: "${safeName} レビュー：プロが教える「買い」の理由"
-description: "${safeName}の実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
+title: "${safeName} レビュー｜特徴・注意点・向いている人"
+description: "${safeName}の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
 date: "${dateStr}"
 category: "Reviews"
 product_id: "${product.id}"
@@ -428,6 +578,58 @@ ${bodyContent || ""}
     saveMarkdown(path.join(dir, fileName), content);
 }
 
+function normalizeLegacyReviewFrontmatter() {
+    const reviewDir = path.resolve(__dirname, '../../src/content/reviews');
+    if (!fs.existsSync(reviewDir)) {
+        return 0;
+    }
+
+    const reviewFiles = fs.readdirSync(reviewDir).filter((name) => name.endsWith('.md') || name.endsWith('.mdx'));
+    let updatedCount = 0;
+
+    reviewFiles.forEach((fileName) => {
+        const filePath = path.join(reviewDir, fileName);
+        const raw = fs.readFileSync(filePath, 'utf8');
+        const lines = raw.split(/\r?\n/);
+        const titleIndex = lines.findIndex((line) => line.startsWith('title:'));
+        const descriptionIndex = lines.findIndex((line) => line.startsWith('description:'));
+        const authorIndex = lines.findIndex((line) => line.startsWith('author:'));
+
+        const rawTitleValue = titleIndex >= 0 ? lines[titleIndex].replace(/^title:\s*"?/u, '').replace(/"?$/u, '').trim() : '';
+        const rawDescriptionValue = descriptionIndex >= 0 ? lines[descriptionIndex].replace(/^description:\s*"?/u, '').replace(/"?$/u, '').trim() : '';
+        const baseName = rawTitleValue
+            .split('レビュー')[0]
+            .replace(/^"+|"+$/gu, '')
+            .trim();
+
+        const safeBaseName = baseName || '製品';
+        const nextTitle = `${safeBaseName} レビュー｜特徴・注意点・向いている人`;
+        const nextDescription = `${safeBaseName}の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。`;
+
+        const needsNormalization =
+            /プロが教える|実機レビュー|編雁|編集部/u.test(raw) ||
+            rawTitleValue !== nextTitle ||
+            rawDescriptionValue !== nextDescription;
+
+        if (needsNormalization) {
+            if (titleIndex >= 0) {
+                lines[titleIndex] = `title: "${nextTitle}"`;
+            }
+            if (descriptionIndex >= 0) {
+                lines[descriptionIndex] = `description: "${nextDescription}"`;
+            }
+            if (authorIndex >= 0) {
+                lines[authorIndex] = 'author: "ChoiceGuide編集部"';
+            }
+
+            fs.writeFileSync(filePath, lines.join('\n'), 'utf8');
+            updatedCount += 1;
+        }
+    });
+
+    return updatedCount;
+}
+
 // 3. Update articles.json Database
 function updateDatabase(targetKeyword, products, productsData, seoMetadata, blueprint = {}, aiThumbnail = null) {
     const dbPath = path.resolve(__dirname, '../../src/data/articles.json');
@@ -438,8 +640,31 @@ function updateDatabase(targetKeyword, products, productsData, seoMetadata, blue
     const topProduct = productsData.find(p => p.id === products[0]?.id) || products[0] || {};
     const defaultLabels = generateDefaultLabels(targetKeyword, blueprint);
     const currentYear = new Date().getFullYear();
-    const title = seoMetadata?.title || `【${currentYear}年】${targetKeyword} おすすめランキング`;
-    const description = seoMetadata?.description || `プロが選ぶ${targetKeyword}のおすすめ人気ランキング。選び方や比較ポイントも解説。`;
+    const fallbackLabels = Object.values(defaultLabels);
+    const criteriaSummary = buildRankingCriteriaSummary({
+        keyword: targetKeyword,
+        blueprint,
+        fallbackLabels,
+    });
+    const baseRankingCriteriaTitles = Array.from(new Set([
+        ...(seoMetadata?.rankingCriteriaTitles || []),
+        ...criteriaSummary.pointTitles,
+    ])).filter(Boolean).slice(0, 4);
+    const rankingCriteriaTitles = Array.from(new Set([
+        ...baseRankingCriteriaTitles,
+        ...fallbackLabels,
+    ])).filter(Boolean).slice(0, 4);
+    const specLabelCandidates = rankingCriteriaTitles.length > 0
+        ? rankingCriteriaTitles
+        : fallbackLabels;
+    const title = syncSelectionCountInTitle(
+        stripQuotes(seoMetadata?.title || `【${currentYear}年】${targetKeyword} おすすめランキング`),
+        products.length
+    );
+    const description = stripQuotes(
+        seoMetadata?.description || `${targetKeyword}のおすすめ人気ランキング。選び方や比較ポイントも解説。`
+    );
+    const specLabels = toSpecLabels(specLabelCandidates);
 
     // Use AI Thumbnail if provided and valid, otherwise fallback to top product image
     const finalThumbnail = (aiThumbnail && aiThumbnail !== '/images/placeholder.jpg')
@@ -461,15 +686,13 @@ function updateDatabase(targetKeyword, products, productsData, seoMetadata, blue
         ...detectCategoryFromKeyword(targetKeyword),
         tags: generateTagsFromKeyword(targetKeyword),
         rankingCriteria: {
-            description: "今回のランキングは、以下の基準で厳選しました。",
-            points: [
-                { icon: getIconForLabel(defaultLabels.spec1), title: defaultLabels.spec1 },
-                { icon: getIconForLabel(defaultLabels.spec2), title: defaultLabels.spec2 },
-                { icon: getIconForLabel(defaultLabels.spec3), title: defaultLabels.spec3 },
-                { icon: getIconForLabel(defaultLabels.spec4), title: defaultLabels.spec4 }
-            ]
+            description: stripQuotes(seoMetadata?.rankingCriteriaDescription || criteriaSummary.description),
+            points: rankingCriteriaTitles.map((label) => ({
+                icon: getIconForLabel(label),
+                title: label,
+            }))
         },
-        specLabels: defaultLabels,
+        specLabels: specLabels,
 
         rankingItems: products.map((p, index) => {
             // Search by both ID and ASIN for robustness
@@ -477,12 +700,9 @@ function updateDatabase(targetKeyword, products, productsData, seoMetadata, blue
 
             // MAP SPECS TO KEYS for Comparison Table
             const specsObj = {};
-            if (data.specs && Array.isArray(data.specs)) {
-                data.specs.forEach((s, i) => {
-                    const key = `spec${i + 1}`; // spec1, spec2...
-                    specsObj[key] = s.value;
-                });
-            }
+            Object.entries(specLabels).forEach(([key, label]) => {
+                specsObj[key] = findSpecValueByLabel(data, label);
+            });
 
             return {
                 rank: index + 1,
@@ -587,4 +807,4 @@ function generateSitemap() {
     console.log(`  🗺️  Sitemap Updated: sitemap.xml (${urls.size} URLs)`);
 }
 
-module.exports = { generateRankingArticle, generateReviewPage, updateDatabase, generateDefaultLabels, generateSitemap, keywordToEnglishSlug, detectCategoryFromKeyword };
+module.exports = { generateRankingArticle, generateReviewPage, updateDatabase, generateDefaultLabels, generateSitemap, keywordToEnglishSlug, detectCategoryFromKeyword, normalizeLegacyReviewFrontmatter };

@@ -1,12 +1,12 @@
 ---
-title: "SONY WI-C100 レビュー：プロが教える「買い」の理由"
-description: "SONY WI-C100の実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
-date: "2026-03-09"
-category: "Reviews"
-product_id: "scout-B0B2WWCDKL"
+title: "SONY WI-C100 レビュー｜特徴・注意点・向いている人"
+description: "SONY WI-C100の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
+date: '2026-03-09'
+category: Reviews
+product_id: scout-B0B2WWCDKL
 author: "ChoiceGuide編集部"
-thumbnail: "/images/products/sony-wi-c100-db31.jpg"
-ranking_url: "/rankings/wireless-earphones-junior-high/"
+thumbnail: /images/products/sony-wi-c100-db31.jpg
+ranking_url: /rankings/wireless-earphones-junior-high/
 ---
 
 価格,連続再生時間,重量の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、[SONY WI-C100](https://www.amazon.co.jp/dp/B0B2WWCDKL?tag=subaru0130-22)は「完全ワイヤレスだと落としそうで怖い」人にぴったりです。左右が繋がったネックバンド型です。耳から外れても首に引っかかります。5,000円以下の手頃な価格です。ソニーらしいクリアな音を楽しめる手堅いモデルです。

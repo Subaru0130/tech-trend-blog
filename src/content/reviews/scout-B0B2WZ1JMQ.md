@@ -1,12 +1,12 @@
 ---
-title: "SONY WI-C100 レビュー：プロが教える「買い」の理由"
-description: "SONY WI-C100の実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
-date: "2026-03-06"
-category: "Reviews"
-product_id: "scout-B0B2WZ1JMQ"
+title: "SONY WI-C100 レビュー｜特徴・注意点・向いている人"
+description: "SONY WI-C100の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
+date: '2026-03-06'
+category: Reviews
+product_id: scout-B0B2WZ1JMQ
 author: "ChoiceGuide編集部"
-thumbnail: "/images/products/sony-wi-c100-d69c.jpg"
-ranking_url: "/rankings/wireless-earphones-bath/"
+thumbnail: /images/products/sony-wi-c100-d69c.jpg
+ranking_url: /rankings/wireless-earphones-bath/
 ---
 
 防水・防塵性能、リモコン、装着方式、重量の観点でスペックとユーザー評価を徹底分析しました。<mark>結論から言うと、物理ボタンと首掛け構造による「確実な操作性と紛失しにくさ」が優秀</mark>です。

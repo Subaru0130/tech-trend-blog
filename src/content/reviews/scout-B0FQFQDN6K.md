@@ -1,10 +1,10 @@
 ---
-title: "Apple AirPods Pro 3 MFHP4J/A レビュー�E��Eロが教える「買ぁE���E琁E��"
-description: "Apple AirPods Pro 3 MFHP4J/Aの実機レビュー。メリチE��・チE��リチE��から、誰におすすめかまで徹底解説、E
+title: "Apple AirPods Pro 3 MFHP4J/A レビュー｜特徴・注意点・向いている人"
+description: "Apple AirPods Pro 3 MFHP4J/Aの特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
 date: "2026-02-23"
 category: "Reviews"
 product_id: "scout-B0FQFQDN6K"
-author: "ChoiceGuide編雁E��"
+author: "ChoiceGuide編集部"
 thumbnail: "/images/products/apple-airpods-pro-3-mfhp4j-a-13d6.jpg"
 ranking_url: "/rankings/wireless-earphones-small-ears/"
 ---

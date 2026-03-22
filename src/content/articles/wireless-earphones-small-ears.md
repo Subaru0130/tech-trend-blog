@@ -1,9 +1,9 @@
 ---
-title: "【耳が小さい】XSサイズでも痛い・落ちる人へ。本体の“薄さ”と“軽さ”で選ぶ「耳に収まる」ワイヤレスイヤホン厳選10選"
-description: "プロが選ぶワイヤレスイヤホン 耳が小さいのおすすめ人気ランキング。選び方めE��輁E�Eイントも解説。"
+title: "【耳が小さい人向け】痛くなりにくく落ちにくいワイヤレスイヤホンの選び方とおすすめ"
+description: "耳が小さくてイヤホンが痛い・落ちやすい人向けに、軽さや本体の薄さ、フィット感を軸にワイヤレスイヤホンを比較します。"
 date: "2026-02-23"
 category: "audio"
-author: "ChoiceGuide編雁E��"
+author: "ChoiceGuide編集部"
 thumbnail: "/images/articles/wireless-earphones-small-ears.jpg"
 ---
 

@@ -1,12 +1,12 @@
 ---
-title: "SONY WI-C100 レビュー：プロが教える「買い」の理由"
-description: "SONY WI-C100の実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
-date: "2026-03-04"
-category: "Reviews"
-product_id: "scout-B0B2WY57PJ"
+title: "SONY WI-C100 レビュー｜特徴・注意点・向いている人"
+description: "SONY WI-C100の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
+date: '2026-03-04'
+category: Reviews
+product_id: scout-B0B2WY57PJ
 author: "ChoiceGuide編集部"
-thumbnail: "/images/products/sony-wi-c100-0838.jpg"
-ranking_url: "/rankings/wireless-earphones/"
+thumbnail: /images/products/sony-wi-c100-0838.jpg
+ranking_url: /rankings/wireless-earphones/
 ---
 
 防水・防塵性能、リモコン、装着方式、重量の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、[SONY WI-C100](https://www.amazon.co.jp/dp/B0B2WY57PJ?tag=subaru0130-22)は価格を抑えつつ基本をしっかり押さえたイヤホンです。

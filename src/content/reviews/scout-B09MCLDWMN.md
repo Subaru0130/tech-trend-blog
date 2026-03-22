@@ -1,12 +1,12 @@
 ---
-title: "Shokz OpenRun レビュー：プロが教える「買い」の理由"
-description: "Shokz OpenRunの実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
-date: "2026-03-04"
-category: "Reviews"
-product_id: "scout-B09MCLDWMN"
+title: "Shokz OpenRun レビュー｜特徴・注意点・向いている人"
+description: "Shokz OpenRunの特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
+date: '2026-03-04'
+category: Reviews
+product_id: scout-B09MCLDWMN
 author: "ChoiceGuide編集部"
-thumbnail: "/images/products/shokz-openrun-7cc8.jpg"
-ranking_url: "/rankings/wireless-earphones/"
+thumbnail: /images/products/shokz-openrun-7cc8.jpg
+ranking_url: /rankings/wireless-earphones/
 ---
 
 防水・防塵性能、リモコン、装着方式、重量の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、[Shokz OpenRun](https://www.amazon.co.jp/dp/B09MCLDWMN?tag=subaru0130-22)は<mark>耳を塞がず「ながら聴き」を極めたい人</mark>向けの定番イヤホンです。水やホコリへの圧倒的な強さと、確実な操作性が魅力。一方で、音楽の世界に没頭したい人には不向きです。

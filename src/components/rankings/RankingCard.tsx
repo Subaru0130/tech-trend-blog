@@ -7,9 +7,14 @@ type RankingCardProps = {
     product: Product;
 };
 
-import { getAmazonLink, getRakutenLink } from '@/lib/affiliate';
+import { getAmazonLink } from '@/lib/affiliate';
+
+type RankingCardProduct = Product & {
+    calculatedRating?: number;
+};
 
 export default function RankingCard({ product }: RankingCardProps) {
+    const enhancedProduct = product as RankingCardProduct;
     const isRank1 = product.rank === 1;
     const rankColorClass = isRank1 ? 'bg-rank-gold' : product.rank === 2 ? 'bg-rank-silver' : 'bg-rank-bronze';
     const rankTextColorClass = isRank1 ? 'text-rank-gold' : product.rank === 2 ? 'text-rank-silver' : 'text-rank-bronze';
@@ -36,7 +41,13 @@ export default function RankingCard({ product }: RankingCardProps) {
                     <div className="flex flex-col md:flex-row gap-8 mb-8">
                         <div className="md:w-1/2">
                             <Link href={`/reviews/${product.id}`} className="block aspect-[4/3] rounded-2xl overflow-hidden bg-surface-subtle border border-border-color relative group">
-                                <img alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src={product.image} />
+                                <Image
+                                    alt={product.name}
+                                    src={product.image}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                />
                                 {product.tags?.flagship && (
                                     <div className="absolute top-3 left-3">
                                         <span className="bg-white/90 backdrop-blur text-primary text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
@@ -53,7 +64,7 @@ export default function RankingCard({ product }: RankingCardProps) {
                             <div className="flex items-center gap-3 mb-6">
                                 {/* Use calculatedRating if available to match ComparisonTable */}
                                 {(() => {
-                                    const displayRating = (product as any).calculatedRating || product.rating;
+                                    const displayRating = enhancedProduct.calculatedRating || product.rating;
                                     return (
                                         <>
                                             <div className={`flex ${rankTextColorClass}`}>

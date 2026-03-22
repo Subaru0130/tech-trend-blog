@@ -1,10 +1,10 @@
 ---
-title: "Bose QuietComfort Ultra Earbuds レビュー�E��Eロが教える「買ぁE���E琁E��"
-description: "Bose QuietComfort Ultra Earbudsの実機レビュー。メリチE��・チE��リチE��から、誰におすすめかまで徹底解説、E
+title: "Bose QuietComfort Ultra Earbuds レビュー｜特徴・注意点・向いている人"
+description: "Bose QuietComfort Ultra Earbudsの特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
 date: "2026-02-23"
 category: "Reviews"
 product_id: "scout-B0CFY6MWMZ"
-author: "ChoiceGuide編雁E��"
+author: "ChoiceGuide編集部"
 thumbnail: "/images/products/bose-quietcomfort-ultra-earbuds-a103.jpg"
 ranking_url: "/rankings/wireless-earphones-small-ears/"
 ---

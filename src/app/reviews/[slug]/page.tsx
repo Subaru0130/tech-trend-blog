@@ -1,20 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/purity, prefer-const */
 import React from 'react';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-// @ts-ignore
 import remarkGfm from 'remark-gfm';
 import Header from '@/components/shared/Header';
 import Footer from '@/components/shared/Footer';
-import { getProductBySlug, getAllSlugs, CATEGORY_MAP, getArticlesByProductId, getArticlesByCategory } from '@/lib/data';
-import { getAmazonLink } from '@/lib/affiliate';
+import { getProductBySlug, getAllSlugs, CATEGORY_MAP, getArticlesByProductId, getRelatedArticlesForArticle } from '@/lib/data';
 import ProductContent from '@/components/techrankings/ProductContent';
 import { Metadata } from 'next';
 
 const REVIEW_DIR = path.join(process.cwd(), 'src/content/reviews');
+
+type ReviewProductMeta = {
+    subCategory?: string;
+    subCategoryId?: string;
+    brand?: string;
+    reviewCount?: number;
+};
 
 export async function generateStaticParams() {
     const slugs = getAllSlugs();
@@ -32,14 +37,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const product = getProductBySlug(slug);
 
     if (!product) {
-        return { title: '製品が見つかりません | ChoiceGuide' };
+        return { title: '製品が見つかりません' };
     }
 
     return {
-        title: `${product.name} 徹底レビュー | ChoiceGuide`,
+        title: `${product.name} 徹底レビュー`,
         description: product.description || `${product.name}の詳細レビュー。スペック・価格・ユーザー評価を徹底分析。`,
         alternates: {
-            canonical: `https://choiceguide.jp/reviews/${slug}`,
+            canonical: `https://choiceguide.jp/reviews/${slug}/`,
         },
         openGraph: {
             title: `${product.name} 徹底レビュー`,
@@ -52,13 +57,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ReviewPage({ params }: Props) {
     const { slug } = await params;
     const product = getProductBySlug(slug);
+    const productMeta = product as typeof product & ReviewProductMeta;
 
     if (!product) {
         notFound();
     }
     const filePath = path.join(REVIEW_DIR, `${slug}.md`);
     let content = null;
-    let frontmatterData: Record<string, any> = {};
+    let frontmatterData: Record<string, unknown> = {};
     try {
         if (fs.existsSync(filePath)) {
             const rawContent = fs.readFileSync(filePath, 'utf8');
@@ -74,10 +80,17 @@ export default async function ReviewPage({ params }: Props) {
     const reviewBodyText = content
         ? content.replace(/[#*\[\]()\-_>`]/g, '').replace(/\n+/g, ' ').trim().slice(0, 300) + '...'
         : product.description || '';
-    const publishDate = frontmatterData.date || new Date().toISOString().split('T')[0];
+    const publishDate =
+        typeof frontmatterData.date === 'string'
+            ? frontmatterData.date
+            : new Date().toISOString().split('T')[0];
+    const updatedDate =
+        typeof frontmatterData.updatedDate === 'string'
+            ? frontmatterData.updatedDate
+            : publishDate;
 
     // Determine category info dynamically
-    const subCat = (product as any).subCategory || (product as any).subCategoryId || product.category;
+    const subCat = productMeta.subCategory || productMeta.subCategoryId || product.category;
     const CATEGORY_LABELS: Record<string, string> = {
         'wireless-headphones': 'ワイヤレスイヤホン',
         'audio': 'オーディオ',
@@ -98,8 +111,6 @@ export default async function ReviewPage({ params }: Props) {
     };
     let catLabel = CATEGORY_LABELS[subCat] || (CATEGORY_MAP[subCat]?.label) || '製品レビュー';
     let catSlug = CATEGORY_MAP[subCat]?.subCategories?.[0]?.slug ? `/categories/${subCat}` : '/';
-
-    const catInfo = { label: catLabel, slug: catSlug };
 
     // --- Structured Data: Product + Review + BreadcrumbList ---
     const priceValue = product.price ? product.price.replace(/[^0-9]/g, '') : "0";
@@ -236,8 +247,8 @@ export default async function ReviewPage({ params }: Props) {
             })
             .filter((p): p is NonNullable<typeof p> => p !== null) as any[])
         : [];
-    const relatedArticles = parentArticle?.category ?
-        getArticlesByCategory(parentArticle.category)
+    const relatedArticles = parentArticle
+        ? getRelatedArticlesForArticle(parentArticle, 6)
         : [];
 
     // Filter top 3 related products
@@ -268,6 +279,7 @@ export default async function ReviewPage({ params }: Props) {
                             parentArticles={allParentArticles}
                             relatedProducts={topRelatedProducts}
                             relatedArticles={relatedArticles}
+                            reviewUpdatedAt={updatedDate}
                         >
                             {content && (
                                 <MDXRemote

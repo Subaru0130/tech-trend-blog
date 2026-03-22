@@ -17,6 +17,20 @@ const ai_writer = require('./lib/ai_writer');
 const { scoutAmazonProducts, scrapeProductReviews, scrapeAmazonProductSpecs } = require('./lib/amazon_scout'); // ★ The "Missing Link"
 const { generateRankingArticle, generateReviewPage, updateDatabase, keywordToEnglishSlug } = require('./lib/generator');
 const { processAffiliateLinks, processAmazonLink } = require('./lib/affiliate_processor'); // ★ Affiliate tag processor
+const { buildSeoBundle } = require('./lib/content_guardrails');
+const { resolveKakakuComparisonPlan } = require('./lib/kakaku_axis_resolver');
+const {
+    buildFallbackCons,
+    buildFallbackEditorComment,
+    buildFallbackPros,
+    hasUsableInsightList,
+    isWeakInsightText,
+    normalizeEditorComment,
+    normalizeInsightList,
+    normalizeInsightText,
+    pickInsightList,
+    scoreInsightText,
+} = require('./lib/review_copy_guardrails');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { normalizeSpecs } = require('./lib/spec_normalizer.js');
 const http = require('http');
@@ -117,29 +131,22 @@ console.log(`   Hook: ${BLUEPRINT.sales_hook}`);
 
 // Deduce Target Spec Labels (for AI to generate consistent columns)
 const { generateDefaultLabels, generateSitemap } = require('./lib/generator');
-const targetLabels = generateDefaultLabels(TARGET_KEYWORD, BLUEPRINT);
-console.log(`🎯 Target Spec Labels: ${JSON.stringify(targetLabels)}`);
-
-// ★ CRITICAL: Override Blueprint Title to ensure honesty
-// Remove "Pro approved", "Expert", "Definitive Edition" if they are not true
-// Enforce the specific situation in the title
-if (BLUEPRINT.title) {
-    let safeTitle = BLUEPRINT.title;
-    const bannedPhrases = ['プロも認めた', '専門家が選ぶ', '徹底取材', '決定版'];
-    bannedPhrases.forEach(phrase => {
-        if (safeTitle.includes(phrase)) {
-            console.log(`   ⚠️ Removing fake authority claim: "${phrase}"`);
-            safeTitle = safeTitle.replace(phrase, '【必見】');
-        }
-    });
-    // Ensure situation is in title
-    if (BLUEPRINT.situation_category && !safeTitle.includes(BLUEPRINT.situation_category)) {
-        console.log(`   ⚠️ Injecting situation into title: "${BLUEPRINT.situation_category}"`);
-        safeTitle = `【${BLUEPRINT.situation_category}】${safeTitle}`;
-    }
-    BLUEPRINT.title = safeTitle;
-    console.log(`   📝 Final Title: ${BLUEPRINT.title}`);
+let targetLabels = generateDefaultLabels(TARGET_KEYWORD, BLUEPRINT);
+const fallbackLabels = Object.values(targetLabels);
+let initialSeoBundle = buildSeoBundle({
+    keyword: TARGET_KEYWORD,
+    blueprint: BLUEPRINT,
+    fallbackLabels,
+});
+BLUEPRINT.title = initialSeoBundle.title;
+if (initialSeoBundle.axes.length > 0) {
+    BLUEPRINT.comparison_axis = initialSeoBundle.axes.join('、');
+    BLUEPRINT.ranking_criteria = initialSeoBundle.axes;
 }
+targetLabels = generateDefaultLabels(TARGET_KEYWORD, BLUEPRINT);
+console.log(`🎯 Target Spec Labels: ${JSON.stringify(targetLabels)}`);
+console.log(`   📝 Final Title: ${BLUEPRINT.title}`);
+console.log(`   📏 Comparison Axes: ${BLUEPRINT.comparison_axis || 'Not specified'}`);
 
 /**
  * Auto-detect product category from keyword for universal category support
@@ -219,6 +226,26 @@ function filterProductsByPrice(products, keyword) {
         console.log(`   ✅ Price filter (${lower}〜${upper}円): ${filtered.length} products remain`);
     }
     return filtered;
+}
+
+function wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getMinimumPublishableCount(targetCount) {
+    if (!targetCount || targetCount <= 5) return targetCount || 5;
+    return Math.max(5, Math.ceil(targetCount * 0.7));
+}
+
+function saveScrapeCache(cacheDir, cachePath, payload) {
+    if (!fs.existsSync(cacheDir)) {
+        fs.mkdirSync(cacheDir, { recursive: true });
+    }
+
+    fs.writeFileSync(cachePath, JSON.stringify({
+        ...payload,
+        savedAt: new Date().toISOString()
+    }, null, 2));
 }
 
 /**
@@ -399,6 +426,158 @@ function cleanProductName(rawName, knownBrand = null) {
     const { generateProductSpecsAndProsCons: genSpecs, analyzeReviewsForInsights } = require('./lib/ai_writer');
     const { searchReviewSummaries, searchProductSpecs } = require('./lib/google_scout');
 
+    function buildReviewAnalysisInput(rawReviews = null) {
+        if (!rawReviews) {
+            return null;
+        }
+
+        return {
+            positive: [
+                ...(rawReviews.positive || []),
+                ...(rawReviews.kakaku?.positive || []),
+                ...(rawReviews.situational || []),
+            ].slice(0, 8),
+            negative: [
+                ...(rawReviews.negative || []),
+                ...(rawReviews.kakaku?.negative || []),
+            ].slice(0, 5),
+        };
+    }
+
+    function mergeReviewAnalysis(targetProduct, reviewAnalysis) {
+        if (!reviewAnalysis || typeof reviewAnalysis !== 'object') {
+            return targetProduct;
+        }
+
+        const existingSpecVerification = normalizeInsightText(targetProduct.specVerification || '', 'spec');
+        const incomingSpecVerification = normalizeInsightText(reviewAnalysis.specVerification || '', 'spec');
+        if (incomingSpecVerification && (isWeakInsightText(existingSpecVerification, 'spec') || incomingSpecVerification.length >= existingSpecVerification.length)) {
+            targetProduct.specVerification = incomingSpecVerification;
+        } else if (existingSpecVerification) {
+            targetProduct.specVerification = existingSpecVerification;
+        }
+
+        const existingUserScenario = normalizeInsightText(targetProduct.userScenario || '', 'scenario');
+        const incomingUserScenario = normalizeInsightText(reviewAnalysis.userScenario || '', 'scenario');
+        if (incomingUserScenario && (isWeakInsightText(existingUserScenario, 'scenario') || incomingUserScenario.length >= existingUserScenario.length)) {
+            targetProduct.userScenario = incomingUserScenario;
+        } else if (existingUserScenario) {
+            targetProduct.userScenario = existingUserScenario;
+        }
+
+        const existingPros = normalizeInsightList(targetProduct.pros || [], 'pro', 3);
+        const incomingPros = normalizeInsightList(reviewAnalysis.enhancedPros || [], 'pro', 3);
+        const mergedPros = pickInsightList(incomingPros, existingPros, 'pro', 3);
+        if (mergedPros.length > 0) {
+            targetProduct.pros = mergedPros;
+        }
+
+        if (!hasUsableInsightList(targetProduct.pros || [], 'pro')) {
+            targetProduct.pros = buildFallbackPros({
+                pros: targetProduct.pros,
+                description: targetProduct.description,
+                userScenario: targetProduct.userScenario,
+                specVerification: targetProduct.specVerification,
+            }, 3);
+        }
+
+        const existingCons = normalizeInsightList(targetProduct.cons || [], 'con', 2);
+        const incomingCons = normalizeInsightList(reviewAnalysis.enhancedCons || [], 'con', 2);
+        const mergedCons = pickInsightList(incomingCons, existingCons, 'con', 2);
+        if (mergedCons.length > 0) {
+            targetProduct.cons = mergedCons;
+        }
+
+        if (!hasUsableInsightList(targetProduct.cons || [], 'con')) {
+            targetProduct.cons = buildFallbackCons({
+                cons: targetProduct.cons,
+                userScenario: targetProduct.userScenario,
+                specVerification: targetProduct.specVerification,
+            }, 2);
+        }
+
+        const incomingEditor = normalizeEditorComment(
+            reviewAnalysis.editorComment || '',
+            targetProduct.name,
+            {
+                pros: targetProduct.pros,
+                cons: targetProduct.cons,
+                userScenario: targetProduct.userScenario,
+                specVerification: targetProduct.specVerification,
+                description: targetProduct.description,
+            }
+        );
+        const existingEditor = normalizeEditorComment(
+            targetProduct.editorComment || '',
+            targetProduct.name,
+            {
+                pros: targetProduct.pros,
+                cons: targetProduct.cons,
+                userScenario: targetProduct.userScenario,
+                specVerification: targetProduct.specVerification,
+                description: targetProduct.description,
+            }
+        );
+
+        targetProduct.editorComment =
+            scoreInsightText(incomingEditor, 'editor') >= scoreInsightText(existingEditor, 'editor')
+                ? incomingEditor
+                : existingEditor;
+
+        if (!targetProduct.editorComment || isWeakInsightText(targetProduct.editorComment, 'editor')) {
+            targetProduct.editorComment = buildFallbackEditorComment(targetProduct.name, {
+                pros: targetProduct.pros,
+                cons: targetProduct.cons,
+                userScenario: targetProduct.userScenario,
+                specVerification: targetProduct.specVerification,
+                description: targetProduct.description,
+            });
+        }
+
+        return targetProduct;
+    }
+
+    async function refreshCachedEvidenceForLineup(products = []) {
+        let refreshedCount = 0;
+
+        for (const product of products) {
+            const needsReviewEvidence =
+                !normalizeInsightText(product.specVerification || '', 'spec') ||
+                !normalizeInsightText(product.userScenario || '', 'scenario') ||
+                isWeakInsightText(product.editorComment || '', 'editor') ||
+                !hasUsableInsightList(product.pros || [], 'pro') ||
+                !hasUsableInsightList(product.cons || [], 'con');
+
+            if (!needsReviewEvidence) {
+                continue;
+            }
+
+            const reviewAnalysisInput = buildReviewAnalysisInput(product.rawReviews);
+            if (!reviewAnalysisInput || (reviewAnalysisInput.positive.length === 0 && reviewAnalysisInput.negative.length === 0)) {
+                continue;
+            }
+
+            try {
+                console.log(`   🔄 Refreshing cached review evidence: ${product.name.slice(0, 35)}...`);
+                const reviewAnalysis = await analyzeReviewsForInsights(
+                    product.name,
+                    reviewAnalysisInput,
+                    BLUEPRINT.comparison_axis || TARGET_KEYWORD
+                );
+                mergeReviewAnalysis(product, reviewAnalysis);
+                refreshedCount += 1;
+            } catch (refreshErr) {
+                console.log(`      ⚠️ Cached evidence refresh failed: ${refreshErr.message}`);
+            }
+        }
+
+        if (refreshedCount > 0) {
+            console.log(`   ✅ Cached evidence refreshed for ${refreshedCount} product(s).`);
+        }
+
+        return products;
+    }
+
     console.log('\n' + '='.repeat(60));
     console.log('📊 PHASE 0: KAKAKU.COM PRIMARY MARKET DISCOVERY');
     console.log('='.repeat(60));
@@ -436,39 +615,66 @@ function cleanProductName(rawName, knownBrand = null) {
     const cacheDir = path.resolve(__dirname, '../.cache');
     const cacheSlug = TARGET_KEYWORD.replace(/\s+/g, '_');
     const cachePath = path.join(cacheDir, `${cacheSlug}.json`);
+    const minimumPublishableCount = getMinimumPublishableCount(TARGET_RANKING_COUNT);
+    let cachedResumeData = null;
+    let skipScrapingWithCache = false;
 
     if (USE_CACHE && fs.existsSync(cachePath)) {
         console.log(`\n🔄 --use-cache: Loading cached scraping data from ${cachePath}`);
         const cached = JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
+        const cachedCount = cached.validatedLineup?.length || 0;
         console.log(`   📦 Cached ${cached.validatedLineup.length} products (saved: ${cached.savedAt})`);
+
+        if (cachedCount >= minimumPublishableCount) {
+            cachedResumeData = cached;
+            skipScrapingWithCache = true;
+        } else {
+            cachedResumeData = cached;
+        }
 
         // Restore variables from cache
         var validatedLineup = cached.validatedLineup;
         var statsTotalScanned = cached.statsTotalScanned || 0;
         var statsCandidates = cached.statsCandidates || 0;
 
-        // Skip directly to Phase 3
-        console.log(`   ⏩ Skipping Phase 1 & 2 (scraping), jumping to Phase 3 (AI generation)...`);
-    } else {
-        if (USE_CACHE) {
+        if (skipScrapingWithCache) {
+            // Skip directly to Phase 3
+            console.log(`   ⏩ Skipping Phase 1 & 2 (scraping), jumping to Phase 3 (AI generation)...`);
+            validatedLineup = await refreshCachedEvidenceForLineup(validatedLineup);
+        } else {
+            console.log(`   Cached lineup is still partial. Resuming scraping from cache...`);
+        }
+    }
+
+    if (!skipScrapingWithCache) {
+        if (USE_CACHE && !cachedResumeData) {
             console.log(`   ⚠️ No cache found at ${cachePath}, running full scrape...`);
         }
 
         // --- PHASE 1: RECURSIVE SOURCING LOOP ---
         console.log("\n--> Phase 1: Recursive Sourcing Loop (Amazon First)...");
 
-        var validatedLineup = [];
-        let processedIds = new Set();
-        let currentPage = 1;
+        var validatedLineup = cachedResumeData?.validatedLineup || [];
+        let processedIds = new Set([
+            ...(cachedResumeData?.processedIds || []),
+            ...validatedLineup.map((item) => item.id || item.asin || item.name).filter(Boolean)
+        ]);
+        let currentPage = Math.max(1, cachedResumeData?.nextPage || cachedResumeData?.currentPage || 1);
         const MAX_SEARCH_PAGES = 10;
 
         // Determine Target Count (default 10)
         const targetCount = TARGET_RANKING_COUNT;
+        const stablePublishableCount = Math.min(targetCount, Math.max(minimumPublishableCount, 8));
         console.log(`🎯 Target: ${targetCount} confirmed products`);
 
+        console.log(`   Stable publishable threshold: ${stablePublishableCount}`);
+        if (validatedLineup.length > 0) {
+            console.log(`   Starting with ${validatedLineup.length} cached products already verified.`);
+        }
+
         // TRACKING STATS FOR E-E-A-T METHODOLOGY
-        let statsTotalScanned = 0;
-        let statsCandidates = 0;
+        var statsTotalScanned = cachedResumeData?.statsTotalScanned || 0;
+        var statsCandidates = cachedResumeData?.statsCandidates || 0;
 
         // Main Sourcing Loop
         while (validatedLineup.length < targetCount && currentPage <= MAX_SEARCH_PAGES) {
@@ -476,19 +682,36 @@ function cleanProductName(rawName, knownBrand = null) {
 
             // 1. Fetch Batch from Kakaku (1 page at a time)
             // We set maxPages to currentPage to ensure loop condition in market_research works: startPage-1 < maxPages
-            const batch = await scrapeKakakuRanking(TARGET_KEYWORD, {
+            let batch = await scrapeKakakuRanking(TARGET_KEYWORD, {
                 startPage: currentPage,
                 maxPages: currentPage,
-                targetCount: 100, // Don't stop internally
+                targetCount: Math.max(targetCount * 2, 20),
                 minPrice: priceRange.minPrice,
                 maxPrice: priceRange.maxPrice,
                 requiredFeatures: BLUEPRINT.required_features || [] // Pass to enable dynamic filter URL discovery
             });
 
+            if (batch.length === 0 && currentPage === 1) {
+                console.log("   ⚠️ Ranking mode returned 0 products. Retrying first page with Kakaku search mode...");
+                batch = await scrapeKakakuRanking(TARGET_KEYWORD, {
+                    startPage: 1,
+                    maxPages: 1,
+                    targetCount: Math.max(targetCount * 2, 20),
+                    minPrice: priceRange.minPrice,
+                    maxPrice: priceRange.maxPrice,
+                    requiredFeatures: BLUEPRINT.required_features || [],
+                    searchMode: true,
+                });
+            }
+
             // Update Stats
             statsTotalScanned += batch.length;
 
             if (batch.length === 0) {
+                if (validatedLineup.length >= minimumPublishableCount) {
+                    console.log(`   No products found on page ${currentPage}, but ${validatedLineup.length} products are already publishable. Ending scrape.`);
+                    break;
+                }
                 console.log("   ⚠️ No products found on this page. Stopping search.");
                 break;
             }
@@ -507,14 +730,16 @@ function cleanProductName(rawName, knownBrand = null) {
             // (e.g., headphones from earphone search, wired from wireless search)
             // 1.5 AI Filter: Remove products that don't match article theme OR missing features
             const filteredBatch = await filterProductsWithAI(amazonLinkedBatch, TARGET_KEYWORD, BLUEPRINT, BLUEPRINT.required_features);
+            statsCandidates += filteredBatch.length;
             console.log(`   🤖 AI Filter: ${filteredBatch.length}/${amazonLinkedBatch.length} passed`);
 
             // 2. Process Candidates (Amazon Verification & Enrichment)
+            let pageAdds = 0;
             for (const candidate of filteredBatch) {
                 if (validatedLineup.length >= targetCount) break;
 
                 // --- A. ID Deduplication (Early) ---
-                const tempId = candidate.name;
+                const tempId = candidate.id || candidate.asin || candidate.name;
                 if (processedIds.has(tempId)) continue;
                 processedIds.add(tempId);
 
@@ -594,12 +819,32 @@ function cleanProductName(rawName, knownBrand = null) {
                         }
                     }
 
+                    const reviewAnalysisInput = buildReviewAnalysisInput(verifiedItem.rawReviews);
+                    if (reviewAnalysisInput && (reviewAnalysisInput.positive.length > 0 || reviewAnalysisInput.negative.length > 0)) {
+                        try {
+                            console.log(`   🧠 Analyzing review evidence for: ${verifiedItem.name.slice(0, 25)}...`);
+                            const reviewAnalysis = await analyzeReviewsForInsights(
+                                verifiedItem.name,
+                                reviewAnalysisInput,
+                                BLUEPRINT.comparison_axis || TARGET_KEYWORD
+                            );
+                            mergeReviewAnalysis(verifiedItem, reviewAnalysis);
+                        } catch (analysisErr) {
+                            console.log(`      ⚠️ Review evidence analysis failed: ${analysisErr.message}`);
+                        }
+                    }
+
                     // --- E. Full Enrichment (Specs) ---
                     console.log(`   🔍 Enriching Specs: ${verifiedItem.name}...`);
                     const externalSpecs = await searchProductSpecs(verifiedItem.name);
                     const enrichedData = await genSpecs(
                         verifiedItem.name,
-                        { target_reader: BLUEPRINT.target_reader, comparison_axis: BLUEPRINT.comparison_axis },
+                        {
+                            target_reader: BLUEPRINT.target_reader,
+                            comparison_axis: BLUEPRINT.comparison_axis,
+                            specVerification: verifiedItem.specVerification || '',
+                            userScenario: verifiedItem.userScenario || '',
+                        },
                         verifiedItem.asin,
                         externalSpecs,
                         Object.values(targetLabels),
@@ -669,7 +914,12 @@ function cleanProductName(rawName, knownBrand = null) {
                                 // NOW PASSING RAW REVIEWS as the 6th argument!
                                 const aiSpecsData = await ai_writer.generateProductSpecsAndProsCons(
                                     { name: verifiedItem.name, realSpecs: { specs: verifiedItem.specs } },
-                                    { comparison_axis: BLUEPRINT.comparison_axis },
+                                    {
+                                        target_reader: BLUEPRINT.target_reader,
+                                        comparison_axis: BLUEPRINT.comparison_axis,
+                                        specVerification: verifiedItem.specVerification || '',
+                                        userScenario: verifiedItem.userScenario || '',
+                                    },
                                     verifiedItem.asin,
                                     rawSpecContext,
                                     targetLabels ? Object.values(targetLabels) : null,
@@ -717,6 +967,17 @@ function cleanProductName(rawName, knownBrand = null) {
                     // Apply our affiliate tags before saving
                     const processedItem = processAffiliateLinks(verifiedItem);
                     validatedLineup.push(processedItem);
+                    pageAdds++;
+                    saveScrapeCache(cacheDir, cachePath, {
+                        keyword: TARGET_KEYWORD,
+                        blueprint: BLUEPRINT,
+                        validatedLineup,
+                        statsTotalScanned,
+                        statsCandidates,
+                        currentPage,
+                        nextPage: currentPage,
+                        processedIds: Array.from(processedIds)
+                    });
                     console.log(`   🎉 ADDED: ${processedItem.name} (${validatedLineup.length}/${targetCount})`);
                     continue; // Skip legacy verification path
                 }
@@ -841,13 +1102,33 @@ function cleanProductName(rawName, knownBrand = null) {
                     }
                 }
 
+                const reviewAnalysisInput = buildReviewAnalysisInput(verifiedItem.rawReviews);
+                if (reviewAnalysisInput && (reviewAnalysisInput.positive.length > 0 || reviewAnalysisInput.negative.length > 0)) {
+                    try {
+                        console.log(`   🧠 Analyzing review evidence for: ${verifiedItem.name.slice(0, 25)}...`);
+                        const reviewAnalysis = await analyzeReviewsForInsights(
+                            verifiedItem.name,
+                            reviewAnalysisInput,
+                            BLUEPRINT.comparison_axis || TARGET_KEYWORD
+                        );
+                        mergeReviewAnalysis(verifiedItem, reviewAnalysis);
+                    } catch (analysisErr) {
+                        console.log(`      ⚠️ Review evidence analysis failed: ${analysisErr.message}`);
+                    }
+                }
+
                 // --- D. Full Enrichment (Specs & AI Analysis using Reviews) ---
                 console.log(`   🔍 Enriching Specs: ${verifiedItem.name}...`);
                 const externalSpecs = await searchProductSpecs(verifiedItem.name);
                 // NOW we pass the reviews we just collected!
                 const enrichedData = await genSpecs(
                     verifiedItem.name,
-                    { target_reader: BLUEPRINT.target_reader, comparison_axis: BLUEPRINT.comparison_axis },
+                    {
+                        target_reader: BLUEPRINT.target_reader,
+                        comparison_axis: BLUEPRINT.comparison_axis,
+                        specVerification: verifiedItem.specVerification || '',
+                        userScenario: verifiedItem.userScenario || '',
+                    },
                     verifiedItem.asin,
                     externalSpecs,
                     Object.values(targetLabels),
@@ -866,13 +1147,87 @@ function cleanProductName(rawName, knownBrand = null) {
                 // --- SUCCESS ---
                 const processedItem = processAffiliateLinks(verifiedItem);
                 validatedLineup.push(processedItem);
+                pageAdds++;
+                saveScrapeCache(cacheDir, cachePath, {
+                    keyword: TARGET_KEYWORD,
+                    blueprint: BLUEPRINT,
+                    validatedLineup,
+                    statsTotalScanned,
+                    statsCandidates,
+                    currentPage,
+                    nextPage: currentPage,
+                    processedIds: Array.from(processedIds)
+                });
                 console.log(`   🎉 ADDED: ${processedItem.name} (${validatedLineup.length}/${targetCount})`);
             }
+
+            saveScrapeCache(cacheDir, cachePath, {
+                keyword: TARGET_KEYWORD,
+                blueprint: BLUEPRINT,
+                validatedLineup,
+                statsTotalScanned,
+                statsCandidates,
+                currentPage,
+                nextPage: currentPage + 1,
+                processedIds: Array.from(processedIds)
+            });
+
+            if (validatedLineup.length >= stablePublishableCount) {
+                console.log(`   Stable publishable lineup reached (${validatedLineup.length}/${targetCount}). Ending scrape early to reduce long-run failures.`);
+                break;
+            }
+
+            if (pageAdds === 0 && validatedLineup.length >= minimumPublishableCount) {
+                console.log(`   No new verified products were added on page ${currentPage}, but the lineup is already publishable. Ending scrape.`);
+                break;
+            }
+
             currentPage++;
         }
 
         if (validatedLineup.length === 0) {
             console.error("❌ CRITICAL: No valid products found after recursive search. Aborting.");
+            process.exit(1);
+        }
+
+        // --- KAKAKU-FIRST: Resolve comparison axes against actual 価格.com specs ---
+        if (validatedLineup.length < Math.min(targetCount, 5)) {
+            console.error(`CRITICAL: Only ${validatedLineup.length} validated products were found. Need at least 5 to publish safely.`);
+            process.exit(1);
+        }
+
+        if (validatedLineup.length < targetCount) {
+            console.log(`\nContinuing with ${validatedLineup.length}/${targetCount} products. Titles and metadata will be normalized to the actual count.`);
+        }
+
+        const kakakuAxisPlan = resolveKakakuComparisonPlan({
+            keyword: TARGET_KEYWORD,
+            blueprint: BLUEPRINT,
+            products: validatedLineup,
+            fallbackLabels: Object.values(generateDefaultLabels(TARGET_KEYWORD, BLUEPRINT)),
+        });
+        BLUEPRINT.kakaku_axis_plan = kakakuAxisPlan;
+
+        if (!kakakuAxisPlan.hardFail && kakakuAxisPlan.axisNames.length > 0) {
+            BLUEPRINT.comparison_axis = kakakuAxisPlan.axisNames.join('、');
+            BLUEPRINT.ranking_criteria = kakakuAxisPlan.axisNames;
+            targetLabels = generateDefaultLabels(TARGET_KEYWORD, BLUEPRINT);
+            console.log(`\n📏 Kakaku-first axes locked: ${BLUEPRINT.comparison_axis}`);
+            kakakuAxisPlan.axisDetails.forEach((detail) => {
+                console.log(`   - ${detail.axis}: ${detail.matchedLabels.join(' / ')} (${detail.coverageCount} products)`);
+            });
+        } else {
+            console.log(`\n⚠️ Kakaku-first axis resolver could not improve axes for "${TARGET_KEYWORD}". Keeping blueprint defaults.`);
+        }
+
+        if (kakakuAxisPlan.rejectedAxes.length > 0) {
+            console.log(`   Rejected as weak/non-measurable: ${kakakuAxisPlan.rejectedAxes.map((item) => item.axis).join(', ')}`);
+        }
+
+        if (kakakuAxisPlan.hardFail) {
+            console.error(`\n❌ Kakaku hard fail for "${TARGET_KEYWORD}": ${kakakuAxisPlan.hardFailReason}`);
+            console.error('   None of the requested comparison axes could be verified directly from Kakaku specs.');
+            console.error(`   Requested axes: ${(kakakuAxisPlan.rejectedAxes || []).map((item) => item.axis).join(', ') || 'N/A'}`);
             process.exit(1);
         }
 
@@ -961,19 +1316,40 @@ function cleanProductName(rawName, knownBrand = null) {
     } // End of else block (full scrape path)
 
     // --- CACHE: Save scraped data before AI generation ---
-    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
-    fs.writeFileSync(cachePath, JSON.stringify({
+    saveScrapeCache(cacheDir, cachePath, {
         keyword: TARGET_KEYWORD,
         blueprint: BLUEPRINT,
         validatedLineup,
         statsTotalScanned,
         statsCandidates,
-        savedAt: new Date().toISOString()
-    }, null, 2));
+        currentPage: null,
+        nextPage: null
+    });
     console.log(`   💾 Scraping cache saved: ${cachePath}`);
 
     // --- PHASE 3: CONTENT GENERATION ---
     console.log("\n--> Phase 3: Generating Content...");
+
+    if (!BLUEPRINT.kakaku_axis_plan) {
+        const kakakuAxisPlan = resolveKakakuComparisonPlan({
+            keyword: TARGET_KEYWORD,
+            blueprint: BLUEPRINT,
+            products: validatedLineup,
+            fallbackLabels: Object.values(generateDefaultLabels(TARGET_KEYWORD, BLUEPRINT)),
+        });
+        BLUEPRINT.kakaku_axis_plan = kakakuAxisPlan;
+
+        if (!kakakuAxisPlan.hardFail && kakakuAxisPlan.axisNames.length > 0) {
+            BLUEPRINT.comparison_axis = kakakuAxisPlan.axisNames.join('、');
+            BLUEPRINT.ranking_criteria = kakakuAxisPlan.axisNames;
+            targetLabels = generateDefaultLabels(TARGET_KEYWORD, BLUEPRINT);
+            console.log(`   📏 Kakaku-first axes locked for content: ${BLUEPRINT.comparison_axis}`);
+        }
+
+        if (kakakuAxisPlan.hardFail) {
+            throw new Error(`Kakaku hard fail: ${kakakuAxisPlan.hardFailReason}`);
+        }
+    }
 
     // 1. Buying Guide Body
     const filteringStats = {
@@ -983,19 +1359,25 @@ function cleanProductName(rawName, knownBrand = null) {
     };
     const buyingGuideBody = await ai_writer.generateBuyingGuideBody(TARGET_KEYWORD, validatedLineup, BLUEPRINT, filteringStats);
 
-    // 2. SEO Metadata - Use Blueprint title if available
-    let seoMetadata;
-    if (BLUEPRINT.title) {
-        // Use Blueprint's pre-defined title
-        seoMetadata = {
-            title: BLUEPRINT.title,
-            description: BLUEPRINT.intro ? BLUEPRINT.intro.slice(0, 150) + "..." : `プロが選ぶ${TARGET_KEYWORD}のおすすめ人気ランキング。選び方や比較ポイントも解説。`,
-            keywords: [TARGET_KEYWORD, "おすすめ", "ランキング", "比較"]
-        };
-        console.log(`   ✅ Using Blueprint Title: ${BLUEPRINT.title}`);
-    } else {
-        seoMetadata = await ai_writer.generateSeoMetadata(TARGET_KEYWORD, validatedLineup);
-    }
+    // 2. SEO Metadata - Deterministic guardrails from blueprint + axes
+    const articleSeoBundle = buildSeoBundle({
+        keyword: TARGET_KEYWORD,
+        blueprint: BLUEPRINT,
+        fallbackLabels: Object.values(targetLabels),
+    });
+    const seoMetadata = {
+        ...articleSeoBundle,
+        title: BLUEPRINT.title || articleSeoBundle.title,
+        description: articleSeoBundle.description,
+        keywords: Array.from(new Set([
+            TARGET_KEYWORD,
+            ...articleSeoBundle.axes,
+            'おすすめ',
+            'ランキング',
+            '比較',
+        ])).slice(0, 8),
+    };
+    console.log(`   ✅ SEO Bundle Ready: ${seoMetadata.title}`);
 
     // 3. Thumbnail Generation
     let thumbPath = '/images/placeholder.jpg';
@@ -1186,7 +1568,7 @@ function cleanProductName(rawName, knownBrand = null) {
 
     // 9. Save Enriched Data to Master JSON
     fs.writeFileSync(PRODUCTS_JSON_PATH, JSON.stringify(productsData, null, 4));
-    console.log(`\n🎉 Article Generated: src/content/articles/${TARGET_KEYWORD}.md`);
+    console.log(`\n🎉 Article Generated: src/content/articles/${keywordToEnglishSlug(TARGET_KEYWORD)}.md`);
 
     // --- NEW: Strict Quality Gate ---
     console.log('\n🛡️ Running Strict Quality Gate...');

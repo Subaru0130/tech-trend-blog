@@ -84,11 +84,14 @@ export interface Article {
     publishDate?: string; // Optional alias
     publishedAt: string; // Primary field
     updatedDate: string;
+    image?: string;
     thumbnail: string;
     author: string;
     category: string;
     categoryId?: string; // Alias
     subCategoryId?: string;
+    tags?: string[];
+    isFeatured?: boolean;
 
     // Rich Content Fields
     rankingCriteria?: {

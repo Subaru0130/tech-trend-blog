@@ -17,7 +17,14 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
+const { buildKeywordFingerprint, compareFingerprints } = require('./lib/intent_fingerprint');
+const { keywordToEnglishSlug } = require('./lib/generator');
+const { evaluateSituationKeywordViability } = require('./lib/kakaku_viability_rules');
 require('dotenv').config({ path: '.env.local' });
+
+const ROOT_DIR = path.resolve(__dirname, '..');
+const ARTICLES_JSON_PATH = path.join(ROOT_DIR, 'src', 'data', 'articles.json');
+const MINER_CACHE_DIR = path.join(ROOT_DIR, '.cache', 'miner_viability');
 
 const GEMINI_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
 const SEED_KEYWORD = process.argv[2] || "ワイヤレスイヤホン";
@@ -30,6 +37,94 @@ if (!GEMINI_API_KEY) {
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-3.1-pro-preview" });
 
+function getCategorySpecificSituationSuffixes(seed) {
+    const normalized = String(seed || '').normalize('NFKC');
+
+    if (normalized.includes('\u30ed\u30dc\u30c3\u30c8\u6383\u9664\u6a5f')) {
+        return [
+            '\u30da\u30c3\u30c8\u306e\u6bdb',
+            '\u72ac\u732b\u306e\u6bdb',
+            '\u6c34\u62ed\u304d',
+            '\u81ea\u52d5\u30b4\u30df\u53ce\u96c6',
+            '\u969c\u5bb3\u7269\u56de\u907f',
+            '\u9759\u97f3',
+            '\u591c\u9593',
+            '\u6bb5\u5dee',
+            '\u30ab\u30fc\u30da\u30c3\u30c8',
+            '\u5bb6\u5177\u306e\u4e0b',
+            '\u8584\u578b',
+            '\u5171\u50cd\u304d',
+            '\u5b50\u80b2\u3066',
+            '\u4e00\u4eba\u66ae\u3089\u3057',
+            '\u30a2\u30d7\u30ea\u4e0d\u8981',
+            '\u30b4\u30df\u6368\u3066\u304c\u697d',
+        ];
+    }
+
+    if (normalized.includes('\u51b7\u8535\u5eab')) {
+        return [
+            '\u4e00\u4eba\u66ae\u3089\u3057',
+            '\u4e8c\u4eba\u66ae\u3089\u3057',
+            '\u81ea\u708a\u5411\u3051',
+            '\u51b7\u51cd\u5eab\u304c\u5e83\u3044',
+            '\u51b7\u51cd\u91cd\u8996',
+            '\u7701\u30a8\u30cd',
+            '\u9759\u97f3',
+            '\u30b9\u30ea\u30e0',
+            '\u5c0f\u578b',
+            '\u5927\u5bb9\u91cf',
+            '\u4f5c\u308a\u7f6e\u304d',
+            '\u91ce\u83dc\u5ba4',
+            '\u89b3\u97f3\u958b\u304d',
+            '\u53f3\u958b\u304d',
+            '\u5de6\u958b\u304d',
+            '\u5f15\u3063\u8d8a\u3057',
+        ];
+    }
+
+    if (normalized.includes('\u30aa\u30d5\u30a3\u30b9\u30c1\u30a7\u30a2')) {
+        return [
+            '\u8170\u75db',
+            '\u30c6\u30ec\u30ef\u30fc\u30af',
+            '\u5728\u5b85\u52e4\u52d9',
+            '\u9577\u6642\u9593\u4f5c\u696d',
+            '\u4f4e\u8eab\u9577',
+            '\u9ad8\u8eab\u9577',
+            '\u5c0f\u67c4',
+            '\u30e1\u30c3\u30b7\u30e5',
+            '\u84b8\u308c\u306b\u304f\u3044',
+            '\u72ed\u3044\u90e8\u5c4b',
+            '\u4e00\u4eba\u66ae\u3089\u3057',
+            '\u30d8\u30c3\u30c9\u30ec\u30b9\u30c8',
+            '\u30e9\u30f3\u30d0\u30fc\u30b5\u30dd\u30fc\u30c8',
+            '\u75b2\u308c\u306b\u304f\u3044',
+            '\u96c6\u4e2d\u3067\u304d\u308b',
+        ];
+    }
+
+    if (normalized.includes('\u30ef\u30a4\u30e4\u30ec\u30b9\u30a4\u30e4\u30db\u30f3')) {
+        return [
+            '\u901a\u8a71',
+            '\u30c6\u30ec\u30ef\u30fc\u30af',
+            '\u5728\u5b85\u52e4\u52d9',
+            '\u30e9\u30f3\u30cb\u30f3\u30b0',
+            '\u30b8\u30e0',
+            '\u901a\u52e4',
+            '\u96fb\u8eca',
+            '\u8033\u304c\u5c0f\u3055\u3044',
+            '\u5bdd\u30db\u30f3',
+            '\u5916\u97f3\u53d6\u308a\u8fbc\u307f',
+            '\u30de\u30eb\u30c1\u30dd\u30a4\u30f3\u30c8',
+            '\u30ce\u30a4\u30ad\u30e3\u30f3',
+            '\u9577\u6642\u9593',
+            'ASMR',
+            '\u304a\u98a8\u5442',
+        ];
+    }
+
+    return [];
+}
+
 // ==========================================
 // 🧠 AI動的サフィックス生成
 // ==========================================
@@ -37,6 +132,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-3.1-pro-preview" });
 // 例: "ワイヤレスイヤホン" → 眼鏡, 骨伝導, 耳が小さい, ASMR, 音漏れ
 // 例: "オフィスチェア" → 腰痛, 猫背, 長時間デスクワーク, 在宅勤務
 async function generateSituationSuffixes(seed, specDetails = '') {
+    const categoryFallbacks = getCategorySpecificSituationSuffixes(seed);
     console.log(`\n🧠 AIが「${seed}」向けの状況サフィックスをブレインストーミング中...`);
     if (specDetails) console.log(`   → 価格.comスペック情報を参考に生成`);
 
@@ -77,12 +173,15 @@ ${specDetails || '（スペック情報なし）'}
         const suffixes = text.split(/,|、|\n/).map(s => s.trim().replace(/・/g, '')).filter(s => s.length > 1 && s.length < 20);
 
         // 重複除去 + 上限50
-        const uniqueSuffixes = [...new Set(suffixes)].slice(0, 50);
+        const uniqueSuffixes = [...new Set([...categoryFallbacks, ...suffixes])].slice(0, 50);
         console.log(`   ✨ ${uniqueSuffixes.length} 個の状況サフィックスを生成:`);
         console.log(`   ${uniqueSuffixes.slice(0, 10).join(', ')} ...`);
         return uniqueSuffixes;
 
     } catch (e) {
+        if (categoryFallbacks.length > 0) {
+            return categoryFallbacks;
+        }
         console.log(`   ⚠️ AI生成失敗: ${e.message}。フォールバックリストを使用。`);
         // 最低限の汎用フォールバック
         return [
@@ -176,6 +275,406 @@ async function fetchSuggestions(query) {
 
 async function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+function safeReadJson(filePath, fallback = []) {
+    try {
+        return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    } catch (e) {
+        return fallback;
+    }
+}
+
+function legacyNormalizeIntentText(value) {
+    return String(value || '')
+        .normalize('NFKC')
+        .toLowerCase()
+        .replace(/[\s\u3000\-_/・、。,.!！?？"'`()\[\]{}]+/g, '')
+        .trim();
+}
+
+function legacyBuildKeywordTailSignal(seed, keyword) {
+    const seedSlug = keywordToEnglishSlug(seed);
+    const keywordSlug = keywordToEnglishSlug(keyword);
+
+    if (keywordSlug.startsWith(`${seedSlug}-`)) {
+        return keywordSlug.slice(seedSlug.length + 1).toLowerCase();
+    }
+
+    return keywordSlug.toLowerCase();
+}
+
+function legacyBuildPublishedIntentIndex(seed) {
+    const articles = safeReadJson(ARTICLES_JSON_PATH, []);
+    const seedSlug = keywordToEnglishSlug(seed);
+    const exactKeywordSignals = new Set();
+    const slugSignals = new Set();
+    const situationSignals = new Set();
+
+    const relevantArticles = articles.filter((article) => {
+        const tags = Array.isArray(article.tags) ? article.tags : [];
+        const slug = String(article.slug || article.id || '');
+
+        return (
+            tags.includes(seed) ||
+            String(article.title || '').includes(seed) ||
+            slug === seedSlug ||
+            slug.startsWith(`${seedSlug}-`)
+        );
+    });
+
+    relevantArticles.forEach((article) => {
+        const slug = String(article.slug || article.id || '').toLowerCase();
+        const tags = Array.isArray(article.tags) ? article.tags : [];
+
+        if (slug) {
+            slugSignals.add(slug);
+        }
+
+        const tailSignal = legacyBuildKeywordTailSignal(seed, slug);
+        if (tailSignal && tailSignal !== seedSlug) {
+            situationSignals.add(tailSignal);
+        }
+
+        tags
+            .filter((tag) => tag && tag !== seed && tag !== 'ランキング' && !/^20\d{2}/.test(tag))
+            .forEach((tag) => {
+                const normalizedTag = legacyNormalizeIntentText(tag);
+                const tagSlug = keywordToEnglishSlug(tag).toLowerCase();
+
+                if (normalizedTag) {
+                    situationSignals.add(normalizedTag);
+                    exactKeywordSignals.add(legacyNormalizeIntentText(`${seed} ${tag}`));
+                }
+
+                if (tagSlug) {
+                    situationSignals.add(tagSlug);
+                }
+            });
+    });
+
+    return {
+        relevantArticleCount: relevantArticles.length,
+        exactKeywordSignals,
+        slugSignals,
+        situationSignals,
+    };
+}
+
+function legacyPreFilterSituationKeywords(seed, candidates) {
+    const publishedIntentIndex = legacyBuildPublishedIntentIndex(seed);
+    const seenSignals = new Set();
+    const approvedCandidates = [];
+    const skippedCandidates = [];
+
+    for (const candidate of candidates) {
+        const keywordSignal = legacyNormalizeIntentText(candidate.baseQuery);
+        const situationSignal = legacyNormalizeIntentText(candidate.situation);
+        const keywordSlug = keywordToEnglishSlug(candidate.baseQuery).toLowerCase();
+        const tailSignal = legacyBuildKeywordTailSignal(seed, candidate.baseQuery);
+        const candidateSignals = [keywordSignal, situationSignal, keywordSlug, tailSignal].filter(Boolean);
+
+        let skipReason = '';
+
+        if (!situationSignal) {
+            skipReason = 'empty_intent_signal';
+        } else if ((candidate.demandScore || 0) <= 0) {
+            skipReason = 'zero_demand';
+        } else if (candidateSignals.some((signal) =>
+            publishedIntentIndex.exactKeywordSignals.has(signal) ||
+            publishedIntentIndex.slugSignals.has(signal) ||
+            publishedIntentIndex.situationSignals.has(signal)
+        )) {
+            skipReason = 'already_published';
+        } else if (candidateSignals.some((signal) => seenSignals.has(signal))) {
+            skipReason = 'duplicate_in_run';
+        }
+
+        if (skipReason) {
+            skippedCandidates.push({ ...candidate, skipReason });
+            continue;
+        }
+
+        candidateSignals.forEach((signal) => seenSignals.add(signal));
+        approvedCandidates.push(candidate);
+    }
+
+    return {
+        approvedCandidates,
+        skippedCandidates,
+        publishedIntentIndex,
+    };
+}
+
+function buildPublishedIntentIndex(seed) {
+    const articles = safeReadJson(ARTICLES_JSON_PATH, []);
+    const seedFingerprint = buildKeywordFingerprint({
+        seed,
+        keyword: seed,
+        tags: [seed],
+    });
+    const seedSlug = String(seedFingerprint.seedSlug || seedFingerprint.baseSlug || '').toLowerCase();
+
+    const relevantArticles = articles
+        .map((article) => {
+            const tags = Array.isArray(article.tags) ? article.tags : [];
+            const fingerprint = buildKeywordFingerprint({
+                seed,
+                keyword: `${seed} ${tags.join(' ')}`.trim(),
+                slug: article.slug || article.id,
+                title: article.title,
+                tags,
+                categoryId: article.categoryId || article.category,
+                subCategoryId: article.subCategoryId,
+            });
+
+            return {
+                articleId: String(article.id || article.slug || ''),
+                slug: String(article.slug || article.id || ''),
+                title: String(article.title || ''),
+                tags,
+                fingerprint,
+            };
+        })
+        .filter((entry) => {
+            if (seedFingerprint.canonicalSubCategoryId && entry.fingerprint.canonicalSubCategoryId) {
+                return entry.fingerprint.canonicalSubCategoryId === seedFingerprint.canonicalSubCategoryId;
+            }
+
+            return (
+                entry.tags.includes(seed) ||
+                entry.title.includes(seed) ||
+                entry.slug.toLowerCase() === seedSlug ||
+                entry.slug.toLowerCase().startsWith(`${seedSlug}-`)
+            );
+        });
+
+    return {
+        relevantArticleCount: relevantArticles.length,
+        seedFingerprint,
+        existingFingerprints: relevantArticles,
+    };
+}
+
+function preFilterSituationKeywords(seed, candidates) {
+    const publishedIntentIndex = buildPublishedIntentIndex(seed);
+    const acceptedFingerprints = [];
+    const approvedCandidates = [];
+    const skippedCandidates = [];
+
+    for (const candidate of candidates) {
+        let skipReason = '';
+        let matchedAgainst = '';
+        const candidateFingerprint = buildKeywordFingerprint({
+            seed,
+            keyword: candidate.baseQuery,
+            tags: [candidate.situation],
+        });
+        const hasDistinctIntent = (
+            candidateFingerprint.intentTokens.length > 0 ||
+            (
+                candidateFingerprint.baseSlug &&
+                candidateFingerprint.seedSlug &&
+                candidateFingerprint.baseSlug !== candidateFingerprint.seedSlug
+            )
+        );
+
+        if (!candidateFingerprint.canonicalSubCategoryId || !hasDistinctIntent) {
+            skipReason = 'empty_intent_signal';
+        } else if ((candidate.demandScore || 0) <= 0) {
+            skipReason = 'zero_demand';
+        } else {
+            const publishedMatch = publishedIntentIndex.existingFingerprints.find((entry) => {
+                const comparison = compareFingerprints(candidateFingerprint, entry.fingerprint);
+                if (!comparison.isDuplicate) {
+                    return false;
+                }
+
+                matchedAgainst = `article:${entry.articleId || entry.slug}:${comparison.reason}`;
+                return true;
+            });
+
+            if (publishedMatch) {
+                skipReason = 'already_published';
+            }
+        }
+
+        if (!skipReason) {
+            const inRunMatch = acceptedFingerprints.find((entry) => {
+                const comparison = compareFingerprints(candidateFingerprint, entry.fingerprint);
+                if (!comparison.isDuplicate) {
+                    return false;
+                }
+
+                matchedAgainst = `run:${entry.baseQuery}:${comparison.reason}`;
+                return true;
+            });
+
+            if (inRunMatch) {
+                skipReason = 'duplicate_in_run';
+            }
+        }
+
+        if (skipReason) {
+            skippedCandidates.push({ ...candidate, skipReason, matchedAgainst });
+            continue;
+        }
+
+        approvedCandidates.push(candidate);
+        acceptedFingerprints.push({
+            baseQuery: candidate.baseQuery,
+            fingerprint: candidateFingerprint,
+        });
+    }
+
+    return {
+        approvedCandidates,
+        skippedCandidates,
+        publishedIntentIndex,
+    };
+}
+
+function validateBlueprintShape(blueprint) {
+    if (!blueprint || blueprint.status !== 'APPROVED') {
+        return { isValid: true };
+    }
+
+    const issues = [];
+
+    if (!blueprint.title || blueprint.title.length < 12) {
+        issues.push('title');
+    }
+    if (!blueprint.search_intent_analysis || blueprint.search_intent_analysis.length < 40) {
+        issues.push('search_intent_analysis');
+    }
+    if (!blueprint.target_reader || blueprint.target_reader.length < 10) {
+        issues.push('target_reader');
+    }
+    if (!blueprint.comparison_axis || blueprint.comparison_axis.length < 4) {
+        issues.push('comparison_axis');
+    }
+    if (!blueprint.intro_structure?.hook || !blueprint.intro_structure?.background_explanation) {
+        issues.push('intro_structure');
+    }
+    if (!Array.isArray(blueprint.ranking_criteria) || blueprint.ranking_criteria.length < 2) {
+        issues.push('ranking_criteria');
+    }
+    if (!Array.isArray(blueprint.required_features)) {
+        blueprint.required_features = [];
+    }
+    if (
+        Number.isFinite(blueprint.price_min) &&
+        Number.isFinite(blueprint.price_max) &&
+        blueprint.price_max > 0 &&
+        blueprint.price_min > blueprint.price_max
+    ) {
+        const temp = blueprint.price_min;
+        blueprint.price_min = blueprint.price_max;
+        blueprint.price_max = temp;
+    }
+
+    return {
+        isValid: issues.length === 0,
+        reason: issues.length > 0 ? `Incomplete blueprint: ${issues.join(', ')}` : '',
+    };
+}
+
+function safeFileSegment(value) {
+    return String(value || '')
+        .normalize('NFKC')
+        .replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_')
+        .replace(/\s+/g, '_')
+        .slice(0, 120);
+}
+
+async function precheckSituationKeywordsWithKakaku(seed, candidates) {
+    const { scrapeKakakuRankingWithEnrichment } = require('./lib/market_research');
+    if (!fs.existsSync(MINER_CACHE_DIR)) {
+        fs.mkdirSync(MINER_CACHE_DIR, { recursive: true });
+    }
+
+    const viableCandidates = [];
+    const skippedCandidates = [];
+
+    console.log(`\n🧪 Phase 1.75: Kakaku viability precheck (${candidates.length} situations)...\n`);
+
+    for (let i = 0; i < candidates.length; i++) {
+        const candidate = candidates[i];
+        process.stdout.write(`   [${i + 1}/${candidates.length}] "${candidate.baseQuery}" `);
+
+        const cachePath = path.join(MINER_CACHE_DIR, `${safeFileSegment(candidate.baseQuery)}.json`);
+        let cachedResult = null;
+
+        if (fs.existsSync(cachePath)) {
+            try {
+                cachedResult = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+            } catch (error) {
+                cachedResult = null;
+            }
+        }
+
+        let viabilityResult = cachedResult;
+
+        if (!viabilityResult) {
+            try {
+                const products = await scrapeKakakuRankingWithEnrichment(candidate.baseQuery, {
+                    targetCount: 6,
+                    maxEnrich: 4,
+                });
+
+                const evaluation = evaluateSituationKeywordViability({
+                    seed,
+                    situationData: candidate,
+                    products,
+                });
+
+                viabilityResult = {
+                    fetchedAt: new Date().toISOString(),
+                    productCount: products.length,
+                    evaluation,
+                };
+                fs.writeFileSync(cachePath, JSON.stringify(viabilityResult, null, 2));
+            } catch (error) {
+                viabilityResult = {
+                    fetchedAt: new Date().toISOString(),
+                    productCount: 0,
+                    evaluation: {
+                        isViable: false,
+                        skipReason: 'kakaku_lookup_failed',
+                        measurableAxes: [],
+                    },
+                    error: error.message,
+                };
+                fs.writeFileSync(cachePath, JSON.stringify(viabilityResult, null, 2));
+            }
+        }
+
+        const evaluation = viabilityResult.evaluation || {};
+        if (evaluation.isViable) {
+            const axisSummary = (evaluation.measurableAxes || [])
+                .map((axis) => `${axis.axisTitle} (${axis.matchedLabels.join(' / ')})`)
+                .join(', ');
+            console.log(`✅ measurable: ${axisSummary}`);
+            viableCandidates.push({
+                ...candidate,
+                kakakuViability: evaluation,
+            });
+        } else {
+            console.log(`❌ ${evaluation.skipReason || 'not_viable'}`);
+            skippedCandidates.push({
+                ...candidate,
+                skipReason: evaluation.skipReason || 'not_viable',
+                kakakuViability: evaluation,
+            });
+        }
+
+        await delay(300);
+    }
+
+    return {
+        viableCandidates,
+        skippedCandidates,
+    };
+}
+
 // ==========================================
 // 🔍 PHASE 1: SITUATION KEYWORD MINING
 // ==========================================
@@ -258,6 +757,13 @@ async function mineSituationKeywords(seed, specDetails = '') {
 async function generateSituationBlueprint(seed, situationData, specResult) {
     const { situation, baseQuery, suggestions } = situationData;
     const specDetails = specResult.details || '';
+    const viability = situationData.kakakuViability || {};
+    const measurableAxes = Array.isArray(viability.measurableAxes) ? viability.measurableAxes : [];
+    const viabilityPromptBlock = measurableAxes.length > 0
+        ? measurableAxes
+            .map((axis) => `- ${axis.axisTitle}: ${axis.matchedLabels.join(' / ')}`)
+            .join('\n')
+        : '（事前検証で有効軸なし）';
 
     // スペック情報は main() で事前取得済み → 引数から受け取る
 
@@ -270,6 +776,14 @@ async function generateSituationBlueprint(seed, situationData, specResult) {
 
 ## Googleサジェストで見つかった関連キーワード
 ${suggestions.join(', ') || baseQuery}
+
+## 価格.com 事前検証で「実際に測れる」と確認できた軸
+${viabilityPromptBlock}
+
+重要:
+- comparison_axis と ranking_criteria は、原則として上の事前検証済みの軸から組み立ててください
+- 上の軸にない主観的な評価軸（装着感、音質の良さ、座り心地の良さ等）を comparison_axis に入れてはいけません
+- 事前検証済みの軸が1つしかない場合でも、その1軸を中心にして required_features と ranking_criteria を設計してください
 
 ## タスク
 1. この「状況」で検索する人の**具体的な悩み・不安**を深堀りしてください
@@ -405,8 +919,62 @@ async function main() {
         return;
     }
 
-    // Take top 20 by demand
-    const topSituations = situationKeywords.slice(0, 20);
+    const {
+        approvedCandidates,
+        skippedCandidates,
+        publishedIntentIndex,
+    } = preFilterSituationKeywords(SEED_KEYWORD, situationKeywords);
+
+    console.log(`\n🔎 Phase 1.5: Pre-filter before blueprint generation`);
+    console.log(`   Published intents checked: ${publishedIntentIndex.relevantArticleCount}`);
+    console.log(`   Passed pre-filter: ${approvedCandidates.length}`);
+    console.log(`   Skipped before AI: ${skippedCandidates.length}`);
+
+    if (skippedCandidates.length > 0) {
+        const skipSummary = skippedCandidates.reduce((acc, item) => {
+            acc[item.skipReason] = (acc[item.skipReason] || 0) + 1;
+            return acc;
+        }, {});
+
+        Object.entries(skipSummary).forEach(([reason, count]) => {
+            console.log(`   - ${reason}: ${count}`);
+        });
+    }
+
+    if (approvedCandidates.length === 0) {
+        console.log("\n笶・All mined situations were filtered out before blueprint generation.");
+        return;
+    }
+
+    // Take top 12 by demand after duplicate filtering to keep the expensive Kakaku precheck practical
+    const demandFilteredCandidates = approvedCandidates.slice(0, 12);
+
+    const {
+        viableCandidates,
+        skippedCandidates: viabilitySkippedCandidates,
+    } = await precheckSituationKeywordsWithKakaku(SEED_KEYWORD, demandFilteredCandidates);
+
+    console.log(`\n🔎 Phase 1.75 Summary`);
+    console.log(`   Passed Kakaku viability: ${viableCandidates.length}`);
+    console.log(`   Rejected by Kakaku viability: ${viabilitySkippedCandidates.length}`);
+
+    if (viabilitySkippedCandidates.length > 0) {
+        const viabilitySummary = viabilitySkippedCandidates.reduce((acc, item) => {
+            acc[item.skipReason] = (acc[item.skipReason] || 0) + 1;
+            return acc;
+        }, {});
+
+        Object.entries(viabilitySummary).forEach(([reason, count]) => {
+            console.log(`   - ${reason}: ${count}`);
+        });
+    }
+
+    if (viableCandidates.length === 0) {
+        console.log('\n❌ No situations passed Kakaku viability precheck.');
+        return;
+    }
+
+    const topSituations = viableCandidates;
 
     console.log(`\n🏗️ Phase 2: Generating Blueprints for top ${topSituations.length} situations...\n`);
 
@@ -416,8 +984,9 @@ async function main() {
         process.stdout.write(`   [${i + 1}/${topSituations.length}] "${sit.situation}" (Demand: ${sit.demandScore})... `);
 
         const blueprint = await generateSituationBlueprint(SEED_KEYWORD, sit, specResult);
+        const validation = validateBlueprintShape(blueprint);
 
-        if (blueprint && blueprint.status === "APPROVED") {
+        if (blueprint && blueprint.status === "APPROVED" && validation.isValid) {
             console.log("✅ APPROVED");
             blueprint.demandScore = sit.demandScore;
             blueprint.googleSuggestions = sit.suggestions;
@@ -428,7 +997,9 @@ async function main() {
                 blueprint: blueprint
             });
         } else {
-            const reason = blueprint?.reason || blueprint?.status || "Generation failed";
+            const reason = validation.isValid
+                ? (blueprint?.reason || blueprint?.status || "Generation failed")
+                : validation.reason;
             console.log(`❌ ${reason}`);
         }
 
@@ -442,6 +1013,8 @@ async function main() {
     console.log(`\n${'='.repeat(60)}`);
     console.log(`✨ MISSION COMPLETE ✨`);
     console.log(`   Found ${situationKeywords.length} situation keywords with demand`);
+    console.log(`   Passed pre-filter: ${approvedCandidates.length}`);
+    console.log(`   Passed Kakaku viability: ${viableCandidates.length}`);
     console.log(`   Generated ${blueprints.length} approved blueprints`);
     console.log(`   Saved to: ${filename}`);
     console.log(`\n📋 Approved Situations:`);

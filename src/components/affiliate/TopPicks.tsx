@@ -1,6 +1,4 @@
 import React from 'react';
-import { Crown, Zap, Home } from 'lucide-react';
-
 interface TopPickItem {
     rank: number;
     id: string;

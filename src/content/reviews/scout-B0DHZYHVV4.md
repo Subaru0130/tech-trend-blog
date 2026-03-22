@@ -1,6 +1,6 @@
 ---
-title: "SONY LinkBuds Fit WF-LS910N レビュー：プロが教える「買い」の理由"
-description: "SONY LinkBuds Fit WF-LS910Nの実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
+title: "SONY LinkBuds Fit WF-LS910N レビュー｜特徴・注意点・向いている人"
+description: "SONY LinkBuds Fit WF-LS910Nの特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
 date: "2026-02-16"
 category: "Reviews"
 product_id: "scout-B0DHZYHVV4"

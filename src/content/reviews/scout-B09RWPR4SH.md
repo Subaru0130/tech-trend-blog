@@ -1,12 +1,12 @@
 ---
-title: "SONY LinkBuds WF-L900 レビュー：プロが教える「買い」の理由"
-description: "SONY LinkBuds WF-L900の実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
-date: "2026-03-09"
-category: "Reviews"
-product_id: "scout-B09RWPR4SH"
+title: "SONY LinkBuds WF-L900 レビュー｜特徴・注意点・向いている人"
+description: "SONY LinkBuds WF-L900の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
+date: '2026-03-09'
+category: Reviews
+product_id: scout-B09RWPR4SH
 author: "ChoiceGuide編集部"
-thumbnail: "/images/products/sony-linkbuds-wf-l900-d009.jpg"
-ranking_url: "/rankings/wireless-earphones-junior-high/"
+thumbnail: /images/products/sony-linkbuds-wf-l900-d009.jpg
+ranking_url: /rankings/wireless-earphones-junior-high/
 ---
 
 価格,連続再生時間,重量の観点でスペックとユーザー評価を徹底分析しました。

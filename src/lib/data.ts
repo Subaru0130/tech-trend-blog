@@ -1,9 +1,24 @@
 import productsData from '@/data/products.json';
 import articlesData from '@/data/articles.json';
 import { Product, Article } from '@/types';
+import {
+    getRelatedArticles,
+    normalizeArticle,
+    sortArticlesByFeatured,
+    sortArticlesByNewest,
+} from '@/lib/article-utils';
 
 export function getAllProducts(): Product[] {
     return productsData as unknown as Product[];
+}
+
+const CATEGORY_ALIASES: Record<string, string> = {
+    furniture: 'interior',
+};
+
+export function resolveMajorCategorySlug(slug?: string): string {
+    if (!slug) return '';
+    return CATEGORY_ALIASES[slug] || slug;
 }
 
 export function getProductById(id: string): Product | undefined {
@@ -31,24 +46,32 @@ export function getProductsByType(type: string): Product[] {
 
 export function getProductsBySubCategory(subCategory: string): Product[] {
     return getAllProducts()
-        .filter((p) => (p as any).subCategory === subCategory)
+        .filter((p) => ('subCategory' in p ? p.subCategory === subCategory : false))
         .sort((a, b) => a.rank - b.rank);
 }
 
 export function getArticlesByCategory(category: string): Article[] {
-    return (articlesData as Article[])
-        .filter((a) => (a.category === category || a.categoryId === category))
-        .sort((a, b) => new Date(b.publishedAt || '').getTime() - new Date(a.publishedAt || '').getTime());
+    const resolvedCategory = resolveMajorCategorySlug(category);
+
+    return sortArticlesByNewest(
+        (articlesData as Article[])
+            .map(normalizeArticle)
+            .filter((a) => {
+                const articleCategory = resolveMajorCategorySlug(a.categoryId || a.category);
+                return articleCategory === resolvedCategory;
+            })
+    );
 }
 
 export function getArticleBySlug(slug: string): Article | undefined {
-    let article = (articlesData as Article[]).find((a) => a.id === slug || a.slug === slug);
+    const normalizedArticles = (articlesData as Article[]).map(normalizeArticle);
+    let article = normalizedArticles.find((a) => a.id === slug || a.slug === slug);
     if (!article) {
         // Try decoding
         try {
             const decoded = decodeURIComponent(slug);
-            article = (articlesData as Article[]).find((a) => a.id === decoded || a.slug === decoded);
-        } catch (e) {
+            article = normalizedArticles.find((a) => a.id === decoded || a.slug === decoded);
+        } catch {
             // ignore
         }
     }
@@ -56,11 +79,16 @@ export function getArticleBySlug(slug: string): Article | undefined {
 }
 
 export function getAllArticles(): Article[] {
-    return (articlesData as Article[]).sort((a, b) => new Date(b.publishedAt || '').getTime() - new Date(a.publishedAt || '').getTime());
+    return sortArticlesByNewest((articlesData as Article[]).map(normalizeArticle));
+}
+
+export function getFeaturedArticles(limit = 4, category?: string): Article[] {
+    const sourceArticles = category ? getArticlesByCategory(category) : getAllArticles();
+    return sortArticlesByFeatured(sourceArticles).slice(0, limit);
 }
 
 export function getArticleByProductId(productId: string): Article | undefined {
-    return (articlesData as Article[]).find(article => {
+    return getAllArticles().find(article => {
         // Check rankingItems
         if (article.rankingItems?.some(item => item.productId === productId)) return true;
         // Check legacy products array
@@ -71,11 +99,15 @@ export function getArticleByProductId(productId: string): Article | undefined {
 
 // ★ Returns ALL articles that contain this product (for multi-article support)
 export function getArticlesByProductId(productId: string): Article[] {
-    return (articlesData as Article[]).filter(article => {
+    return getAllArticles().filter(article => {
         if (article.rankingItems?.some(item => item.productId === productId)) return true;
         if (article.products?.includes(productId)) return true;
         return false;
     });
+}
+
+export function getRelatedArticlesForArticle(sourceArticle: Article, limit = 3): Article[] {
+    return getRelatedArticles(sourceArticle, getAllArticles(), limit);
 }
 
 export const CATEGORY_MAP: Record<string, { label: string; icon: string; subCategories: { label: string; slug: string; icon: string }[] }> = {
@@ -135,5 +167,10 @@ export const CATEGORY_MAP: Record<string, { label: string; icon: string; subCate
 };
 
 export function getMajorCategoryInfo(slug: string) {
-    return CATEGORY_MAP[slug];
+    return CATEGORY_MAP[resolveMajorCategorySlug(slug)];
+}
+
+export function getMajorCategoryLink(slug?: string): string {
+    const resolvedSlug = resolveMajorCategorySlug(slug);
+    return resolvedSlug ? `/categories/${resolvedSlug}` : '/categories';
 }

@@ -1,10 +1,10 @@
 ---
-title: "final TONALITE レビュー�E��Eロが教える「買ぁE���E琁E��"
-description: "final TONALITEの実機レビュー。メリチE��・チE��リチE��から、誰におすすめかまで徹底解説、E
+title: "final TONALITE レビュー｜特徴・注意点・向いている人"
+description: "final TONALITEの特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
 date: "2026-02-23"
 category: "Reviews"
 product_id: "scout-B0G48FKH2H"
-author: "ChoiceGuide編雁E��"
+author: "ChoiceGuide編集部"
 thumbnail: "/images/products/final-tonalite-9dd6.jpg"
 ranking_url: "/rankings/wireless-earphones-small-ears/"
 ---

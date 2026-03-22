@@ -1,10 +1,10 @@
 ---
-title: "パナソニック Technics EAH-AZ100 レビュー�E��Eロが教える「買ぁE���E琁E��"
-description: "パナソニック Technics EAH-AZ100の実機レビュー。メリチE��・チE��リチE��から、誰におすすめかまで徹底解説、E
+title: "パナソニック Technics EAH-AZ100 レビュー｜特徴・注意点・向いている人"
+description: "パナソニック Technics EAH-AZ100の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
 date: "2026-02-23"
 category: "Reviews"
 product_id: "scout-B0DQBSZVGX"
-author: "ChoiceGuide編雁E��"
+author: "ChoiceGuide編集部"
 thumbnail: "/images/products/technics-eah-az100-1b8e.jpg"
 ranking_url: "/rankings/wireless-earphones-small-ears/"
 ---

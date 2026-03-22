@@ -1,22 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/purity, @next/next/no-html-link-for-pages, prefer-const */
 import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import fs from 'fs';
 import path from 'path';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-// @ts-ignore
 import remarkGfm from 'remark-gfm';
 import matter from 'gray-matter';
 import Header from '@/components/shared/Header';
 import Footer from '@/components/shared/Footer';
-import { getArticleBySlug, getProductById } from '@/lib/data';
+import { getAllArticles, getArticleBySlug, getMajorCategoryInfo, getMajorCategoryLink, getProductById, resolveMajorCategorySlug } from '@/lib/data';
 import { getAmazonLink, getRakutenLink } from '@/lib/affiliate';
 import { Metadata } from 'next';
 import { RankingItem, Product } from '@/types';
 import ComparisonTable from '@/components/rankings/ComparisonTable';
-import { RankingCard } from '@/components/affiliate/RankingCard';
 import rehypeSlug from 'rehype-slug';
 import TableOfContents from '@/components/shared/TableOfContents';
 import GlossarySection from '@/components/shared/GlossarySection';
+import EditorialPolicyCard from '@/components/shared/EditorialPolicyCard';
+import { getArticleDisplayDate, getRelatedArticles, isRankingArticle } from '@/lib/article-utils';
 
 // Utility to slugs
 const slugify = (text: string) => {
@@ -75,8 +78,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         "image": [
             article.thumbnail
         ],
-        "datePublished": article.publishDate || article.publishedAt,
-        "dateModified": article.updatedDate || article.publishDate,
+        "datePublished": getArticleDisplayDate(article),
+        "dateModified": article.updatedDate || getArticleDisplayDate(article),
         "author": [{
             "@type": "Person",
             "name": article.author,
@@ -88,7 +91,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: `${article.title}`,
         description: article.description,
         alternates: {
-            canonical: `https://choiceguide.jp/rankings/${slug}`,
+            canonical: `https://choiceguide.jp/rankings/${slug}/`,
         },
         openGraph: {
             title: article.title,
@@ -143,7 +146,7 @@ export default async function RankingPage({ params }: Props) {
             const item: RankingItem = {
                 rank: index + 1,
                 productId: product.id,
-                badge: index === 0 ? "総合No.1" : (product.tags?.highCospa ? "コスパ最強" : "おすすめ"),
+                badge: index === 0 ? "総合No.1" : (product.tags?.highCospa ? "コスパ重視" : "おすすめ"),
                 rankBadge: index === 0 ? "gold" : (index === 1 ? "silver" : (index === 2 ? "bronze" : undefined)),
                 rating: product.rating,
                 reviewCount: product.reviewCount,
@@ -218,6 +221,12 @@ export default async function RankingPage({ params }: Props) {
             id: `rank-${item.rank}`
         });
     });
+
+    const relatedArticles = getRelatedArticles(article, getAllArticles(), 3);
+    const majorCategorySlug = resolveMajorCategorySlug(article.categoryId || article.category);
+    const majorCategoryInfo = getMajorCategoryInfo(majorCategorySlug);
+    const categoryLabel = majorCategoryInfo?.label || 'カテゴリ';
+    const categoryHref = getMajorCategoryLink(majorCategorySlug);
 
     return (
         <>
@@ -318,8 +327,8 @@ export default async function RankingPage({ params }: Props) {
                                         {
                                             "@type": "ListItem",
                                             "position": 3,
-                                            "name": article.categoryId === 'audio' ? 'オーディオ' : (article.categoryId === 'gadget' ? 'ガジェット' : (article.categoryId === 'home-appliances' ? '生活家電' : 'その他')),
-                                            "item": `https://choiceguide.jp/categories/${article.categoryId}`
+                                            "name": categoryLabel,
+                                            "item": `https://choiceguide.jp${categoryHref}`
                                         },
                                         {
                                             "@type": "ListItem",
@@ -338,7 +347,7 @@ export default async function RankingPage({ params }: Props) {
                             <span className="mx-2 text-stone-300">/</span>
                             <a className="hover:text-accent transition-colors" href="/categories">カテゴリ</a>
                             <span className="mx-2 text-stone-300">/</span>
-                            <a className="hover:text-accent transition-colors" href={`/categories/${article.categoryId}`}>{article.categoryId === 'audio' ? 'オーディオ' : (article.categoryId === 'gadget' ? 'ガジェット' : (article.categoryId === 'home-appliances' ? '生活家電' : 'その他'))}</a>
+                            <a className="hover:text-accent transition-colors" href={categoryHref}>{categoryLabel}</a>
                             <span className="mx-2 text-stone-300">/</span>
                             <span className="font-bold text-primary">{article.title}</span>
                         </nav>
@@ -348,7 +357,7 @@ export default async function RankingPage({ params }: Props) {
                             <span className="bg-accent/10 text-accent border border-accent/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">{article.subCategoryId}</span>
                             <div className="flex items-center text-xs text-text-sub">
                                 <span className="material-symbols-outlined text-[16px] mr-1">update</span>
-                                <span>{article.updatedDate || article.publishedAt} 更新</span>
+                                <span>{article.updatedDate || getArticleDisplayDate(article)} 更新</span>
                             </div>
                         </div>
                         <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-primary leading-tight mb-6">
@@ -357,10 +366,12 @@ export default async function RankingPage({ params }: Props) {
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-4 border-y border-border-color bg-white/50 rounded-xl px-4">
                             <div className="flex items-center gap-3">
                                 <div className="size-10 rounded-full bg-surface-subtle overflow-hidden border border-border-color relative">
-                                    <img
+                                    <Image
                                         src="/images/author_misaki.png"
                                         alt="編集部"
-                                        className="w-full h-full object-cover"
+                                        className="object-cover"
+                                        fill
+                                        sizes="40px"
                                     />
                                 </div>
                                 <div>
@@ -375,18 +386,24 @@ export default async function RankingPage({ params }: Props) {
                                 {/* Share buttons removed as per user request */}
                             </div>
                         </div>
+                        <EditorialPolicyCard
+                            variant="ranking"
+                            updatedAt={article.updatedDate || getArticleDisplayDate(article)}
+                            authorName={article.author}
+                            className="mt-6"
+                        />
                     </div>
 
                     {article.thumbnail && (
                         <div className="max-w-4xl mx-auto px-4 md:px-6 mb-10">
                             <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-sm border border-border-color">
-                                <img
-                                    src={`${article.thumbnail}?v=${new Date().getTime()}`}
+                                <Image
+                                    src={`${article.thumbnail}?v=${encodeURIComponent(article.updatedDate || getArticleDisplayDate(article))}`}
                                     alt={article.title}
-                                    className="w-full h-full object-cover"
-                                    loading="eager"
-                                    width={1200}
-                                    height={675}
+                                    className="object-cover"
+                                    fill
+                                    priority
+                                    sizes="(max-width: 768px) 100vw, 896px"
                                 />
                             </div>
                             <p className="text-xs text-muted-foreground text-center mt-2">
@@ -477,7 +494,14 @@ export default async function RankingPage({ params }: Props) {
                                             <div className="flex flex-col md:flex-row gap-8 mb-8">
                                                 <div className="md:w-1/2">
                                                     <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-white border border-border-color relative group flex items-center justify-center p-4">
-                                                        <img alt={item.product.name} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" src={item.product.image || "https://placehold.co/600x400"} loading="lazy" width={600} height={450} />
+                                                        <Image
+                                                            alt={item.product.name}
+                                                            className="object-contain transition-transform duration-700 group-hover:scale-105"
+                                                            fill
+                                                            loading="lazy"
+                                                            sizes="(max-width: 768px) 100vw, 384px"
+                                                            src={item.product.image || "https://placehold.co/600x400"}
+                                                        />
                                                         {item.rank === 1 && (
                                                             <div className="absolute top-3 left-3">
                                                                 <span className="bg-white/90 backdrop-blur text-primary text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
@@ -564,7 +588,55 @@ export default async function RankingPage({ params }: Props) {
                         </section>
                     </div>
 
+                    {relatedArticles.length > 0 && (
+                        <section className="max-w-4xl mx-auto px-4 md:px-6 mb-20">
+                            <div className="border-t border-border-color pt-10">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="material-symbols-outlined text-accent">auto_stories</span>
+                                    <h2 className="text-xl md:text-2xl font-black text-primary">関連記事</h2>
+                                </div>
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    {relatedArticles.map((relatedArticle) => {
+                                        const relatedHref = isRankingArticle(relatedArticle)
+                                            ? `/rankings/${relatedArticle.id}`
+                                            : `/reviews/${relatedArticle.id}`;
 
+                                        return (
+                                            <Link
+                                                key={relatedArticle.id}
+                                                href={relatedHref}
+                                                className="group bg-white rounded-2xl border border-border-color overflow-hidden shadow-sm hover:shadow-card-hover hover:border-primary/20 transition-all duration-300"
+                                            >
+                                                <div className="aspect-[16/10] overflow-hidden bg-surface-subtle relative">
+                                                    <Image
+                                                        src={relatedArticle.thumbnail}
+                                                        alt={relatedArticle.title}
+                                                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                                        fill
+                                                        loading="lazy"
+                                                        sizes="(max-width: 768px) 100vw, 288px"
+                                                    />
+                                                </div>
+                                                <div className="p-5">
+                                                    <div className="flex items-center gap-2 text-[11px] text-stone-400 mb-2">
+                                                        <span>{relatedArticle.subCategoryId || article.subCategoryId}</span>
+                                                        <span>•</span>
+                                                        <span>{getArticleDisplayDate(relatedArticle)}</span>
+                                                    </div>
+                                                    <h3 className="font-bold text-primary leading-snug mb-2 line-clamp-2 group-hover:text-accent transition-colors">
+                                                        {relatedArticle.title}
+                                                    </h3>
+                                                    <p className="text-sm text-text-sub line-clamp-3">
+                                                        {relatedArticle.description}
+                                                    </p>
+                                                </div>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </section>
+                    )}
 
                     {/* Dynamic Markdown Content (Buying Guide etc.) */}
                     {/* Dynamic Markdown Content (Buying Guide etc.) - FALLBACK ONLY */}

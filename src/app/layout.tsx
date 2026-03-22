@@ -11,9 +11,8 @@ const manrope = Manrope({
 });
 
 const notoSansJP = Noto_Sans_JP({
-  subsets: ["latin"], // Noto Sans JP automatically handles Japanese subset via Google Fonts API behavior but 'latin' is usually required argument or preload: false
-  preload: false, // Preloading JP fonts can be heavy, usually recommended false or 'latin' only if mixed. Next.js docs say preload: false for subsets not available. Noto Sans JP has subsets. 
-  // Let's try standard config:
+  subsets: ["latin"],
+  preload: false,
   variable: "--font-noto-sans-jp",
   display: "swap",
 });
@@ -23,25 +22,28 @@ export const metadata: Metadata = {
     template: "%s | ChoiceGuide",
     default: "ChoiceGuide - 暮らしを豊かにする家電選び",
   },
-  description: "専門家が厳選した家電・日用品のおすすめランキング。冷蔵庫、洗濯機から最新ガジェットまで、失敗しない買い物ガイド。",
-  metadataBase: new URL('https://choiceguide.jp'),
+  description:
+    "家電・ガジェット・インテリアの比較レビューをもとに、使い方に合う一台を選びやすくする比較サイトです。",
+  metadataBase: new URL("https://choiceguide.jp"),
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
-    siteName: 'ChoiceGuide',
-    type: 'website',
-    images: [{
-      url: 'https://choiceguide.jp/images/ogp-default.png',
-      width: 1200,
-      height: 630,
-      alt: 'ChoiceGuide - 暮らしを豊かにする家電選び',
-    }],
+    siteName: "ChoiceGuide",
+    type: "website",
+    images: [
+      {
+        url: "https://choiceguide.jp/images/ogp-default.png",
+        width: 1200,
+        height: 630,
+        alt: "ChoiceGuide - 暮らしを豊かにする家電選び",
+      },
+    ],
   },
   twitter: {
-    card: 'summary_large_image',
-    images: ['https://choiceguide.jp/images/ogp-default.png'],
+    card: "summary_large_image",
+    images: ["https://choiceguide.jp/images/ogp-default.png"],
   },
 };
 
@@ -51,11 +53,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" suppressHydrationWarning className={`${manrope.variable} ${notoSansJP.variable}`}>
-      <head>
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      </head>
+    <html
+      lang="ja"
+      suppressHydrationWarning
+      className={`${manrope.variable} ${notoSansJP.variable}`}
+    >
       <body
         className="antialiased font-sans bg-background-light text-text-main"
         suppressHydrationWarning
@@ -79,14 +81,14 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "ChoiceGuide",
-              "url": "https://choiceguide.jp",
-              "logo": "https://choiceguide.jp/logo.png",
-              "contactPoint": {
+              name: "ChoiceGuide",
+              url: "https://choiceguide.jp",
+              logo: "https://choiceguide.jp/logo.png",
+              contactPoint: {
                 "@type": "ContactPoint",
-                "telephone": "+81-00-0000-0000",
-                "contactType": "customer service"
-              }
+                telephone: "+81-00-0000-0000",
+                contactType: "customer service",
+              },
             }),
           }}
         />

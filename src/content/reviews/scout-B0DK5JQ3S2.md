@@ -1,6 +1,6 @@
 ---
-title: "Bose Ultra Open Earbuds レビュー：プロが教える「買い」の理由"
-description: "Bose Ultra Open Earbudsの実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
+title: "Bose Ultra Open Earbuds レビュー｜特徴・注意点・向いている人"
+description: "Bose Ultra Open Earbudsの特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
 date: "2026-03-06"
 category: "Reviews"
 product_id: "scout-B0DK5JQ3S2"

@@ -169,7 +169,7 @@ async function searchBing(query) {
             req.setTimeout(3000, () => { req.destroy(); reject(new Error('timeout')); });
         });
 
-        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null, protocolTimeout: 120000 });
+        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null, protocolTimeout: 180000 });
         isRemote = true;
         // console.log(`      ✅ Connected to Chrome (remote debugging)`);
     } catch (e) {
@@ -231,12 +231,16 @@ async function searchBing(query) {
             return snippets.slice(0, 10);
         }, TRUSTED_SOURCES);
 
-        await browser.close();
+        if (isRemote) await browser.disconnect();
+        else await browser.close();
         return results;
 
     } catch (e) {
         console.log(`      ⚠️ Search failed: ${e.message}`);
-        if (browser) await browser.close();
+        if (browser) {
+            if (isRemote) await browser.disconnect();
+            else await browser.close();
+        }
         return [];
     }
 }
@@ -436,7 +440,10 @@ async function scrapePageContent(url) {
         return content;
 
     } catch (e) {
-        if (browser) await browser.close();
+        if (browser) {
+            if (isRemote) await browser.disconnect();
+            else await browser.close();
+        }
         return '';
     }
 }
@@ -515,7 +522,7 @@ const KAKAKU_CATEGORY_MAP = {
     // ================================================================
     '掃除機': { path: 'vacuum', code: '2165' },
     'コードレス掃除機': { path: 'cordless-vacuum', code: '7084' },
-    'ロボット掃除機': { path: 'robot-vacuum', code: '7032' },
+    'ロボット掃除機': { path: 'robot-cleaner', code: 'V045' },
     'ハンディ掃除機': { path: 'handy-vacuum', code: '2167' },
     '布団クリーナー': { path: 'futon-cleaner', code: '7057' },
     'スチームクリーナー': { path: 'steam-cleaner', code: '7044' },
@@ -695,7 +702,7 @@ const KAKAKU_CATEGORY_MAP = {
     '机': { section: 'interior', path: 'desk', code: '0010' },
     'チェア': { section: 'interior', path: 'chair', code: '0020' },
     '椅子': { section: 'interior', path: 'chair', code: '0020' },
-    'オフィスチェア': { section: 'interior', path: 'office-chair', code: '0021' },
+    'オフィスチェア': { section: 'interior', path: 'office-chair', code: '6608' },
     'ゲーミングチェア': { section: 'interior', path: 'gaming-chair', code: '7090' },
     'テーブル': { section: 'interior', path: 'table', code: '0030' },
     'ダイニングテーブル': { section: 'interior', path: 'dining-table', code: '0031' },
@@ -979,7 +986,11 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
     let categoryInfo = null;
     let useSearchMode = options.searchMode || false;
 
-    for (const [key, value] of Object.entries(KAKAKU_CATEGORY_MAP)) {
+    const categoryEntries = Object.entries(KAKAKU_CATEGORY_MAP)
+        .filter(([key]) => key !== 'default')
+        .sort((a, b) => b[0].length - a[0].length);
+
+    for (const [key, value] of categoryEntries) {
         if (key !== 'default' && keyword.includes(key)) {
             categoryInfo = value;
             break;
@@ -1014,7 +1025,7 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
             req.on('error', reject);
             req.setTimeout(3000, () => { req.destroy(); reject(new Error('timeout')); });
         });
-        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null, protocolTimeout: 120000 });
+        browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null, protocolTimeout: 180000 });
         isRemote = true;
         console.log('   🌐 Connected to remote Chrome for better Amazon compatibility');
     } catch (e) {
@@ -1141,9 +1152,11 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
                     // Working selectors for Kakaku.com ranking pages
                     // Note: Broad selectors may match duplicates, but we deduplicate by URL
                     const selectors = [
-                        '[class*="rkgBox"]',                // Matches ranking box elements
-                        'a[href*="/item/"]',                // Product links as fallback
-                        '.p-result_item'                    // Search result items
+                        '.rkgBox',                          // Current Kakaku ranking card
+                        '[class*="rkgBox noGraph"]',        // Legacy ranking card variant
+                        '[class*="rkgBox"]',                // Broad fallback for ranking pages
+                        '.p-result_item',                   // Search result items
+                        'a[href*="/item/"]'                 // Product links as last fallback
                     ];
 
                     const seenUrls = new Set();  // Deduplicate by product URL
@@ -1157,13 +1170,15 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
 
                     productElements.forEach(el => {
                         // Try multiple name selectors
-                        const nameEl = el.querySelector('.itemName a, .p-result_title a, a[class*="name"], h3 a, .c-productCard_name a, a');
+                        const nameEl = el.matches?.('a[href*="/item/"]')
+                            ? el
+                            : el.querySelector('.itemName a, .p-result_title a, .rkgBoxNameItem a, .rkgBoxLink, a[class*="name"], h3 a, .c-productCard_name a, a[href*="/item/"]');
                         // Try multiple price selectors
-                        const priceEl = el.querySelector('.price, .p-result_price, [class*="price"], .c-productCard_price');
-                        const ratingEl = el.querySelector('.star, .p-result_rating, [class*="rating"]');
+                        const priceEl = el.querySelector('.price, .p-result_price, .rkgPrice, [class*="price"], [class*="Price"], .c-productCard_price');
+                        const ratingEl = el.querySelector('.star, .p-result_rating, .rkgEvaluate, [class*="rating"], [class*="Rating"]');
 
                         // Extract Image (High Resolution Priority)
-                        const imgEl = el.querySelector('.p-result_item_image img, .c-productCard_image img, .itemImg img, img');
+                        const imgEl = el.querySelector('.p-result_item_image img, .c-productCard_image img, .itemImg img, .rkgItemImg img, img');
                         let imageUrl = null;
                         if (imgEl) {
                             imageUrl = imgEl.src || imgEl.getAttribute('data-src') || imgEl.getAttribute('data-original');
@@ -1778,7 +1793,8 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
         console.log(`   📄 Scraped ${pageNum} pages, ${allProducts.length} raw products`);
 
 
-        await browser.close();
+        if (isRemote) await browser.disconnect();
+        else await browser.close();
 
         // Deduplicate by name
         const uniqueProducts = [];
@@ -1815,7 +1831,10 @@ async function scrapeKakakuRanking(keyword = 'イヤホン', options = {}) {
 
     } catch (e) {
         console.log(`   ⚠️ Kakaku scraping failed: ${e.message}`);
-        if (browser) await browser.close();
+        if (browser) {
+            if (isRemote) await browser.disconnect();
+            else await browser.close();
+        }
         return [];
     }
 }
@@ -1849,7 +1868,7 @@ async function scrapeMyBestRanking(keyword) {
                     req.on('error', reject);
                     req.setTimeout(2000, () => { req.destroy(); reject(new Error('timeout')); });
                 });
-                browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null, protocolTimeout: 120000 });
+                browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null, protocolTimeout: 180000 });
             } catch (connectErr) {
                 console.log(`   ⚠️ Could not connect to shared Chrome, falling back to new instance: ${connectErr.message}`);
                 // Fallback: Launch new (headless) - might fail if profile is locked, but standard behavior
@@ -1988,7 +2007,7 @@ async function scrapeAmazonBestseller(category = '3477981', options = {}) {
                 req.on('error', reject);
                 req.setTimeout(2000, () => { req.destroy(); reject(new Error('timeout')); });
             });
-            browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null, protocolTimeout: 120000 });
+            browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null, protocolTimeout: 180000 });
         } catch (connectErr) {
             browser = await puppeteer.launch({
                 headless: 'new',
@@ -2338,7 +2357,15 @@ async function scrapeKakakuRankingWithEnrichment(keyword = 'イヤホン', optio
     console.log(`\n📊 Kakaku.com Full Market Research for "${keyword}"...`);
 
     // Step 1: Get products from ranking page
-    const products = await scrapeKakakuRanking(keyword, options);
+    let products = await scrapeKakakuRanking(keyword, options);
+
+    if (products.length === 0 && !options.searchMode) {
+        console.log('   ⚠️ Ranking page returned 0 products. Retrying with Kakaku search mode...');
+        products = await scrapeKakakuRanking(keyword, {
+            ...options,
+            searchMode: true,
+        });
+    }
 
     if (products.length === 0) {
         console.log('   ⚠️ No products found from ranking');
@@ -2371,7 +2398,7 @@ async function scrapeKakakuRankingWithEnrichment(keyword = 'イヤホン', optio
                 req.on('error', reject);
                 req.setTimeout(2000, () => { req.destroy(); reject(new Error('timeout')); });
             });
-            browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null, protocolTimeout: 120000 });
+            browser = await puppeteer.connect({ browserWSEndpoint: wsUrl, defaultViewport: null, protocolTimeout: 180000 });
             isConnected = true;
             console.log(`   🔌 Connected to shared Chrome session`);
         } catch (connectErr) {

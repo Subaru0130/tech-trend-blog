@@ -1,10 +1,10 @@
 ---
-title: "SONY WF-C710N レビュー�E��Eロが教える「買ぁE���E琁E��"
-description: "SONY WF-C710Nの実機レビュー。メリチE��・チE��リチE��から、誰におすすめかまで徹底解説、E
+title: "SONY WF-C710N レビュー｜特徴・注意点・向いている人"
+description: "SONY WF-C710Nの特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
 date: "2026-02-23"
 category: "Reviews"
 product_id: "scout-B0F3XF8VD8"
-author: "ChoiceGuide編雁E��"
+author: "ChoiceGuide編集部"
 thumbnail: "/images/products/sony-wf-c710n-99b3.jpg"
 ranking_url: "/rankings/wireless-earphones-small-ears/"
 ---

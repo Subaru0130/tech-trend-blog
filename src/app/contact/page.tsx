@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     title: 'お問い合わせ',
     description: 'ChoiceGuideに関するお問い合わせはこちらからお願いします。',
     alternates: {
-        canonical: 'https://choiceguide.jp/contact',
+        canonical: 'https://choiceguide.jp/contact/',
     },
 };
 

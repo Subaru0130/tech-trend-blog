@@ -495,6 +495,11 @@ async function scrapeKakakuReviews(productName, kakakuUrl = null, maxReviews = 1
     try {
         const page = await browser.newPage();
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+        const closeSession = async () => {
+            await page.close().catch(() => { });
+            if (isRemote) await browser.disconnect();
+            else await browser.close();
+        };
 
         let productPageUrl = kakakuUrl;
 
@@ -556,7 +561,7 @@ async function scrapeKakakuReviews(productName, kakakuUrl = null, maxReviews = 1
             }
 
             if (!productPageUrl) {
-                await browser.close();
+                await closeSession();
                 console.log(`      ⚠️ No product found on 価格.com for: ${productName}`);
                 return null;
             }
@@ -570,23 +575,26 @@ async function scrapeKakakuReviews(productName, kakakuUrl = null, maxReviews = 1
         if (!isDirectReviewPage) {
             // Find the review/kuchikomi link (口コミ or レビュー)
             const reviewLink = await page.evaluate(() => {
-                // Try multiple selectors for review page
-                const selectors = [
-                    'a[href*="/review/"]',
-                    'a[href*="review"]',
-                    '.subNavi a:contains("レビュー")',
-                    'a[href*="/kuchikomi/"]',
-                    'a[href*="/bbs/"]',
-                    '.subNavi a:contains("口コミ")',
-                    'a.tabNav[href*="kuchi"]',
-                    'li.tabItem_kuchikomi a'
-                ];
-                for (const sel of selectors) {
-                    try {
-                        const link = document.querySelector(sel);
-                        if (link && link.href) return link.href;
-                    } catch (e) { }
-                }
+                const anchors = Array.from(document.querySelectorAll('a[href]'));
+                const isBlockedReviewLink = (href) => {
+                    return href.includes('/present/review/') || href.includes('/present/');
+                };
+                const isPreferredReviewLink = (href) => {
+                    if (!href || isBlockedReviewLink(href)) return false;
+                    return href.includes('review.kakaku.com/review/')
+                        || (href.includes('/item/') && (href.includes('/kuchikomi/') || href.includes('/bbs/') || href.includes('/review/')));
+                };
+
+                const preferred = anchors.find((link) => isPreferredReviewLink(link.href));
+                if (preferred) return preferred.href;
+
+                const textMatch = anchors.find((link) => {
+                    const text = (link.textContent || '').trim();
+                    if (!text || isBlockedReviewLink(link.href)) return false;
+                    return text.includes('口コミ') || text.includes('レビュー');
+                });
+                if (textMatch) return textMatch.href;
+
                 // Fallback: construct URL from product page
                 const currentUrl = window.location.href;
                 if (currentUrl.includes('/item/')) {
@@ -731,8 +739,7 @@ async function scrapeKakakuReviews(productName, kakakuUrl = null, maxReviews = 1
 
         const reviewData = allReviews.slice(0, maxReviews);
 
-        if (isRemote) await browser.disconnect();
-        else await browser.close();
+        await closeSession();
 
         if (reviewData.length > 0) {
             // Categorize reviews by sentiment
@@ -756,6 +763,8 @@ async function scrapeKakakuReviews(productName, kakakuUrl = null, maxReviews = 1
 
     } catch (e) {
         if (browser) {
+            const pages = await browser.pages().catch(() => []);
+            await Promise.all(pages.map((p) => p.close().catch(() => { })));
             if (isRemote) await browser.disconnect();
             else await browser.close();
         }

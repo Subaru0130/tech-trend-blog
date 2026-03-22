@@ -16,17 +16,14 @@ type ComparisonTableProps = {
     };
 };
 
+type ComparisonProduct = Product & {
+    calculatedRating?: number;
+    costPerformance?: number;
+};
+
 const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
     // State for expanded view
     const [isExpanded, setIsExpanded] = useState(false);
-
-    console.log('ComparisonTable Debug:', {
-        hasCriteria: !!criteria,
-        points: criteria?.points,
-        productsLen: products.length,
-        firstProductCat: products[0]?.category,
-        firstProductSub: (products[0] as any)?.subCategory
-    });
 
     // Show all products in comparison table, sorted by rank
     const topProducts = products.sort((a, b) => a.rank - b.rank);
@@ -74,6 +71,7 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
                             </thead>
                             <tbody className="divide-y divide-border-color">
                                 {visibleProducts.map((product, index) => {
+                                    const enhancedProduct = product as ComparisonProduct;
                                     // Extract specs with improved matching
                                     const specValues = headers.map((header, headerIdx) => {
                                         if (!product.specs || product.specs.length === 0) return '-';
@@ -132,10 +130,12 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
                                             <td className="px-3 py-3 max-w-[200px] sticky left-12 bg-white z-10">
                                                 <div className="flex items-center gap-3">
                                                     <div className="size-12 rounded-lg relative overflow-hidden border border-border-color bg-white shrink-0">
-                                                        <img
+                                                        <Image
                                                             src={product.image}
                                                             alt={product.name}
-                                                            className="w-full h-full object-cover"
+                                                            fill
+                                                            sizes="48px"
+                                                            className="object-cover"
                                                         />
                                                     </div>
                                                     <Link className="font-bold text-primary hover:text-accent hover:underline line-clamp-2 leading-tight" href={`/reviews/${product.id}`}>
@@ -169,7 +169,7 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
                                                 <div className="flex flex-col items-center">
                                                     <span className="text-rank-gold font-black text-lg flex items-center gap-1">
                                                         <span className="material-symbols-outlined filled text-[18px]">star</span>
-                                                        {((product as any).calculatedRating || product.rating).toFixed(1)}
+                                                        {(enhancedProduct.calculatedRating || product.rating).toFixed(1)}
                                                     </span>
                                                 </div>
                                             </td>
@@ -181,7 +181,7 @@ const ComparisonTable = ({ products = [], criteria }: ComparisonTableProps) => {
                                             {/* コスパ (Cost Performance) Column */}
                                             <td className="px-3 py-3 text-center">
                                                 {(() => {
-                                                    const cp = (product as any).costPerformance || 5;
+                                                    const cp = enhancedProduct.costPerformance || 5;
                                                     let grade = 'B';
                                                     let colorClass = 'text-slate-500 bg-slate-100';
                                                     if (cp >= 8.5) { grade = 'S'; colorClass = 'text-amber-600 bg-amber-100'; }

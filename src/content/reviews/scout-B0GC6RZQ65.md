@@ -1,6 +1,6 @@
 ---
-title: "JVC Victor HA-A110T レビュー：プロが教える「買い」の理由"
-description: "JVC Victor HA-A110Tの実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
+title: "JVC Victor HA-A110T レビュー｜特徴・注意点・向いている人"
+description: "JVC Victor HA-A110Tの特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
 date: "2026-02-16"
 category: "Reviews"
 product_id: "scout-B0GC6RZQ65"

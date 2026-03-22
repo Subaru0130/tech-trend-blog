@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Check, Minus, ExternalLink, ShoppingCart } from 'lucide-react';
+import { Check, Minus, ShoppingCart } from 'lucide-react';
 
 interface ProductSpec {
     id: string;

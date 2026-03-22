@@ -1,4 +1,44 @@
 import React from 'react';
+import Link from 'next/link';
+
+const CATEGORY_ITEMS = [
+    {
+        href: '/categories/kitchen-appliances',
+        icon: 'kitchen',
+        title: 'キッチン家電',
+        subtitle: '炊飯器・電子レンジ',
+    },
+    {
+        href: '/categories/home-appliances',
+        icon: 'local_laundry_service',
+        title: '生活家電',
+        subtitle: '掃除・洗濯・空調',
+    },
+    {
+        href: '/categories/pc-smartphones',
+        icon: 'devices',
+        title: 'PC・スマホ',
+        subtitle: '周辺機器・作業効率化',
+    },
+    {
+        href: '/categories/audio',
+        icon: 'headphones',
+        title: 'オーディオ',
+        subtitle: 'イヤホン・スピーカー',
+    },
+    {
+        href: '/categories/interior',
+        icon: 'chair',
+        title: 'インテリア',
+        subtitle: 'チェア・デスク',
+    },
+    {
+        href: '/categories/beauty-health',
+        icon: 'health_and_beauty',
+        title: '美容・健康',
+        subtitle: 'ドライヤー・ケア',
+    },
+];
 
 export default function CategoryList() {
     return (
@@ -8,62 +48,37 @@ export default function CategoryList() {
                     <div>
                         <h2 className="text-2xl md:text-3xl font-black text-primary flex items-center gap-3">
                             <span className="w-1.5 h-8 bg-accent rounded-full"></span>
-                            探したいモノから選ぶ
+                            気になるジャンルから選ぶ
                         </h2>
-                        <p className="mt-3 text-text-sub text-sm font-medium">生活を便利にするアイテムをカテゴリごとに比較・紹介しています。</p>
+                        <p className="mt-3 text-text-sub text-sm font-medium">
+                            生活に合うアイテムをカテゴリごとに比較して、後悔しにくい選び方をまとめています。
+                        </p>
                     </div>
-                    <a className="hidden md:flex items-center gap-1 text-sm font-bold text-accent hover:text-accent-dark transition-colors group" href="/categories">
+                    <Link className="hidden md:flex items-center gap-1 text-sm font-bold text-accent hover:text-accent-dark transition-colors group" href="/categories">
                         全カテゴリを見る <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
-                    </a>
+                    </Link>
                 </div>
+
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    <a className="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="/categories/kitchen-appliances">
-                        <div className="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
-                            <span className="material-symbols-outlined text-[28px]">kitchen</span>
-                        </div>
-                        <h3 className="font-bold text-sm text-primary mb-1">キッチン家電</h3>
-                        <span className="text-[10px] text-text-sub">冷蔵庫・レンジ</span>
-                    </a>
-                    <a className="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="/categories/home-appliances">
-                        <div className="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
-                            <span className="material-symbols-outlined text-[28px]">local_laundry_service</span>
-                        </div>
-                        <h3 className="font-bold text-sm text-primary mb-1">生活家電</h3>
-                        <span className="text-[10px] text-text-sub">洗濯機・掃除機</span>
-                    </a>
-                    <a className="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="/categories/pc-smartphones">
-                        <div className="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
-                            <span className="material-symbols-outlined text-[28px]">devices</span>
-                        </div>
-                        <h3 className="font-bold text-sm text-primary mb-1">PC・スマホ</h3>
-                        <span className="text-[10px] text-text-sub">パソコン・周辺機器</span>
-                    </a>
-                    <a className="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="/categories/audio">
-                        <div className="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
-                            <span className="material-symbols-outlined text-[28px]">headphones</span>
-                        </div>
-                        <h3 className="font-bold text-sm text-primary mb-1">オーディオ</h3>
-                        <span className="text-[10px] text-text-sub">イヤホン・スピーカー</span>
-                    </a>
-                    <a className="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="/categories/interior">
-                        <div className="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
-                            <span className="material-symbols-outlined text-[28px]">chair</span>
-                        </div>
-                        <h3 className="font-bold text-sm text-primary mb-1">インテリア</h3>
-                        <span className="text-[10px] text-text-sub">家具・収納</span>
-                    </a>
-                    <a className="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover" href="/categories/beauty-health">
-                        <div className="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
-                            <span className="material-symbols-outlined text-[28px]">health_and_beauty</span>
-                        </div>
-                        <h3 className="font-bold text-sm text-primary mb-1">美容・健康</h3>
-                        <span className="text-[10px] text-text-sub">ドライヤー・ケア</span>
-                    </a>
+                    {CATEGORY_ITEMS.map((item) => (
+                        <Link
+                            key={item.href}
+                            className="group bg-surface-subtle hover:bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 border border-transparent hover:border-accent/20 hover:shadow-card-hover"
+                            href={item.href}
+                        >
+                            <div className="mb-4 size-14 rounded-full bg-white group-hover:bg-accent-light flex items-center justify-center shadow-sm text-primary group-hover:text-accent transition-colors duration-300 ring-1 ring-border-color/50 group-hover:ring-accent/20">
+                                <span className="material-symbols-outlined text-[28px]">{item.icon}</span>
+                            </div>
+                            <h3 className="font-bold text-sm text-primary mb-1">{item.title}</h3>
+                            <span className="text-[10px] text-text-sub">{item.subtitle}</span>
+                        </Link>
+                    ))}
                 </div>
+
                 <div className="mt-8 text-center md:hidden">
-                    <a className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-lg bg-surface-subtle text-sm font-bold text-text-main border border-border-color" href="/categories">
+                    <Link className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-lg bg-surface-subtle text-sm font-bold text-text-main border border-border-color" href="/categories">
                         全カテゴリ一覧 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-                    </a>
+                    </Link>
                 </div>
             </div>
         </section>

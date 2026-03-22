@@ -1,12 +1,12 @@
 ---
-title: "パナソニック Technics EAH-AZ60M2 レビュー：プロが教える「買い」の理由"
-description: "パナソニック Technics EAH-AZ60M2の実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
-date: "2026-02-16"
-category: "Reviews"
-product_id: "scout-B0C5WZ737Z"
+title: "パナソニック Technics EAH-AZ60M2 レビュー｜特徴・注意点・向いている人"
+description: "パナソニック Technics EAH-AZ60M2の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
+date: '2026-02-16'
+category: Reviews
+product_id: scout-B0C5WZ737Z
 author: "ChoiceGuide編集部"
-thumbnail: "/images/products/technics-eah-az60m2-e9b7.jpg"
-ranking_url: "/articles/wireless-earphones-gym/"
+thumbnail: /images/products/technics-eah-az60m2-e9b7.jpg
+ranking_url: /articles/wireless-earphones-gym/
 ---
 
 防水・防汗性能、装着安定性（外れにくさ）、音質、バッテリー持続時間の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、「高音質」と「最強の使い勝手」を両立させたいなら、間違いなく買いのモデルです。

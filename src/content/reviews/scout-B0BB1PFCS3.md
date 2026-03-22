@@ -1,12 +1,12 @@
 ---
-title: "ANKER Soundcore Liberty 4 レビュー：プロが教える「買い」の理由"
-description: "ANKER Soundcore Liberty 4の実機レビュー。メリット・デメリットから、誰におすすめかまで徹底解説。"
-date: "2026-03-09"
-category: "Reviews"
-product_id: "scout-B0BB1PFCS3"
+title: "ANKER Soundcore Liberty 4 レビュー｜特徴・注意点・向いている人"
+description: "ANKER Soundcore Liberty 4の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
+date: '2026-03-09'
+category: Reviews
+product_id: scout-B0BB1PFCS3
 author: "ChoiceGuide編集部"
-thumbnail: "/images/products/anker-soundcore-liberty-4-40ed.jpg"
-ranking_url: "/rankings/wireless-earphones-junior-high/"
+thumbnail: /images/products/anker-soundcore-liberty-4-40ed.jpg
+ranking_url: /rankings/wireless-earphones-junior-high/
 ---
 
 価格、連続再生時間、重量の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、1万円台で欲しい機能がすべて揃う優等生です。[ANKER Soundcore Liberty 4](https://www.amazon.co.jp/dp/B0BB1PFCS3?tag=subaru0130-22)は予算と性能のバランスが絶妙な一台です。

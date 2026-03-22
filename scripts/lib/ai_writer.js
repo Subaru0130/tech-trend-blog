@@ -1,6 +1,25 @@
 const { GoogleGenAI } = require('@google/genai');
 const Anthropic = require('@anthropic-ai/sdk').default;
 require('dotenv').config({ path: '.env.local' });
+const {
+    extractComparisonAxes,
+    buildPromptGuardrails,
+    sanitizeGeneratedCopy,
+    summarizeTargetReader,
+} = require('./content_guardrails');
+const {
+    buildAxisEvidencePackets,
+    buildAxisEvidencePrompt,
+} = require('./axis_evidence_builder');
+const {
+    buildFallbackCons,
+    buildFallbackEditorComment,
+    buildFallbackPros,
+    hasUsableInsightList,
+    normalizeEditorComment,
+    normalizeInsightList,
+    normalizeInsightText,
+} = require('./review_copy_guardrails');
 
 const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 if (!apiKey) {
@@ -24,7 +43,20 @@ if (articleAiProvider === 'claude' && !claudeClient) {
 console.log(`📝 Article AI Provider: ${articleAiProvider === 'claude' && claudeClient ? 'Claude Opus 4.5' : 'Gemini'}`);
 
 // Helper function to check if Claude should be used
-const useClaudeForArticles = () => articleAiProvider === 'claude' && claudeClient;
+const shouldUseClaudeForArticles = () => articleAiProvider === 'claude' && claudeClient;
+
+function formatContextDataSummary(contextData = {}) {
+    if (!contextData || typeof contextData !== 'object') {
+        return String(contextData || '');
+    }
+
+    return [
+        contextData.target_reader ? `- Target reader: ${contextData.target_reader}` : '',
+        contextData.comparison_axis ? `- Comparison axis: ${contextData.comparison_axis}` : '',
+        contextData.specVerification ? `- Spec reality hint: ${contextData.specVerification}` : '',
+        contextData.userScenario ? `- Best scenario hint: ${contextData.userScenario}` : '',
+    ].filter(Boolean).join('\n');
+}
 
 
 /**
@@ -91,6 +123,332 @@ async function withRetryAndFallback(primaryOp, fallbackOp, label = 'AI') {
             throw primaryError; // Throw original error
         }
     }
+}
+
+function normalizeForValidation(text) {
+    return String(text || '').normalize('NFKC');
+}
+
+function getBuyingGuideDepthRequirements(axes = []) {
+    const axisCount = Math.max(Array.isArray(axes) ? axes.length : 0, 2);
+    return {
+        minChars: Math.max(2600, 2100 + axisCount * 260),
+        minParagraphs: Math.max(10, 6 + axisCount * 2),
+        minH3: axisCount + 4,
+        minChooseH3: 3,
+    };
+}
+
+function buildBuyingGuideOutline(keyword, ctx, axes = [], stats = {}) {
+    const readerLabel = ctx.reader_label || ctx.target_reader || 'この条件で商品を探している人';
+    const axisLines = (axes.length > 0 ? axes : ['比較ポイント']).slice(0, 4)
+        .map((axis) => `### ${axis}`)
+        .join('\n');
+
+    return [
+        '## こんな人向けに選びました',
+        `- 冒頭2段落で「${readerLabel}」の悩みと、避けたい失敗を書く`,
+        `- ${stats.totalScanned || 0}件を見て${stats.finalCount || 0}件に絞った理由を自然に触れる`,
+        '',
+        '## 今回の比較ポイント',
+        axisLines,
+        '',
+        '## 失敗しない選び方',
+        '### 予算で決める前に見るべき点',
+        `### ${readerLabel}が失敗しやすいポイント`,
+        '### 迷ったときの絞り込み方',
+        '',
+        '## まとめ',
+        '### タイプ別の結論',
+        `- 最後は「それでは、今回おすすめする${stats.finalCount || 0}製品をランキング形式で紹介します。」で締める`,
+    ].join('\n');
+}
+
+function summarizeFallbackEvidence(text, fallback = '') {
+    const summarized = sanitizeGeneratedCopy(String(text || ''))
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    if (!summarized) {
+        return fallback;
+    }
+
+    const firstSentence = summarized
+        .split(/[。！？]/u)
+        .map((part) => part.trim())
+        .find(Boolean) || summarized;
+
+    if (/[がでをにとやもはへからまでより、]$/u.test(firstSentence)) {
+        return fallback;
+    }
+
+    if (firstSentence.length <= 68) {
+        return firstSentence;
+    }
+
+    const compactClauses = firstSentence
+        .split(/[、]/u)
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .slice(0, 2)
+        .join('、');
+
+    if (compactClauses.length >= 18 && compactClauses.length <= 68) {
+        return compactClauses;
+    }
+
+    return fallback;
+}
+
+function buildFallbackBuyingGuideBody(keyword, productList, blueprint, ctx, comparisonAxes, axisEvidencePackets, stats = {}) {
+    const headings = buildBuyingGuideOutline(keyword, ctx, comparisonAxes, stats)
+        .split('\n')
+        .filter((line) => line.startsWith('## '));
+
+    const [
+        introHeading = '## こんな人向けに選びました',
+        axisHeading = '## 比較ポイント',
+        chooseHeading = '## 失敗しない選び方',
+        summaryHeading = '## まとめ',
+    ] = headings;
+
+    const topProducts = productList.slice(0, 3);
+    const featuredNames = topProducts.slice(0, 2).map((product) => product.name).filter(Boolean);
+    const primaryNames = featuredNames.length > 0
+        ? `${featuredNames.join('、')}${topProducts.length > 2 ? 'など' : ''}`
+        : keyword;
+    const axisNames = (comparisonAxes.length > 0 ? comparisonAxes : ['価格.comで確認できる仕様差']).slice(0, 4);
+    const readerLabel = ctx.reader_label || 'この条件で商品を探している人';
+    const topPackets = axisEvidencePackets
+        .flatMap((packet) => packet?.productPackets || [])
+        .filter(Boolean);
+    const firstPacket = topPackets[0] || null;
+    const secondPacket = topPackets[1] || firstPacket;
+    const thirdPacket = topPackets[2] || secondPacket || firstPacket;
+    const firstSpec = firstPacket?.matchedSpecs?.[0] || `${axisNames[0] || '比較ポイント'}: 価格.comで差を確認`;
+    const secondSpec = secondPacket?.matchedSpecs?.[0] || `${axisNames[1] || axisNames[0] || '比較ポイント'}: 価格.comで差を確認`;
+    const thirdSpec = thirdPacket?.matchedSpecs?.[0] || `${axisNames[0] || '比較ポイント'}: 価格.comの表示項目を確認`;
+    const firstScenario = summarizeFallbackEvidence(
+        firstPacket?.userScenario,
+        `${readerLabel}が長時間使ったときに疲れや後悔につながりやすいポイントです`
+    ) || `${readerLabel}が長時間使ったときに疲れや後悔につながりやすいポイントです`;
+    const secondScenario = summarizeFallbackEvidence(
+        secondPacket?.specVerification,
+        `${readerLabel}にとっては数字よりも、体格や設置場所との相性が満足度を左右します`
+    ) || `${readerLabel}にとっては数字よりも、体格や設置場所との相性が満足度を左右します`;
+    const thirdScenario = summarizeFallbackEvidence(
+        thirdPacket?.reviewSnippets?.[0],
+        `レビューでも、使い始めは気にならなくても毎日使うと差が出るという声があります`
+    ) || `レビューでも、使い始めは気にならなくても毎日使うと差が出るという声があります`;
+
+    const axisSections = axisNames.map((axis, index) => {
+        const packet = axisEvidencePackets.find((item) => item.axis === axis) || axisEvidencePackets[index] || null;
+        const leadProduct = packet?.productPackets?.[0];
+        const specEvidence = leadProduct?.matchedSpecs?.[0] || `${axis}: 価格.comで確認できる仕様差あり`;
+        const scenarioEvidence =
+            summarizeFallbackEvidence(
+                leadProduct?.userScenario,
+                `${axis}は長時間使ったときの負担差が出やすいポイントです`
+            ) ||
+            summarizeFallbackEvidence(
+                leadProduct?.specVerification,
+                `${axis}は体格や使い方との相性で差が出やすいポイントです`
+            ) ||
+            `${axis}を重視するなら、実際の使い方に合うモデルを優先するのが安全です`;
+        const reviewEvidence = summarizeFallbackEvidence(
+            leadProduct?.reviewSnippets?.[0],
+            `レビューでも${axis}まわりの使い勝手に差が出るという声があります`
+        ) || `レビューでも${axis}まわりの使い勝手に差が出るという声があります`;
+
+        return [
+            `### ${axis}`,
+            `<mark>${axis}</mark>は、このテーマで失敗を避けるために最初に確認したい比較ポイントです。今回の候補では<mark>${specEvidence}</mark>のように価格.comの仕様差が出ており、数字や有無で判断しやすい軸だけを残しています。`,
+            `${scenarioEvidence}。さらに、${reviewEvidence}。そのため、<mark>${axis}</mark>を軽視すると「買ったのに使わなくなる」失敗につながりやすいです。`
+        ].join('\n');
+    }).join('\n\n');
+
+    const chooseSections = [
+        [
+            '### 予算で決める前に見るべき点',
+            `価格だけで絞る前に、まずは<mark>${firstSpec}</mark>のように価格.comで差が出ている項目を見てください。${firstScenario}。安いモデルでも条件に合えば十分ですが、ここが弱いまま価格だけで選ぶと、結局買い替えたくなることが多いです。`,
+            `${primaryNames}のような上位候補も、単純に高いから優秀なのではなく、<mark>${axisNames[0] || '比較ポイント'}</mark>や${axisNames[1] || axisNames[0] || '比較ポイント'}に理由があるから上位に残っています。価格差を見るときは、スペック差と自分の使い方が一致しているかを先に確かめるのが安全です。`,
+        ].join('\n'),
+        [
+            `### ${readerLabel}が失敗しやすいポイント`,
+            `${readerLabel}が見落としやすいのは、スペック表にある数字をそのまま「使いやすさ」だと思い込んでしまうことです。たとえば<mark>${secondSpec}</mark>のような項目は、数値が良く見えても体格や置き場所に合わないと満足度につながりません。`,
+            `${secondScenario}。特に長時間使うテーマでは、最初の5分では気にならなくても、1週間使ってから不満が出ることがあります。だからこそ、レビューで繰り返し出てくる困りごとまで見て、日常の使い方に置き換えて判断するのが大切です。`,
+        ].join('\n'),
+        [
+            '### 迷ったときの絞り込み方',
+            `候補が多くて決めきれないときは、<mark>絶対に外したくない条件を1つだけ先に決める</mark>のがおすすめです。${axisNames[0] || '比較ポイント'}を最優先にするのか、${axisNames[1] || axisNames[0] || '比較ポイント'}まで含めてバランスを見るのかで、残るモデルはかなり変わります。`,
+            `${thirdScenario}。最後は「体格・使う時間・設置場所」の3つで絞ると、ランキング上位の中でも自分に合うモデルが見えやすくなります。迷ったら、まずは${primaryNames}のような上位候補から比較して、外したくない条件を満たすものを残してください。`,
+        ].join('\n'),
+    ].join('\n\n');
+    const summarySection = [
+        '### タイプ別の結論',
+        `できるだけ失敗を減らしたいなら、まずは<mark>${axisNames[0] || '比較ポイント'}</mark>を最優先に見てください。価格.comで差が確認できる項目を基準にすると、感覚だけで選ぶよりかなりぶれにくくなります。`,
+        `${axisNames[1] ? `<mark>${axisNames[1]}</mark>まで含めてバランスを見たい人は、` : ''}${primaryNames}のような上位候補を比べると、価格差の理由が見えやすいです。反対に、条件がはっきりしている人ほど、ランキング上位でも自分に合わないモデルを早めに外せます。`,
+        `今回の${keyword}比較では、「価格.comで確認できる仕様差」と「自分の生活で必要な条件」が重なるモデルを選ぶのが最短です。`,
+    ].join('\n');
+
+    return sanitizeGeneratedCopy([
+        introHeading,
+        `「${keyword}を選びたいけれど、買ってから後悔する失敗は避けたい」という人向けに、今回は<mark>${axisNames.slice(0, 2).join('・')}</mark>を中心に比較しました。${stats.totalScanned || productList.length}件の候補から${stats.finalCount || productList.length}件まで絞り込み、<mark>${primaryNames}</mark>のように今すぐ比較対象に入れる価値があるモデルだけを残しています。`,
+        `特に${readerLabel}は、スペック表だけでなく「自分の使い方で本当に楽になるか」を見落とすと失敗しやすいです。そこで本文では、<mark>価格.comで確認できる比較ポイント</mark>と、レビューや使用シーンから見えた実用差をセットで整理します。`,
+        '',
+        axisHeading,
+        axisSections,
+        '',
+        chooseHeading,
+        chooseSections,
+        '',
+        summaryHeading,
+        summarySection
+    ].join('\n\n'));
+}
+
+function validateBuyingGuideBody(text, axes = []) {
+    const normalized = normalizeForValidation(text);
+    const introWindow = normalized.slice(0, 900);
+    const requirements = getBuyingGuideDepthRequirements(axes);
+    const requiredHeadings = [
+        '## こんな人向けに選びました',
+        '## 今回の比較ポイント',
+        '## 失敗しない選び方',
+        '## まとめ',
+    ];
+    const issues = [];
+
+    const missingHeadings = requiredHeadings.filter((heading) => !normalized.includes(heading));
+    if (missingHeadings.length > 0) {
+        issues.push(`Missing required headings: ${missingHeadings.join(', ')}`);
+    }
+
+    const markCount = (normalized.match(/<mark>/g) || []).length;
+    if (markCount < 6) {
+        issues.push(`Not enough highlighted key phrases: ${markCount}`);
+    }
+
+    const introHasFailureLanguage = /(失敗|後悔|悩み|困る|避けたい|選び方)/u.test(introWindow);
+    if (!introHasFailureLanguage) {
+        issues.push('Intro does not clearly state the failure or pain to avoid.');
+    }
+
+    const introHasComparisonLanguage = /(比較|基準|チェック|ポイント)/u.test(introWindow);
+    if (!introHasComparisonLanguage) {
+        issues.push('Intro does not explain how products are compared.');
+    }
+
+    const matchedAxes = axes.filter((axis) => normalized.includes(axis));
+    const minAxisMatches = axes.length > 0 ? Math.min(2, axes.length) : 0;
+    if (matchedAxes.length < minAxisMatches) {
+        issues.push(`Too few comparison axes reflected in body: ${matchedAxes.length}/${axes.length}`);
+    }
+
+    const bodyCharCount = normalized.replace(/\s+/g, '').length;
+    if (bodyCharCount < requirements.minChars) {
+        issues.push(`Body is too short for a ranking article: ${bodyCharCount}/${requirements.minChars}`);
+    }
+
+    const h3Count = (normalized.match(/^### /gm) || []).length;
+    if (h3Count < requirements.minH3) {
+        issues.push(`Not enough H3 subsections for depth: ${h3Count}/${requirements.minH3}`);
+    }
+
+    const chooseSectionMatch = text.match(/## 失敗しない選び方([\s\S]*?)(?:\n## |\s*$)/);
+    const chooseH3Count = chooseSectionMatch ? (chooseSectionMatch[1].match(/^### /gm) || []).length : 0;
+    if (chooseH3Count < requirements.minChooseH3) {
+        issues.push(`失敗しない選び方 section is too thin: ${chooseH3Count}/${requirements.minChooseH3}`);
+    }
+
+    if (/^# (?!#).+/m.test(text)) {
+        issues.push('Body contains an H1 heading even though the page title is rendered separately.');
+    }
+
+    const paragraphs = text
+        .split(/\n{2,}/)
+        .map((part) => part.replace(/\s+/g, ' ').trim())
+        .filter((part) => part.length >= 70);
+    if (paragraphs.length < requirements.minParagraphs) {
+        issues.push(`Not enough substantial paragraphs: ${paragraphs.length}/${requirements.minParagraphs}`);
+    }
+
+    const leakedReviewVoice = /(私は|僕は|私も|当方|個人的には|★[0-9]|とさせていただきます|使ってみると)/u.test(text);
+    if (leakedReviewVoice) {
+        issues.push('Body still contains raw first-person review voice.');
+    }
+
+    const seenParagraphs = new Set();
+    const duplicateParagraph = paragraphs.find((paragraph) => {
+        if (seenParagraphs.has(paragraph)) {
+            return true;
+        }
+        seenParagraphs.add(paragraph);
+        return false;
+    });
+
+    if (duplicateParagraph) {
+        issues.push('Body contains duplicated long paragraphs.');
+    }
+
+    return {
+        isValid: issues.length === 0,
+        issues,
+    };
+}
+
+function cleanBuyingGuideMarkdown(text) {
+    let nextText = String(text || '');
+
+    nextText = nextText.replace(/```markdown/g, '').replace(/```/g, '').trim();
+    nextText = nextText.replace(/^---[\s\S]*?---/g, '').trim();
+    nextText = nextText.replace(/^# (?!#).+\n+/u, '');
+
+    const lines = nextText.split('\n');
+    let startIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line === '') continue;
+        if (/^[a-z_]+:\s/i.test(line)) {
+            continue;
+        }
+        startIndex = i;
+        break;
+    }
+
+    nextText = lines.slice(startIndex).join('\n').trim();
+    nextText = nextText.replace(/\*\*/g, '');
+
+    const tableHeaderRegex = /##\s+TOP.*比較表/g;
+    const matches = nextText.match(tableHeaderRegex);
+    if (matches && matches.length > 1) {
+        console.warn('  ⚠️ Detected multiple Comparison Table headers. Removing extras...');
+        const parts = nextText.split(/##\s+TOP.*比較表/);
+        nextText = parts[0] + matches[0] + parts.slice(1).join('\n');
+    }
+
+    return sanitizeGeneratedCopy(nextText);
+}
+
+function buildKakakuEvidencePrompt(plan = null) {
+    if (!plan || !Array.isArray(plan.axisDetails) || plan.axisDetails.length === 0) {
+        return '価格.comで直接確認できる比較軸が薄い場合は、断定を避けて書いてください。';
+    }
+
+    const lines = [
+        '以下は、価格.comのスペック項目に照合して確認できた比較軸です。本文ではこの根拠を主軸にしてください。',
+    ];
+
+    plan.axisDetails.forEach((detail) => {
+        const labelText = detail.matchedLabels?.join(' / ') || '該当ラベルなし';
+        const sampleText = detail.sampleValues?.length > 0 ? ` 例: ${detail.sampleValues.join('、')}` : '';
+        lines.push(`- ${detail.axis}: 価格.comラベル ${labelText}.${sampleText}`);
+    });
+
+    lines.push('各比較軸の段落では、必ず価格.comで確認できるラベル名や数値の意味を噛み砕いて説明してください。');
+    lines.push('レビューや userScenario は補強として使ってよいですが、主張の中心は価格.comで確認できる情報に置いてください。');
+
+    return lines.join('\n');
 }
 
 
@@ -165,7 +523,7 @@ ${context}
  * Generate the MAIN ARTICLE BODY (Buying Guide)
  * 記事の「選び方」や「ランキング」の本文を生成する
  */
-// @ts-ignore
+// @ts-expect-error upstream typing is incomplete for this generated payload flow
 async function generateBuyingGuideBody(keyword, productList, blueprint, stats = { totalScanned: 50, finalCount: 10 }) {
     if (!client) throw new Error("Gemini Client not initialized");
 
@@ -199,11 +557,33 @@ async function generateBuyingGuideBody(keyword, productList, blueprint, stats = 
         comparison_axis: "音質、機能、価格のバランス",
         sales_hook: `最適な${keyword}を見つけるための完全ガイド`
     };
+    const comparisonAxes = (
+        blueprint.kakaku_axis_plan?.axisNames?.length > 0
+            ? blueprint.kakaku_axis_plan.axisNames
+            : extractComparisonAxes(blueprint)
+    ).slice(0, 4);
+    const comparisonAxisText = comparisonAxes.join('、') || blueprint.comparison_axis || defaultContext.comparison_axis;
+    const promptGuardrails = buildPromptGuardrails({
+        keyword,
+        blueprint,
+        axes: comparisonAxes,
+    });
+    const kakakuEvidencePrompt = buildKakakuEvidencePrompt(blueprint.kakaku_axis_plan);
+    const axisEvidencePackets = buildAxisEvidencePackets(productList, blueprint.kakaku_axis_plan);
+    const axisEvidencePrompt = buildAxisEvidencePrompt(axisEvidencePackets);
+    const requiredOutline = buildBuyingGuideOutline(keyword, {
+        target_reader: blueprint.target_reader || defaultContext.target_reader,
+        reader_label: summarizeTargetReader(blueprint.target_reader || defaultContext.target_reader),
+        target_reader_situation: blueprint.target_reader_situation || "日常使い",
+        comparison_axis: comparisonAxisText,
+        sales_hook: blueprint.sales_hook || defaultContext.sales_hook,
+    }, comparisonAxes, stats);
 
     const ctx = {
         target_reader: blueprint.target_reader || defaultContext.target_reader,
+        reader_label: summarizeTargetReader(blueprint.target_reader || defaultContext.target_reader),
         target_reader_situation: blueprint.target_reader_situation || "日常使い",
-        comparison_axis: blueprint.comparison_axis || defaultContext.comparison_axis,
+        comparison_axis: comparisonAxisText,
         sales_hook: blueprint.sales_hook || defaultContext.sales_hook
     };
 
@@ -211,8 +591,45 @@ async function generateBuyingGuideBody(keyword, productList, blueprint, stats = 
 # Role
 あなたは、情報過多で「何を買えばいいかわからない」と迷っている読者に寄り添う、**親切で知識豊富な「専属アドバイザー」**です。
 重要な事実: **あなたはこの製品を所有していません。** したがって「実際に使った」という嘘は絶対につかないでください。
-「数百件のレビューを分析した結果」という**客観的な分析視点**を持ちつつ、**丁寧で柔らかい（です・ます調）語り口**で解説してください。
+実際のレビューやスペック情報を整理した**客観的な分析視点**を持ちつつ、**丁寧で柔らかい（です・ます調）語り口**で解説してください。
 上から目線の「断定」や、冷たい「体言止め」は禁止です。
+
+# SEO / Conversion Guardrails
+${promptGuardrails}
+
+# Kakaku-first Evidence
+${kakakuEvidencePrompt}
+
+# Axis Evidence Pack
+${axisEvidencePrompt}
+
+# Required Output Skeleton
+Use the exact H2 headings below.
+${requiredOutline}
+
+# Intro Rule
+The opening must be 2-3 short paragraphs, not a single compressed paragraph.
+Paragraph 1: who this guide is for.
+Paragraph 2: what regret or failure it helps avoid.
+Paragraph 3: which comparison axes are used and why those axes matter in real life.
+Do not open with "今回は", "この記事では", market size, popularity, or generic setup lines.
+
+# Axis Writing Rule
+Use the Axis Evidence Pack for every major comparison section.
+For each axis, cite at least one Kakaku spec label/value and one scenario or review signal.
+Do not invent unsupported comparison points.
+If a sentence could fit any category, rewrite it until it contains a concrete use case, measurable difference, or purchase tradeoff.
+Each axis section must be 2 short paragraphs or more, with at least 4-6 sentences total.
+
+# Depth Rule
+This is a ranking article, so it must feel substantial and useful even before the ranking cards.
+- Total target length: at least 2600 Japanese characters in the body.
+- "## 失敗しない選び方" must contain these three H3 subsections:
+  - "### 予算で決める前に見るべき点"
+  - "### ${ctx.reader_label || ctx.target_reader}が失敗しやすいポイント"
+  - "### 迷ったときの絞り込み方"
+- "## まとめ" must contain "### タイプ別の結論".
+- Do not use bullet-only sections for the main explanation. Write paragraphs with concrete guidance.
 
 # Blueprint（購買意図）データ
 - ターゲット読者: ${ctx.target_reader}
@@ -263,7 +680,7 @@ ${productListString}
 | ❌ 禁止（AIっぽい） | ⭕️ 置き換え（人間っぽい） |
 |---|---|
 | 静寂 | 静かさ / ノイキャンの強さ |
-| 最適解 | ベスト / おすすめ |
+| 最適解 | 有力候補 / おすすめ |
 | 賢い選択と言えます | 〜がおすすめです / 〜で決まりです |
 | 〜と言えるでしょう | 〜です（断定で終わる） |
 | 〜という観点から | （削除してシンプルに） |
@@ -288,10 +705,10 @@ ${productListString}
 # Before/After 変換例（これを暗記しろ）
 
 ❌ AI: 「静寂を最優先するなら、ソニーが最適解と言えるでしょう」
-⭕️ 人間: 「とにかくノイキャンがいい！って人は、ソニー一択です」
+⭕️ 人間: 「とにかくノイキャン重視なら、ソニーが有力候補です」
 
 ❌ AI: 「コストパフォーマンスという観点から見ると、非常に魅力的な選択肢です」
-⭕️ 人間: 「この価格でこれだけ使えれば、コスパは文句なしです」
+⭕️ 人間: 「この価格でここまで使えれば、コスパ重視でも選びやすいです」
 
 ❌ AI: 「本製品は、優れた装着感を提供します」
 ⭕️ 人間: 「着けてるの忘れるくらい軽いです」
@@ -300,7 +717,7 @@ ${productListString}
 ⭕️ 人間: 「iPhoneならフタ開けた瞬間つながります」
 
 ❌ AI: 「ジム通いを習慣化している方にとって、賢い選択と言えます」
-⭕️ 人間: 「週3でジム行く人なら、これ買っとけば間違いないです」
+⭕️ 人間: 「週3でジムに行く人なら、候補に入れやすいです」
 
 ❌ AI: 「〜という観点から見ると、非常にバランスの取れた製品です」
 ⭕️ 人間: 「音質も機能もちょうどいい感じです」
@@ -326,7 +743,7 @@ ${productListString}
 
 ### 書くべき内容（詳しく書く）:
 1. **読者の悩みへの共感（戦略的ターゲットへの直球）**（2-3段落）
-   - 冒頭の1文目で、**${ctx.target_reader}** が抱える「共通の悩み（ペイン）」を言い当てる。
+   - 冒頭の1文目で、**${ctx.reader_label || ctx.target_reader}** が抱える「共通の悩み（ペイン）」を言い当てる。
    - ❌ 禁止: 「最近人気ですね」のような一般論。
    - ❌ 禁止: 「英会話教材が聞こえない」のような**過度な限定**（ブループリントで指定がない限り）。
    - ❌ 禁止: **「徹底的に分析」「劇的に向上」「必須ギアと言えます」「相棒」**などのAI臭い表現。
@@ -376,7 +793,7 @@ ${productListString}
 **【論理の飛躍防止：スペック用語の解説ルールの徹底（超重要）】**
 - **記事は拾い読み（斜め読み）される前提**です。前のセクションで説明したからといって、後のセクションでいきなり専門用語やスペック数値を補足なしで出してはいけません。
 - **スペック値や専門用語（英数字の規格名など）を製品紹介で言及する際は、その数値や記号が「どのような意味を持つのか」「記事前半で設定した基準に対してどう優れているのか」を初心者向けに必ず補足**してください。
-- ❌ 悪い例（論理の飛躍）：前半で「基準はA」と説明したのに、後半でいきなり「この製品はB規格だから最強！」と書く（読者はAとBの関係がわからず混乱します）。
+- ❌ 悪い例（論理の飛躍）：前半で「基準はA」と説明したのに、後半でいきなり「この製品はB規格だからベスト！」と書く（読者はAとBの関係がわからず混乱します）。
 - ⭕️ 良い例（論理の接続）：「この製品はB規格（先述のA規格よりさらに上のレベル）に対応しているため〜」のように、常に用語の意味とメリットを接続し、読者の知識レベルを置いてけぼりにしないでください。
 
 例:
@@ -398,14 +815,14 @@ ${productListString}
    - 各価格帯で「できること」「できないこと」を明確に
    - **重要**: 「この価格を超えると急に性能が上がる」という「壁」があるなら具体的に言及
 
-2. **${ctx.target_reader}がやりがちな失敗パターンと回避法**（4-6段落）
+2. **${ctx.reader_label || ctx.target_reader}がやりがちな失敗パターンと回避法**（4-6段落）
    - **ターゲット特化の失敗例**を3つ以上挙げる
    - 「〇〇だと思って買ったら△△だった」形式で具体的に
    - 例：「防水だと思ったら汗で滑った」「ノイキャンあるのにジムのBGMが消えない」
    - それぞれの回避法を明記
 
-3. **${ctx.target_reader}へのワンポイントアドバイス**（2-3段落）
-   - 「${ctx.target_reader}なら、こう選べば失敗しない」という明確な指針
+3. **${ctx.reader_label || ctx.target_reader}へのワンポイントアドバイス**（2-3段落）
+   - 「${ctx.reader_label || ctx.target_reader}なら、こう選べば失敗しない」という明確な指針
    - スペック比較だけでは見えない選び方のコツ（例：「イヤーピースの素材をチェックしろ」）
 
 ---
@@ -446,11 +863,11 @@ ${productListString}
 \> [なぜこの商品がベストなのか1-2文で解説]
 
 ### **💰 <mark>コスパを重視するなら</mark>**
-▶ **[商品名](Amazonリンク)** が最強！ ※リストの1-5位から選ぶこと
+▶ **[商品名](Amazonリンク)** がおすすめです。 ※リストの1-5位から選ぶこと
 \> [なぜこの商品がベストなのか1-2文で解説]
 
 ### **🎯 <mark>[キーワードに合わせた別の切り口]</mark>**
-▶ **[商品名](Amazonリンク)** 一択！ ※リストの1-3位から選ぶこと
+▶ **[商品名](Amazonリンク)** が有力候補です。 ※リストの1-3位から選ぶこと
 \> [なぜこの商品がベストなのか1-2文で解説]
 
 ※ポイント:
@@ -485,7 +902,7 @@ ${productListString}
 # E-E-A-T強化ルール（重要）
 
 ## スペック評価には「ターゲットの使用シーン」を添える
-単なる数値の羅列ではなく、**${ctx.target_reader}の生活シーンに合わせて**その数値が意味することを説明する。
+単なる数値の羅列ではなく、**${ctx.reader_label || ctx.target_reader}の生活シーンに合わせて**その数値が意味することを説明する。
 
 ❌ NG例: 「バッテリー30時間」
 ❌ NG例: 「バッテリー30時間は、今回比較した10製品の中で最長。1週間の通勤でも充電不要で使える」（ターゲットが通勤者でない場合）
@@ -496,7 +913,7 @@ ${productListString}
 ⭕️ OK例（ジム利用者向け）: 「ジムのBGMや隣の人の声がほぼ消えるレベル」
 ⭕️ OK例（通勤者向け）: 「電車の走行音がほぼ聞こえなくなるレベル」
 
-**重要**: スペックの解釈は常に「${ctx.target_reader}にとって」という文脈で書くこと。
+**重要**: スペックの解釈は常に「${ctx.reader_label || ctx.target_reader}にとって」という文脈で書くこと。
 
 ## 購入者の声を自然に引用する
 レビューデータがある場合は、「Amazon購入者の声」として自然に本文に組み込む。
@@ -522,90 +939,79 @@ ${productListString}
 
 「一方で、装着感については人によって評価が分かれています。」
 
-# 出力
-(Markdown形式の記事本文のみ。日本語で出力。各セクションを詳しく書く。)
+    # 出力
+    (Markdown形式の記事本文のみ。日本語で出力。各セクションを詳しく書く。)
 `;
 
     console.log(`  🤖 generating Buying Guide for "${keyword}"...`);
     try {
-        let text;
+        const runBuyingGuidePrompt = async (currentPrompt, label = 'initial') => {
+            let draft;
 
-        // Use Claude Opus 4.5 if configured, fallback to Gemini
-        if (useClaudeForArticles()) {
-            console.log(`  🎭 Using Claude Opus 4.5...`);
-            const response = await withRetry(() => claudeClient.messages.create({
-                model: 'claude-opus-4-5-20251101',
-                max_tokens: 16384,
-                messages: [{ role: 'user', content: prompt }],
-            }));
-            text = response.content[0].text;
-        } else {
-            console.log(`  🤖 Using Gemini...`);
-            const response = await withRetry(() => client.models.generateContent({
-                model: 'gemini-3.1-pro-preview',
-                contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            }));
-            if (!response.candidates || response.candidates.length === 0) {
-                console.error("  ❌ AI Error: No candidates returned.");
-                return "AI生成エラー";
+            if (shouldUseClaudeForArticles()) {
+                console.log(`  🎭 Using Claude Opus 4.5 (${label})...`);
+                const response = await withRetry(() => claudeClient.messages.create({
+                    model: 'claude-opus-4-5-20251101',
+                    max_tokens: 16384,
+                    messages: [{ role: 'user', content: currentPrompt }],
+                }));
+                draft = response.content[0].text;
+            } else {
+                console.log(`  🤖 Using Gemini (${label})...`);
+                const response = await withRetry(() => client.models.generateContent({
+                    model: 'gemini-3.1-pro-preview',
+                    contents: [{ role: 'user', parts: [{ text: currentPrompt }] }],
+                }));
+                if (!response.candidates || response.candidates.length === 0) {
+                    console.error("  ❌ AI Error: No candidates returned.");
+                    return "AI生成エラー";
+                }
+                draft = response.candidates[0].content.parts[0].text;
             }
-            text = response.candidates[0].content.parts[0].text;
-        }
 
-        // AGGRESSIVE CLEANING
-        text = text.replace(/```markdown/g, '').replace(/```/g, '').trim();
-        // Remove fenced frontmatter
-        text = text.replace(/^---[\s\S]*?---/g, '').trim();
+            return cleanBuyingGuideMarkdown(draft);
+        };
 
-        // Loop to remove any top-level key: value lines (orphaned frontmatter)
-        const lines = text.split('\n');
-        let starIndex = 0;
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (line === '') continue; // skip empty lines
-            // If line looks like "key: value" or "title: ...", ignore it
-            if (/^[a-z_]+:\s/i.test(line)) {
-                continue;
+        let text = await runBuyingGuidePrompt(prompt, 'initial');
+        let validation = validateBuyingGuideBody(text, comparisonAxes);
+
+        if (!validation.isValid) {
+            console.warn(`  ⚠️ Buying guide draft missed structure: ${validation.issues.join(' / ')}`);
+
+            const retryPrompt = `${prompt}
+
+# Rewrite Instruction
+The previous draft did not satisfy the required structure.
+Fix these issues:
+- ${validation.issues.join('\n- ')}
+
+Rewrite the entire article from scratch.
+Do not add YAML frontmatter.
+Use the exact H2 headings from the required output skeleton.
+Make sure at least two comparison axes appear clearly in the body.
+For each comparison axis section, cite at least one Kakaku spec label/value from the Axis Evidence Pack and one supporting scenario or review signal.
+Do not invent unsupported comparison points.
+`;
+
+            const retryText = await runBuyingGuidePrompt(retryPrompt, 'rewrite');
+            const retryValidation = validateBuyingGuideBody(retryText, comparisonAxes);
+            if (!retryValidation.isValid) {
+                console.warn(`  ⚠️ Buying guide rewrite still missed structure: ${retryValidation.issues.join(' / ')}`);
+                return buildFallbackBuyingGuideBody(keyword, productList, blueprint, ctx, comparisonAxes, axisEvidencePackets, stats);
             }
-            // If we hit a header or normal text, stop stripping
-            starIndex = i;
-            break;
-        }
-        text = lines.slice(starIndex).join('\n').trim();
-        // Remove any stray asterisks from AI output (we use <mark> tags instead)
-        text = text.replace(/\*\*/g, '');
 
-        // DEDUPLICATION: Comparison Table
-        // Sometimes AI generates the table, but the system also inserts one.
-        // We only want the INTRO text for the table, not the table itself (checked later).
-        // But if AI generated multiple "Comparison Table" headers within the body, remove dupes.
-        const tableHeaderRegex = /##\s+TOP.*比較表/g;
-        const matches = text.match(tableHeaderRegex);
-        if (matches && matches.length > 1) {
-            console.warn("  ⚠️ Detected multiple Comparison Table headers. Removing extras...");
-            // Keep first instance, remove subsequent
-            let firstIndex = text.search(tableHeaderRegex);
-            if (firstIndex !== -1) {
-                // Find end of first header line
-                const afterHeader = text.indexOf('\n', firstIndex);
-                // Keep everything up to there
-                // And scan the rest for repeated headers and remove them?
-                // Actually, safer to just replace all subsequent matches with empty string.
-                // But regex replace is indiscriminate.
-
-                // Strategy: Split by header, reconstruct.
-                const parts = text.split(/##\s+TOP.*比較表/);
-                // parts[0] is content before first table
-                // parts[1...] are content after. 
-                // We reconstruct exactly ONE header.
-                text = parts[0] + matches[0] + parts.slice(1).join('\n');
+            if (retryValidation.isValid) {
+                console.log('  ✅ Buying guide rewrite passed structure validation.');
+                text = retryText;
+            } else {
+                console.warn(`  ⚠️ Buying guide rewrite still has issues: ${retryValidation.issues.join(' / ')}`);
+                text = retryText;
             }
         }
 
         return text;
     } catch (e) {
-        console.error("  ❌ AI Generation Failed:", e);
-        return "AI生成に失敗しました。";
+        return buildFallbackBuyingGuideBody(keyword, productList, blueprint, ctx, comparisonAxes, axisEvidencePackets, stats);
     }
 }
 
@@ -777,11 +1183,11 @@ ${kakakuNegative}`;
 
 ## まとめ
    読者のタイプ別におすすめを提案してください。
-   **【マーカー必須】** 各おすすめ文の冒頭フレーズ（例：「圧倒的な静寂とiPhoneとの連携を最重視するなら」）には必ず <mark>...</mark> を使用してください。
+   **【マーカー必須】** 各おすすめ文の冒頭フレーズ（例：「静音性とiPhoneとの連携を重視するなら」）には必ず <mark>...</mark> を使用してください。
 
    "### この製品がおすすめな人"
    - 具体的なライフスタイルや価値観を3パターン程度提示。
-   - 例：<mark>通勤電車での静寂を求めるなら</mark>、この製品は最適解です。
+   - 例：<mark>通勤電車での静寂を求めるなら</mark>、この製品は有力候補です。
 
    "### 他の選択肢を検討すべき人"
    - こういうニーズがある人は別の製品（具体名を出さなくてもOK）の方が満足度が高い / ニーズに適している、と正直に提案。
@@ -886,7 +1292,7 @@ ${kakakuNegative}`;
 | ❌ 禁止（AIっぽい） | ⭕️ 置き換え（人間っぽい） |
 |---|---|
 | 静寂 | 静かさ / ノイキャンの強さ |
-| 最適解 | ベスト / おすすめ |
+| 最適解 | 有力候補 / おすすめ |
 | 賢い選択と言えます | 〜がおすすめです / 〜で決まりです |
 | 〜と言えるでしょう | 〜です（断定で終わる） |
 | 〜という観点から | （削除してシンプルに） |
@@ -908,13 +1314,13 @@ ${kakakuNegative}`;
 # Before/After 変換例（これを暗記しろ）
 
 ❌ AI: 「静寂を最優先するなら、ソニーが最適解と言えるでしょう」
-⭕️ 人間: 「とにかくノイキャンがいい！って人は、ソニー一択です」
+⭕️ 人間: 「とにかくノイキャン重視なら、ソニーが有力候補です」
 
 ❌ AI: 「本製品は、優れた装着感を提供します」
 ⭕️ 人間: 「着けてるの忘れるくらい軽いです」
 
 ❌ AI: 「ジム通いを習慣化している方にとって、賢い選択と言えます」
-⭕️ 人間: 「週3でジム行く人なら、これ買っとけば間違いないです」
+⭕️ 人間: 「週3でジムに行く人なら、候補に入れやすいです」
 
 # Product Information
 - Name: ${product.name}
@@ -959,7 +1365,7 @@ ${targetReader}
 - **正直なデメリット**: 「すべてが最高」とは言わず、正直に伝えてください。
 - **評価との整合性（最重要）**:
     - 上記「AI Evaluated Grades」と矛盾する記述は禁止です。
-    - Grade Sなら「最高クラス」「文句なし」と絶賛してください。
+    - Grade Sなら「高水準」「第一候補になりやすい」など、根拠に見合う範囲で高評価してください。
     - Grade B/Cなら「価格相応」「ここが惜しい」と正直に指摘してください。
     - 「評価はSだが、実際は微妙」といった記述は論理破綻するため禁止です。
     - この記事は「筆者の意見だけ」ではなく、**実際の購入者の声も交えた多角的な分析**であることを示してください。
@@ -998,7 +1404,7 @@ ${targetReader}
 
 ❌ 「ノイズキャンセリングが極めて自然で、快適な静寂空間を提供します」
 ⭕️ 「電車のガタンゴトンがスッと消える。これだけで買う価値ある（Audio）」
-⭕️ 「3時間座ってても腰が痛くならない。在宅ワークの救世主（Furniture）」
+⭕️ 「3時間座っていても腰が痛くなりにくい。在宅ワーク向けです（Furniture）」
 ⭕️ 「猫の毛がカーペットから一発で取れる（Appliance）」
 
 ❌ 「人によっては長時間の使用で〜と感じる場合があるかもしれません」
@@ -1029,7 +1435,7 @@ ${targetReader}
         let text;
 
         // Use Claude Opus 4.5 if configured, fallback to Gemini
-        if (useClaudeForArticles()) {
+        if (shouldUseClaudeForArticles()) {
             console.log(`  🎭 Using Claude Opus 4.5...`);
             const response = await withRetry(() => claudeClient.messages.create({
                 model: 'claude-opus-4-5-20251101',
@@ -1120,6 +1526,7 @@ ${targetReader}
 
         // Clean up excessive newlines left by removals
         text = text.replace(/\n{3,}/g, '\n\n').trim();
+        text = sanitizeGeneratedCopy(text);
 
         return text;
     } catch (e) {
@@ -1265,6 +1672,8 @@ ${kkNeg}
     const specContext = [realDataContext, realSpecContext, fallbackContext].filter(Boolean).join('\n');
 
 
+    const contextSummary = formatContextDataSummary(contextData);
+
     const prompt = `
 # Role
 **Tech Spec Analyst**
@@ -1276,16 +1685,19 @@ ${realSpecContext}
 ${fallbackContext}
 ${reviewContext}
 
-追加コンテキスト: ${contextData}
+追加コンテキスト:
+${contextSummary || '- No additional context'}
 
 # Task
 Generate a JSON object containing:
 
 ## 1. Pros (メリット3つ)
-**SOURCE RULE**: You MUST generate these based on the "# Real Scraped Reviews" provided above.
+**SOURCE RULE**: Prioritize evidence in this order: 1) official specs / scraped specs, 2) Spec reality / Best scenario hints, 3) concrete user review phrases.
 **TARGET RULE**: Prioritize points that are strictly relevant to the Target Reader: "**${contextData.target_reader || 'General User'}**".
 (e.g., If target is "Commuter", prioritize "ANC strength" over "Hi-Res support".)
 簡潔かつ具体的なメリットとして書く。友達口調や「〜だよ」は禁止。「〜できる」「〜なので快適」など、機能的価値を端的に伝える。レビュー記事っぽさは消すが、馴れ馴れしくはしない。
+誇張表現は禁止: 「圧倒的」「最強」「最高」「極上」「大満足」「段違い」は使わない。
+できるだけ、数値・使用シーン・困りごとの解消が見える書き方にする。
 
 ❌ AIっぽい（書くな）→ ⭕️ 人間っぽい（書け）
 
@@ -1302,17 +1714,19 @@ Generate a JSON object containing:
 ⭕️ 「ケースから出した瞬間につながるので、ストレスフリー」
 
 ## 2. Cons (デメリット2つ)
-**SOURCE RULE**: You MUST generate these based on the "# Real Scraped Reviews" provided above.
+**SOURCE RULE**: Prioritize high-impact risks that would affect buying decisions, using concrete evidence from specs or real reviews.
 **TARGET RULE**: Prioritize pain points that would specifically annoy the Target Reader: "**${contextData.target_reader || 'General User'}**".
 (e.g., If target is "Commuter", prioritize "Sound leakage" over "Lack of wireless charging".)
 If users complain about "heavy case" or "bad fit", USE THAT.
 フォロー禁止。「〜だが問題ない」は絶対ダメ。
+サイズが合わない、重い、うるさい、設置しづらい、体格に合わないなどの**影響が大きい欠点**を、小さな不満より優先してください。
+誇張表現は禁止: 「致命的」「最悪」「絶対」は使わない。
 
 ❌ AIっぽい: 「人によっては長時間の使用で圧迫感を感じる場合があるかもしれません」
 ⭕️ 人間っぽい: 「2時間超えると耳に痛みを感じる人もいるので注意が必要（Audio）」
 
 ❌ AIっぽい: 「組み立てには多少の力が必要な場合があります」
-⭕️ 「ネジが硬すぎて電動ドライバー必須（Furniture）」
+⭕️ 「ネジが硬く、電動ドライバーが必要になりやすい（Furniture）」
 
 
 禁止項目: 初期不良、サポート、保証、配送、価格、リセール
@@ -1385,7 +1799,7 @@ ${specContext}
 # 出力要件
 1. ${targetLabels ? `**${targetLabels.join(', ')}** の${targetLabels.length}項目について、順に出力してください。` : `比較軸に基づいた重要なスペックを4項目出力してください。`}
 2. **主観的項目（音質、ノイキャンなど）**: 必ず **S, A, B, C** の4段階で評価してください。
-   - S: 業界最高クラス / 感動するレベル
+   - S: かなり優秀 / 比較上位
    - A: 非常に良い / 満足度高い
    - B: 普通 / 価格相応
    - C: 不満 / 改善の余地あり
@@ -1402,7 +1816,7 @@ ${specContext}
     ## Example for Earphones (comparison_axis: 音質、ノイキャン、バッテリー、機能):
     {
       "pros": ["電車の騒音がほぼ消える", "8時間連続再生で通勤に十分", "3台同時接続が便利"],
-      "cons": ["LDAC使用時は4.5時間に短縮。ですが通常のAACなら8時間持つので日常使いには十分", "ケースの質感がやや安っぽい。ですが本体の装着感は非常に良い"],
+      "cons": ["LDAC使用時は再生時間が短く、長時間移動では途中充電が必要", "ケースの質感は価格相応で、高級感を重視する人には物足りない"],
       "specs": [
         { "label": "音質", "value": "S" },
         { "label": "ノイキャン", "value": "A" },
@@ -1454,6 +1868,26 @@ ${specContext}
 
                 return { ...spec, value: val };
             });
+        }
+
+        parsed.pros = normalizeInsightList(parsed.pros, 'pro', 3);
+        parsed.cons = normalizeInsightList(parsed.cons, 'con', 2);
+
+        if (!hasUsableInsightList(parsed.pros, 'pro')) {
+            parsed.pros = buildFallbackPros({
+                pros: parsed.pros,
+                description: productName,
+                userScenario: contextData.userScenario,
+                specVerification: contextData.specVerification,
+            }, 3);
+        }
+
+        if (!hasUsableInsightList(parsed.cons, 'con')) {
+            parsed.cons = buildFallbackCons({
+                cons: parsed.cons,
+                userScenario: contextData.userScenario,
+                specVerification: contextData.specVerification,
+            }, 2);
         }
 
         // Attach identity info if available
@@ -1516,18 +1950,25 @@ ${negativeText || '(データなし)'}
 
 ## 2. userScenario（具体的な利用シーンの発見）
 「どんな状況で」「誰が」使った時に真価を発揮しているか、または失敗しているか特定してください。
-例: 「満員電車では途切れるが、カフェで作業する分には完璧」
+例: 「満員電車では途切れるが、カフェで作業する分には使いやすい」
 例: 「ランニング用としては、タッチノイズがひどくて不向き」
 
 ## 3. editorComment（プロの推奨・結論）
 上記分析を踏まえた、あなた自身の「結論」を50文字以内で。
-単なる要約ではなく、「買いかどうか」「誰にすすめるか」をズバリ言い切る。
-文体: 専門家が友人にアドバイスするような、信頼感がありつつもフランクな口調（〜だ、〜だろう）。
+単なる要約ではなく、「誰に向くか」「どんな人は注意か」が伝わる結論にしてください。
+文体: 編集部が短く結論を添えるような、落ち着いた口調（です・ます）。
+禁止表現: 「最高」「最強」「極上」「一択」「だぞ」「だろう」「絶対」「必須」。
+理想形: 「〜を重視する人には有力候補です。〜が気になる人は慎重に選びたいです。」
 
 ## 4. enhancedPros / enhancedCons（深掘りメリット・デメリット）
 - 具体的な「体験」に基づく記述にする（抽象的な形容詞は禁止）。
 - メリット: 「〜できる」「〜が変わる」という生活の変化。
 - デメリット: 「〜なのは痛い」「〜には向かない」という具体的な制約。
+- 誇張表現は禁止: 「圧倒的」「最高」「最強」「極上」「大満足」「段違い」。
+- デメリットでフォローを入れない。「ただし問題ない」「十分使える」は禁止。
+- 先頭を「この製品は」「全体として」「一般的には」で始めない。
+- メリットは少なくとも1つ、デメリットは少なくとも1つ、使用シーンか具体的な困りごとを入れる。
+- 抽象語だけの文は禁止: 「快適」「便利」「高性能」だけで終わらせない。
 
 # 出力JSON形式
 {
@@ -1555,15 +1996,45 @@ ${negativeText || '(データなし)'}
         jsonText = jsonText.replace(/```json/g, '').replace(/```/g, '').trim();
 
         const result = JSON.parse(jsonText);
+        result.specVerification = normalizeInsightText(result.specVerification || '', 'spec');
+        result.userScenario = normalizeInsightText(result.userScenario || '', 'scenario');
+        result.enhancedPros = normalizeInsightList(result.enhancedPros, 'pro', 3);
+        result.enhancedCons = normalizeInsightList(result.enhancedCons, 'con', 2);
+        if (!hasUsableInsightList(result.enhancedPros, 'pro')) {
+            result.enhancedPros = buildFallbackPros({
+                pros: result.enhancedPros,
+                userScenario: result.userScenario,
+                specVerification: result.specVerification,
+            }, 3);
+        }
+        if (!hasUsableInsightList(result.enhancedCons, 'con')) {
+            result.enhancedCons = buildFallbackCons({
+                cons: result.enhancedCons,
+                userScenario: result.userScenario,
+                specVerification: result.specVerification,
+            }, 2);
+        }
+        result.editorComment = normalizeEditorComment(
+            result.editorComment || '',
+            productName,
+            {
+                pros: result.enhancedPros,
+                cons: result.enhancedCons,
+                userScenario: result.userScenario,
+                specVerification: result.specVerification,
+            }
+        );
         console.log(`   ✅ Review analysis complete: "${result.editorComment?.slice(0, 40)}..."`);
         return result;
 
     } catch (e) {
         console.error("  ❌ Review Analysis Failed:", e.message);
         return {
-            editorComment: `${productName}は多くのユーザーから高い評価を得ています。`,
-            enhancedPros: ["高い評価を獲得", "多くのユーザーが推薦", "コスパが良い"],
-            enhancedCons: ["好みが分かれるデザイン", "一部のユーザーには不向きな場合も"]
+            specVerification: '',
+            userScenario: '',
+            editorComment: buildFallbackEditorComment(productName, {}),
+            enhancedPros: buildFallbackPros({}, 3),
+            enhancedCons: buildFallbackCons({}, 2)
         };
     }
 }
