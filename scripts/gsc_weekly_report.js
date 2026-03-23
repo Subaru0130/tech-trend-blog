@@ -34,7 +34,7 @@ function renderSection(title, entries, emptyMessage, recommendation) {
 
     if (recommendation) {
         lines.push('');
-        lines.push(`判断: ${recommendation}`);
+        lines.push(`次の一手: ${recommendation}`);
     }
 
     return lines.join('\n');
@@ -64,55 +64,55 @@ function main() {
         '# ChoiceGuide 週次GSCレポート',
         '',
         `- 生成日時: ${generatedAt}`,
-        `- 対象期間: ${dateRange.startDate || '-'} 〜 ${dateRange.endDate || '-'}`,
+        `- 集計期間: ${dateRange.startDate || '-'} ～ ${dateRange.endDate || '-'}`,
         `- 対象サイト: ${report.publicBaseUrl || config.publicBaseUrl}`,
         '',
         '## サマリー',
         `- 公開・技術状態: pending deploy ${report.totals?.pendingDeployCount || 0} / indexing issues ${report.totals?.indexingIssueCount || 0} / canonical issues ${report.totals?.canonicalIssueCount || 0}`,
-        `- 今すぐ改善候補: quick-win ${report.totals?.quickWinCount || 0} 件`,
-        `- 伸ばす候補: growth-seed ${report.totals?.growthSeedCandidateCount || 0} 件`,
-        `- 低CTR: ${report.totals?.lowCtrCount || 0} 件`,
-        `- 表示ゼロ: ${report.totals?.zeroImpressionCount || 0} 件`,
+        `- 先に直す候補: quick-win ${report.totals?.quickWinCount || 0} 件`,
+        `- 次に伸ばす候補: growth-seed ${report.totals?.growthSeedCandidateCount || 0} 件`,
+        `- 低CTRページ: ${report.totals?.lowCtrCount || 0} 件`,
+        `- 表示ゼロページ: ${report.totals?.zeroImpressionCount || 0} 件`,
         '',
         renderSection(
-            '今週の優先改善ページ',
+            '先に直す価値が高いページ',
             quickWins,
             '該当なし',
-            'タイトル、description、導入文、関連記事導線を先に見直す価値があります。'
+            'タイトル、description、導入文、関連記事導線を優先して見直します。'
         ),
         '',
         renderSection(
-            '今週の拡張候補クラスター',
+            '次に伸ばす候補クラスター',
             growthSeeds,
             '該当なし',
-            '周辺の別意図記事を追加するなら、まずこのクラスターから広げるのが堅いです。'
+            '周辺の別意図記事を増やすなら、このクラスターから着手します。'
         ),
         '',
         renderSection(
             '低CTRページ',
             lowCtr,
             '該当なし',
-            '順位の割にクリックが弱いページです。検索結果での見え方改善を優先します。'
+            '表示はあるのにクリックされていないページなので、見出しと説明文を優先して改善します。'
         ),
         '',
         renderSection(
             '表示ゼロページ',
             zeroImpression,
             '該当なし',
-            '公開済みなのに表示されないページです。内部リンク、重複、インデックス状態を確認します。'
+            '公開済みなのに表示されていないページです。重複、内部リンク、インデックス状態を確認します。'
         ),
         '',
         '## 今週の結論',
     ];
 
     if (quickWins.length === 0 && growthSeeds.length === 0) {
-        overview.push('- 今週は大きく触るより、公開済みページの反応観測を優先します。');
+        overview.push('- 先に動くべき候補は少なく、技術面とインデックス監視を優先します。');
     } else {
         if (quickWins.length > 0) {
-            overview.push(`- 先に直すなら ${quickWins.map((entry) => entry.slug).join(' / ')} です。`);
+            overview.push(`- 先に直すなら: ${quickWins.map((entry) => entry.slug).join(' / ')}`);
         }
         if (growthSeeds.length > 0) {
-            overview.push(`- 次に増やすなら ${growthSeeds.map((entry) => entry.slug).join(' / ')} 周辺です。`);
+            overview.push(`- 次に増やすなら: ${growthSeeds.map((entry) => entry.slug).join(' / ')}`);
         }
     }
 
