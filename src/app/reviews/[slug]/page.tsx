@@ -32,6 +32,55 @@ type Props = {
     params: Promise<{ slug: string }>;
 };
 
+function getReviewFrontmatter(slug: string): Record<string, unknown> {
+    const filePath = path.join(REVIEW_DIR, `${slug}.md`);
+
+    try {
+        if (!fs.existsSync(filePath)) {
+            return {};
+        }
+
+        const rawContent = fs.readFileSync(filePath, 'utf8');
+        const { data } = matter(rawContent);
+        return data as Record<string, unknown>;
+    } catch (error) {
+        console.error('Error reading review frontmatter:', error);
+        return {};
+    }
+}
+
+function normalizeReviewSummaryMarkup(content: string): string {
+    return content.replace(/<div class(?:Name)?="review-summary">([\s\S]*?)<\/div>/g, (match, innerContent) => {
+        const inner = typeof innerContent === 'string' ? innerContent : '';
+        const sections = Array.from(
+            inner.matchAll(/<p><strong>(.*?)<\/strong><\/p>\s*([\s\S]*?)(?=(?:<p><strong>|$))/g)
+        );
+
+        if (sections.length === 0) {
+            return match;
+        }
+
+        const safeSections = sections.map((section) => {
+            const label = (typeof section[1] === 'string' ? section[1] : '').trim();
+            const body = (typeof section[2] === 'string' ? section[2] : '')
+                .trim()
+                .split('\n')
+                .map((line) => line.trim())
+                .filter(Boolean)
+                .join(' ');
+
+            return [
+                '<div className="review-summary-item">',
+                `  <h3>${label}</h3>`,
+                `  <p>${body}</p>`,
+                '</div>',
+            ].join('\n');
+        });
+
+        return ['<div className="review-summary">', ...safeSections, '</div>'].join('\n');
+    });
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
     const product = getProductBySlug(slug);
@@ -40,15 +89,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         return { title: '製品が見つかりません' };
     }
 
+    const reviewFrontmatter = getReviewFrontmatter(slug);
+    const pageTitle =
+        typeof reviewFrontmatter.title === 'string' && reviewFrontmatter.title.trim().length > 0
+            ? reviewFrontmatter.title.trim()
+            : `${product.name} 徹底レビュー`;
+    const pageDescription =
+        typeof reviewFrontmatter.description === 'string' && reviewFrontmatter.description.trim().length > 0
+            ? reviewFrontmatter.description.trim()
+            : product.description || `${product.name}の詳細レビュー。スペック・価格・ユーザー評価を徹底分析。`;
+
     return {
-        title: `${product.name} 徹底レビュー`,
-        description: product.description || `${product.name}の詳細レビュー。スペック・価格・ユーザー評価を徹底分析。`,
+        title: pageTitle,
+        description: pageDescription,
         alternates: {
             canonical: `https://choiceguide.jp/reviews/${slug}/`,
         },
         openGraph: {
-            title: `${product.name} 徹底レビュー`,
-            description: product.description,
+            title: pageTitle,
+            description: pageDescription,
             images: product.image ? [product.image] : [],
         },
     };
@@ -69,7 +128,7 @@ export default async function ReviewPage({ params }: Props) {
         if (fs.existsSync(filePath)) {
             const rawContent = fs.readFileSync(filePath, 'utf8');
             const { content: mdxContent, data } = matter(rawContent);
-            content = mdxContent;
+            content = normalizeReviewSummaryMarkup(mdxContent);
             frontmatterData = data;
         }
     } catch (e) {
