@@ -5,10 +5,19 @@ import CategoryContent from '@/components/categories/CategoryContent'; // Reusin
 import { getAllArticles } from '@/lib/data';
 import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-    title: '検索結果',
-    description: 'ChoiceGuideの記事検索結果ページです。',
-};
+export function generateMetadata(): Metadata {
+    return {
+        title: '検索結果',
+        description: 'ChoiceGuideの記事検索結果ページです。',
+        alternates: {
+            canonical: 'https://choiceguide.jp/search/',
+        },
+        robots: {
+            index: false,
+            follow: true,
+        },
+    };
+}
 
 // Wrapper for Suspense
 function SearchPageContent() {

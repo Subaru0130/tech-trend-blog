@@ -22,6 +22,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return {
         title: categoryInfo.label + ' 記事一覧',
         description: 'ChoiceGuideの' + categoryInfo.label + 'に関する記事一覧ページ。最新のランキングやレビューをチェック。',
+        alternates: {
+            canonical: `https://choiceguide.jp/categories/${slug}/`,
+        },
     };
 }
 
