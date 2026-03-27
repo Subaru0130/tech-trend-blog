@@ -350,7 +350,6 @@ function buildFallbackCons(context = {}, limit = 2) {
 function buildFallbackEditorComment(productName, context = {}) {
     const rawScenarioClause = firstShortClause(context.userScenario || '', 28);
     const scenarioClause = /(人|ワーカー|ユーザー|世帯|家庭)/u.test(rawScenarioClause) ? rawScenarioClause : '';
-    const proClause = firstShortClause((Array.isArray(context.pros) && context.pros[0]) || '', 28);
     const specClause = firstShortClause(context.specVerification || '', 28);
     const conClause = firstShortClause(
         (buildFallbackCons(context, 1)[0]) ||
@@ -360,10 +359,8 @@ function buildFallbackEditorComment(productName, context = {}) {
 
     const benefitLead = scenarioClause
         ? `${scenarioClause}人には候補に入れやすい製品です`
-        : proClause
-            ? `${proClause}を重視する人には候補に入れやすい製品です`
-            : specClause
-                ? `${specClause}を見ながら選びたい人には候補に入れやすい製品です`
+        : specClause
+            ? `${specClause}を確認しながら選びたい人には候補に入れやすい製品です`
             : `${productName}は用途が合う人には候補に入れやすい製品です`;
 
     if (conClause) {

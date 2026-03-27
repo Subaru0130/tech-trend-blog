@@ -6,7 +6,7 @@ category: Reviews
 product_id: scout-B0C5WZ737Z
 author: "ChoiceGuide編集部"
 thumbnail: /images/products/technics-eah-az60m2-e9b7.jpg
-ranking_url: /articles/wireless-earphones-gym/
+ranking_url: /rankings/wireless-earphones-gym/
 ---
 
 防水・防汗性能、装着安定性（外れにくさ）、音質、バッテリー持続時間の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、「高音質」と「最強の使い勝手」を両立させたいなら、間違いなく買いのモデルです。

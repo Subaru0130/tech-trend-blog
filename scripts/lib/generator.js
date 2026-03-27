@@ -555,7 +555,7 @@ function generateReviewPage(product, bodyContent) {
 
     const content = `---
 title: "${safeName} レビュー｜特徴・注意点・向いている人"
-description: "${safeName}の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。"
+description: "${safeName}の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説します。"
 date: "${dateStr}"
 category: "Reviews"
 product_id: "${product.id}"
@@ -598,13 +598,13 @@ function normalizeLegacyReviewFrontmatter() {
         const rawTitleValue = titleIndex >= 0 ? lines[titleIndex].replace(/^title:\s*"?/u, '').replace(/"?$/u, '').trim() : '';
         const rawDescriptionValue = descriptionIndex >= 0 ? lines[descriptionIndex].replace(/^description:\s*"?/u, '').replace(/"?$/u, '').trim() : '';
         const baseName = rawTitleValue
-            .split('レビュー')[0]
+            .split('レビュー｜')[0]
             .replace(/^"+|"+$/gu, '')
             .trim();
 
         const safeBaseName = baseName || '製品';
         const nextTitle = `${safeBaseName} レビュー｜特徴・注意点・向いている人`;
-        const nextDescription = `${safeBaseName}の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説。`;
+        const nextDescription = `${safeBaseName}の特徴や注意点を、スペックとユーザー評価をもとに整理。どんな人に向いているかをわかりやすく解説します。`;
 
         const needsNormalization =
             /プロが教える|実機レビュー|編雁|編集部/u.test(raw) ||

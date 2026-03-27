@@ -126,6 +126,9 @@ export function verifyContentFiles() {
             if (!rankingUrl) {
                 console.error(`❌ ERROR in ${entry.file}: Missing ranking_url.`);
                 hasError = true;
+            } else if (/^\/articles\//.test(rankingUrl)) {
+                console.error(`❌ ERROR in ${entry.file}: ranking_url still points to legacy /articles path.`);
+                hasError = true;
             }
         }
     }

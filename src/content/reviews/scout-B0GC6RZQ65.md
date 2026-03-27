@@ -6,7 +6,7 @@ category: "Reviews"
 product_id: "scout-B0GC6RZQ65"
 author: "ChoiceGuide編集部"
 thumbnail: "/images/products/jvc-victor-ha-a110t-8061.jpg"
-ranking_url: "/articles/wireless-earphones-gym/"
+ranking_url: "/rankings/wireless-earphones-gym/"
 ---
 
 防水・防汗性能, 装着安定性（外れにくさ）, 音質, バッテリー持続時間の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、この製品は「圧倒的なスタミナ」と「ボーカルが際立つ音質」において、同価格帯の中で頭一つ抜けた存在です。[JVC Victor HA-A110T](https://www.amazon.co.jp/dp/B0GC6RZQ65?tag=subaru0130-22)は、派手な機能の多さよりも、イヤホンとしての基本性能を突き詰めた実用重視の一台と言えます。

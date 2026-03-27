@@ -6,7 +6,7 @@ category: "Reviews"
 product_id: "scout-B0DDKGK41D"
 author: "ChoiceGuide編集部"
 thumbnail: "/images/products/sony-wf-c510-7e68.jpg"
-ranking_url: "/articles/wireless-earphones-gym/"
+ranking_url: "/rankings/wireless-earphones-gym/"
 ---
 
 防水・防汗性能, 装着安定性（外れにくさ）, 音質, バッテリー持続時間の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、「機能はシンプルでいいから、絶対に失敗したくない」という人にとっての最適解と言える一台です。

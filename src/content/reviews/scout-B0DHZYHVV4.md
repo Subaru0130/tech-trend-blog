@@ -6,7 +6,7 @@ category: "Reviews"
 product_id: "scout-B0DHZYHVV4"
 author: "ChoiceGuide編集部"
 thumbnail: "/images/products/sony-linkbuds-fit-wf-ls910n-5350.jpg"
-ranking_url: "/articles/wireless-earphones-gym/"
+ranking_url: "/rankings/wireless-earphones-gym/"
 ---
 
 防水・防汗性能、装着安定性（外れにくさ）、音質、バッテリー持続時間の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、「着けていることを忘れる装着感」と「実用的な音質・機能」を両立させたい人にとって、非常に有力な選択肢です。特に、耳への圧迫感が苦手な人や、動いてもズレない安定性を求める人からの支持が厚いのが特徴です。

@@ -6,7 +6,7 @@ category: "Reviews"
 product_id: "scout-B0DJCXW1H3"
 author: "ChoiceGuide編集部"
 thumbnail: "/images/products/solid-bass-ath-cks50tw2-8145.jpg"
-ranking_url: "/articles/wireless-earphones-gym/"
+ranking_url: "/rankings/wireless-earphones-gym/"
 ---
 
 防水・防汗性能、装着安定性（外れにくさ）、音質、バッテリー持続時間の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、[オーディオテクニカ SOLID BASS ATH-CKS50TW2](https://www.amazon.co.jp/dp/B0DJCXW1H3?tag=subaru0130-22) は「充電の手間」と「ケースを持ち歩くストレス」を過去にする、スタミナ特化型の重低音イヤホンです。

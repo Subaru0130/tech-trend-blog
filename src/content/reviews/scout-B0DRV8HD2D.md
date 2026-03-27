@@ -6,7 +6,7 @@ category: "Reviews"
 product_id: "scout-B0DRV8HD2D"
 author: "ChoiceGuide編集部"
 thumbnail: "/images/products/anker-soundcore-liberty-5-d885.jpg"
-ranking_url: "/articles/wireless-earphones-gym/"
+ranking_url: "/rankings/wireless-earphones-gym/"
 ---
 
 防水・防汗性能、装着安定性（外れにくさ）、音質、バッテリー持続時間の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、[ANKER Soundcore Liberty 5](https://www.amazon.co.jp/dp/B0DRV8HD2D?tag=subaru0130-22) は「全部入りの機能」と「圧倒的なバッテリー持ち」を両立した、失敗の少ない一台です。

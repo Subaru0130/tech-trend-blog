@@ -157,6 +157,7 @@ function filterConsoleMessages(messages = []) {
             !normalized.includes('favicon.ico') &&
             !normalized.includes('download the react devtools') &&
             !normalized.includes('sourcemap') &&
+            !normalized.includes('largest contentful paint (lcp)') &&
             !normalized.includes('failed to load resource: net::err_failed');
     });
 }

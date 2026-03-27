@@ -6,7 +6,7 @@ category: "Reviews"
 product_id: "scout-B0GGGQGQKK"
 author: "ChoiceGuide編集部"
 thumbnail: "/images/products/sony-linkbuds-clip-wf-lc900-5331.jpg"
-ranking_url: "/articles/wireless-earphones-gym/"
+ranking_url: "/rankings/wireless-earphones-gym/"
 ---
 
 防水・防汗性能、装着安定性（外れにくさ）、音質、バッテリー持続時間の観点でスペックとユーザー評価を徹底分析しました。結論から言うと、「着けっぱなし」で生活したい人には最強の選択肢ですが、音楽への没入感を求める人には不向きです。
